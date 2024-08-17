@@ -61,7 +61,7 @@ const PendingTransactions = ({ id }: any) => {
     );
 
     return (
-        <div className='max-w-6xl p-5 rounded-md border mx-2 my-6 md:my-10'>
+        <div className='max-w-6xl p-5 rounded-md border my-6 md:my-10 mx-auto'>
             <Table>
            { invoices.length > 0 &&
                 <TableCaption>

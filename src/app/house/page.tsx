@@ -61,7 +61,7 @@ const handleSubmitEdit =async()=>{
         </div>
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {houses.map((house:any) => (
-            <Card key={house?.id} className="border rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <Card key={house?._id} className="border rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <Link href={`/house-details/${house?._id}`}>
               <CardHeader className="mb-2 bg-gray-100 rounded-t-md">
                 <CardTitle className="text-lg font-medium">House {house?.number}</CardTitle>

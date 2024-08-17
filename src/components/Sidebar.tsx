@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { Home, LayoutDashboard, LogOut, MenuIcon, X } from 'lucide-react';
+import { Home, LayoutDashboard, LogOut, MenuIcon, ReceiptIndianRupee, X } from 'lucide-react';
 import { useRouter,usePathname } from 'next/navigation';
 
 const Sidebar: React.FC = () => {
@@ -73,6 +73,18 @@ const Sidebar: React.FC = () => {
               >
                 <Home className="mr-3" />
                 <span className="text-lg">House</span>
+              </div>
+            </Link>
+          </li>
+          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
+            <Link href="/collection">
+              <div
+                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
+                  CurrentPage('/collection') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
+                }`}
+              >
+                <ReceiptIndianRupee className="mr-3" />
+                <span className="text-lg">Collection</span>
               </div>
             </Link>
           </li>

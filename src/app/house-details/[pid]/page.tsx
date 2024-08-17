@@ -1,4 +1,5 @@
 'use client'
+import ListMembers from '@/components/ListMembers'
 import PendingTransactions from '@/components/PendingTransactions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -108,7 +109,6 @@ const PageComponent = ({ params }: PageProps) => {
     try {
       const response = await axios.put(`${apiUrl}/api/house/edit-house`, data);
       if (response.data.success) {
-        console.log('House edited successfully:', response.data.house);
         setloading(false)
         setFamilyHead(
           {memberId: '',
@@ -156,9 +156,9 @@ const PageComponent = ({ params }: PageProps) => {
           </CardContent>
           {house?.familyHead ?
           (<CardFooter className="flex justify-between">
-            <div>
-              <p className="font-semibold">Family Head: {house?.familyHead.name} </p>
-              <p className="text-gray-900 font-semibold">Collection: ₹{house?.collectionAmount} </p>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-gray-800">Family Head: {house?.familyHead.name}</p>
+              <p className="text-xs text-gray-600">Collection: ₹{house?.collectionAmount}</p>
             </div>
             <Button variant="outline" size='sm' onClick={
               () => {
@@ -201,6 +201,7 @@ const PageComponent = ({ params }: PageProps) => {
         </Card>
       </div>
       <PendingTransactions id={pid} />
+      <ListMembers members={members} familyHead={house?.familyHead}/>
       <Dialog
         open={isOpen} onOpenChange={(v) => {
           if (!v) {

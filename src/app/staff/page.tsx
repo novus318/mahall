@@ -67,15 +67,8 @@ const Page = () => {
                   <TableCell className="px-4 py-2">{item.contactInfo.phone}</TableCell>
                   <TableCell className="px-4 py-2">₹{item.salary}</TableCell>
                   <TableCell className="px-4 py-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <MoreHorizontal size={24} />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Link href={`/staff/details/${item._id}`} className='bg-gray-900 text-white px-2 py-1 rounded-sm'>
+                    Details</Link>
                   </TableCell>
                 </TableRow>
               ))}

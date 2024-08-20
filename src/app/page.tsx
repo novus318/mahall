@@ -1,5 +1,7 @@
 'use client'
 import CreateAccount from "@/components/CreateAccount";
+import LinechartChart from "@/components/LinechartChart";
+import PiechartcustomChart from "@/components/PiechartcustomChart";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,51 +17,56 @@ function Home() {
       <div className="w-full md:w-1/6">
         <Sidebar />
       </div>
-      <div className="w-full md:w-5/6 p-4">
-      <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-      <Card className="sm:col-span-2 lg:col-span-3 p-6 border rounded-lg shadow-lg bg-white">
-  <CardHeader className="font-semibold text-xl border-b-2 border-gray-200 pb-2">
-    Assets
-  </CardHeader>
-  <CardContent className="pt-4">
-    <div className="flex flex-col gap-6">
-      <ul className="space-y-2">
-        <li className="flex justify-between text-gray-700 font-medium">
-          <span className="font-medium">Bank</span>
-          <span className="font-bold">₹00.00</span>
-        </li>
-        <li className="flex justify-between text-gray-700 font-medium">
-          <span className="font-medium">Cash</span>
-          <span className="font-bold">₹0.00</span>
-        </li>
-      </ul>
-    </div>
-  </CardContent>
-</Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>This Week</CardDescription>
-              <CardTitle className="text-3xl">O</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xs text-muted-foreground">
-                +0% from last week
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>This Month</CardDescription>
-              <CardTitle className="text-3xl">0</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xs text-muted-foreground">
-                +0% from last month
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      <div className="w-full md:w-5/6 p-4 space-y-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Card>
+              <CardHeader>
+                <CardTitle>Total Assets</CardTitle>
+                <CardDescription>The total number of assets managed by the NGO.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-4xl font-bold">1,234</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Total Donations</CardTitle>
+                <CardDescription>The total amount of donations received by the NGO.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-4xl font-bold">$567,890</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Volunteer Hours</CardTitle>
+                <CardDescription>The total number of volunteer hours contributed to the NGO.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-4xl font-bold">12,345</div>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Asset Distribution</CardTitle>
+                <CardDescription>A breakdown of the NGOs assets by category.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <PiechartcustomChart className="aspect-[4/3]" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Donation Trends</CardTitle>
+                <CardDescription>A line chart showing the trend of donations over time.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <LinechartChart className="aspect-[4/3]" />
+              </CardContent>
+            </Card>
+            </div>
       </div>
     </div>
   );

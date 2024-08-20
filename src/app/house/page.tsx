@@ -1,24 +1,20 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import CreateHouse from '@/components/CreateHouse';
 import { useHouseContext } from '@/context/HouseContext';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Loader2 } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import axios from 'axios';
 import Link from 'next/link';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 const Page = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const { houses, searchTerm, setSearchTerm,fetchHouses } = useHouseContext();
@@ -42,6 +38,9 @@ const handleSubmitEdit =async()=>{
     console.error('Error editing house:', error);
   }
 }
+useEffect(()=>{
+  fetchHouses()
+},[])
 
 
   return (
@@ -57,7 +56,8 @@ const handleSubmitEdit =async()=>{
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full sm:w-1/2"
           />
-          <CreateHouse />
+          <Link href='/create-house' className='bg-gray-900 text-white py-1 px-2 rounded-md'>
+          Create House</Link>
         </div>
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {houses.map((house:any) => (
@@ -131,6 +131,33 @@ const handleSubmitEdit =async()=>{
           }
         />
       </div>
+      <div className='grid grid-cols-2 gap-2'>
+                    <Select
+                name='status'
+                onValueChange={(value) => 
+                  setEditHouse({...editHouse, status: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={editHouse?.status} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='rented'>
+                    Rented
+                  </SelectItem>
+                  <SelectItem value='owned'>
+                  Owned
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <Input
+                            type="text"
+                            placeholder="Ration status"
+                            value={editHouse?.rationsStatus}
+                            onChange={(e) => setEditHouse({...editHouse,rationsStatus: e.target.value })}
+                            disabled={loading}
+                        />
+                    </div>
     { loading ?(  <Button>
         <Loader2 className='animate-spin'/>
       </Button>):(

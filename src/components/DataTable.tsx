@@ -103,14 +103,14 @@ const DataTable = () => {
             <TableRow key={index}>
               <TableCell>
                 <Checkbox
-                  checked={selectedIds.includes(house.familyHead._id)}
-                  onCheckedChange={(isChecked) => handleSelect(house.familyHead._id, !!isChecked)}
+                  checked={selectedIds.includes(house.familyHead?._id)}
+                  onCheckedChange={(isChecked) => handleSelect(house.familyHead?._id, !!isChecked)}
                 />
               </TableCell>
-              <TableCell>{house.number}</TableCell>
-              <TableCell>{house.LastCollection || 'no collection'}</TableCell>
-              <TableCell>{house.collectionAmount}</TableCell>
-              <TableCell>{house.familyHead.name}</TableCell>
+              <TableCell>{house?.number}</TableCell>
+              <TableCell>{house?.LastCollection || 'no collection'}</TableCell>
+              <TableCell>{house?.collectionAmount}</TableCell>
+              <TableCell>{house?.familyHead?.name}</TableCell>
             </TableRow>
           ))}
         </TableBody>

@@ -9,6 +9,7 @@ import DatePicker from '@/components/DatePicker'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/components/ui/use-toast'
 
 interface PageProps {
   params: {
@@ -24,13 +25,13 @@ interface Member {
   education: string,
   gender:string,
   mobile: string,
-
-  // Add other fields as needed
+place:string
 }
 
 const PageComponent = ({ params }: PageProps) => {
   const { pid } = params
   const router = useRouter();
+  const { toast } = useToast()
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [members, setMembers] = useState<Member[]>([])
   const [newMember, setNewMember] = useState<Member>({
@@ -40,7 +41,8 @@ const PageComponent = ({ params }: PageProps) => {
     maritalStatus: '',
     gender:'',
     education: '',
-    mobile: ''
+    mobile: '',
+    place:''
   })
   const [selectedRelation, setSelectedRelation] = useState({ memberId: '', relation: '' })
 
@@ -63,8 +65,79 @@ const PageComponent = ({ params }: PageProps) => {
       })
   }, [pid])
 
+
+  const validate = () => {
+    const currentYear = new Date().getFullYear();
+const dobYear = new Date(newMember.DOB).getFullYear();
+    let isValid = true;
+  
+    if(!newMember.name){
+        toast({
+            title: "Please fill member name",
+            variant: "destructive",
+        });
+        isValid = false;
+    }
+    if (!newMember.status) {
+        toast({
+            title: "Please fill current ocupation",
+            variant: "destructive",
+        });
+        isValid = false;
+    }
+    if (!newMember.maritalStatus) {
+        toast({
+            title: "Please fill marital status",
+            variant: "destructive",
+        });
+        isValid = false;
+    }
+    if (!newMember.gender) {
+        toast({
+            title: "Please fill gender",
+            variant: "destructive",
+        });
+        isValid = false;
+    }
+    if (!newMember.education) {
+        toast({
+            title: "Please fill education if there else NILL",
+            variant: "destructive",
+        });
+        isValid = false;
+    }
+    if (!newMember.DOB || dobYear === currentYear) {
+        toast({
+            title: "Please enter a valid Date of Birth",
+            variant: "destructive",
+        });
+        isValid = false;
+    }
+    if (!newMember.place) {
+        toast({
+            title: "Please select place",
+            variant: "destructive",
+            });
+    }
+    if (selectedRelation.memberId === '') {
+      toast({
+        title: "Please select a member to relate",
+        variant: "destructive",
+      });
+      return false;
+    }
+    if (selectedRelation.relation === '') {
+      toast({
+        title: "Please select a relation type",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return isValid;
+};
   // Handle form submission for creating a new member
   const handleCreateMember = async() => {
+    if (!validate()) return;
    try {
     const data = {
       newMember,
@@ -80,7 +153,8 @@ const PageComponent = ({ params }: PageProps) => {
         maritalStatus: '',
         gender:'',
         education: '',
-        mobile: ''
+        mobile: '',
+        place:''
       })
       setSelectedRelation({ memberId: '', relation: '' })
       router.push(`/house-details/${pid}`);
@@ -211,6 +285,33 @@ const PageComponent = ({ params }: PageProps) => {
               className=' block w-full border p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
             />
           </div>
+          <div>
+                    <Select
+                name='place'
+                onValueChange={(value) => setNewMember((prev) => ({ ...prev, place: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Place" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value='house'>
+                   House
+                  </SelectItem>
+                  <SelectItem value='UAE'>
+                    UAE
+                  </SelectItem>
+                  <SelectItem value='Malaysia'>
+                  Malaysia
+                  </SelectItem>
+                  <SelectItem value='Singapore'>
+                  Singapore
+                  </SelectItem>
+                  <SelectItem value='Local'>
+                  Local
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+                    </div>
         </div>
       </div>
 

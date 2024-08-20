@@ -7,11 +7,11 @@ import Link from 'next/link';
 const ListMembers = ({ members, familyHead }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<any>(null);
-  const filteredMembers = members.filter((member: any) => member._id !== familyHead._id);
+  const filteredMembers = members.filter((member: any) => member?._id !== familyHead?._id);
 
   // Separate members into those with relations and those without
-  const membersWithRelations = filteredMembers.filter((member: any) => member.relation);
-  const membersWithoutRelations = filteredMembers.filter((member: any) => !member.relation);
+  const membersWithRelations = filteredMembers.filter((member: any) => member?.relation);
+  const membersWithoutRelations = filteredMembers.filter((member: any) => !member?.relation);
 
   return (
     <div className="flex flex-col items-center space-y-8 p-2 md:p-8 bg-background rounded-lg border mx-auto max-w-5xl">
@@ -24,8 +24,8 @@ const ListMembers = ({ members, familyHead }: any) => {
             setSelectedMember(familyHead)
           }} className="flex cursor-pointer items-center justify-center w-52 bg-primary text-primary-foreground rounded-md font-semibold text-lg shadow-lg py-2">
           <div className="text-center">
-            <div className="text-sm">{familyHead.name}</div>
-            <div className="text-xs mt-1">{familyHead.status|| 'Occupation not specified'}</div>
+            <div className="text-sm">{familyHead?.name}</div>
+            <div className="text-xs mt-1">{familyHead?.status|| 'Occupation not specified'}</div>
           </div>
         </div>
         <ArrowDownIcon className="w-10 h-10 text-muted-foreground animate-bounce" />

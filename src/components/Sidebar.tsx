@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { Home, LayoutDashboard, LogOut, MenuIcon, ReceiptIndianRupee, X } from 'lucide-react';
+import { Banknote, Home, LayoutDashboard, LogOut, MenuIcon, ReceiptIndianRupee, User2Icon, X } from 'lucide-react';
 import { useRouter,usePathname } from 'next/navigation';
 
 const Sidebar: React.FC = () => {
@@ -65,6 +65,18 @@ const Sidebar: React.FC = () => {
             </Link>
           </li>
           <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
+            <Link href="/account">
+              <div
+                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
+                  CurrentPage('/account') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
+                }`}
+              >
+                <Banknote className="mr-3" />
+                <span className="text-lg">Account</span>
+              </div>
+            </Link>
+          </li>
+          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
             <Link href="/house">
               <div
                 className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
@@ -85,6 +97,18 @@ const Sidebar: React.FC = () => {
               >
                 <ReceiptIndianRupee className="mr-3" />
                 <span className="text-lg">Collection</span>
+              </div>
+            </Link>
+          </li>
+          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
+            <Link href="/staff">
+              <div
+                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
+                  CurrentPage('/staff') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
+                }`}
+              >
+                <User2Icon className="mr-3" />
+                <span className="text-lg">Staff</span>
               </div>
             </Link>
           </li>

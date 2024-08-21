@@ -136,7 +136,7 @@ const PageComponent = ({ params }: PageProps) => {
     <div className='p-2'>
      <div className='max-w-5xl mx-auto'>
      <div className="mb-4 flex justify-between items-center">
-        <Link href={`/house-details/${newMember?.house}`} className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
+        <Link href={`/house/house-details/${newMember?.house}`} className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
           Back
         </Link>
       </div>

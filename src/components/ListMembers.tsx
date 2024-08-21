@@ -131,7 +131,7 @@ const ListMembers = ({ members, familyHead }: any) => {
             <span>{selectedMember?.status}</span>
           </div>
          <div className='flex justify-center'>
-         <Link className='bg-gray-900 text-white font-medium py-1 px-3 rounded-md' href={`/edit-member/${selectedMember?._id}`}>
+         <Link className='bg-gray-900 text-white font-medium py-1 px-3 rounded-md' href={`/house/edit-member/${selectedMember?._id}`}>
          Edit</Link>
          </div>
         </div>

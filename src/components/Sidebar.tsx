@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { Banknote, Home, LayoutDashboard, LogOut, MenuIcon, ReceiptIndianRupee, User2Icon, X } from 'lucide-react';
+import { Banknote, Building, Home, LayoutDashboard, ListOrdered, ListTree, LogOut, MenuIcon, ReceiptIndianRupee, ReceiptIndianRupeeIcon, SendIcon, User2Icon, X } from 'lucide-react';
 import { useRouter,usePathname } from 'next/navigation';
 
 const Sidebar: React.FC = () => {
@@ -95,8 +95,8 @@ const Sidebar: React.FC = () => {
                   CurrentPage('/collection') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
                 }`}
               >
-                <ReceiptIndianRupee className="mr-3" />
-                <span className="text-lg">Collection</span>
+                <ListTree className="mr-3" />
+                <span className="text-lg">Kudi collection</span>
               </div>
             </Link>
           </li>
@@ -109,6 +109,42 @@ const Sidebar: React.FC = () => {
               >
                 <User2Icon className="mr-3" />
                 <span className="text-lg">Staff</span>
+              </div>
+            </Link>
+          </li>
+          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
+            <Link href="/rent">
+              <div
+                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
+                  CurrentPage('/rent') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
+                }`}
+              >
+                <Building className="mr-3" />
+                <span className="text-lg">Rent</span>
+              </div>
+            </Link>
+          </li>
+          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
+            <Link href="/payment">
+              <div
+                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
+                  CurrentPage('/payment') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
+                }`}
+              >
+                <SendIcon className="mr-3" />
+                <span className="text-lg">Payment</span>
+              </div>
+            </Link>
+          </li>
+          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
+            <Link href="/reciept">
+              <div
+                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
+                  CurrentPage('/reciept') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
+                }`}
+              >
+                <ReceiptIndianRupeeIcon className="mr-3" />
+                <span className="text-lg">Reciept</span>
               </div>
             </Link>
           </li>

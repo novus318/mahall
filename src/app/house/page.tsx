@@ -15,6 +15,8 @@ import { Textarea } from '@/components/ui/textarea';
 import axios from 'axios';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+
 const Page = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const { houses, searchTerm, setSearchTerm,fetchHouses } = useHouseContext();
@@ -56,13 +58,13 @@ useEffect(()=>{
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full sm:w-1/2"
           />
-          <Link href='/create-house' className='bg-gray-900 text-white py-1 px-2 rounded-md'>
+          <Link href='/house/create-house' className='bg-gray-900 text-white py-1 px-2 rounded-md'>
           Create House</Link>
         </div>
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {houses.map((house:any) => (
             <Card key={house?._id} className="border rounded-lg shadow-sm hover:shadow-md transition-shadow">
-              <Link href={`/house-details/${house?._id}`}>
+              <Link href={`/house/house-details/${house?._id}`}>
               <CardHeader className="mb-2 bg-gray-100 rounded-t-md">
                 <CardTitle className="text-lg font-medium">House {house?.number}</CardTitle>
               </CardHeader>

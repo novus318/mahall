@@ -133,7 +133,7 @@ const PageComponent = ({ params }: PageProps) => {
           Back
         </Link>
         <Link
-          href={`/add-member/${house?._id}`}
+          href={`/house/add-member/${house?._id}`}
           className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
           Add Member
         </Link>

@@ -157,7 +157,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
         place:''
       })
       setSelectedRelation({ memberId: '', relation: '' })
-      router.push(`/house-details/${pid}`);
+      router.push(`/house/house-details/${pid}`);
    }
   } catch (error) {
     
@@ -222,10 +222,10 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='male'>
-                    male
+                    Male
                   </SelectItem>
                   <SelectItem value='female'>
-                    female
+                    Female
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -251,13 +251,13 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value='maried'>
-                    married
+                    Married
                   </SelectItem>
                   <SelectItem value='unmarried'>
-                    unmarried
+                    Unmarried
                   </SelectItem>
                   <SelectItem value='divorced'>
-                    divorced
+                    Divorced
                   </SelectItem>
                 </SelectContent>
               </Select>

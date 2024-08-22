@@ -278,7 +278,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                     </div>
                     <div>
                         <Input
-                            type="number"
+                            type="text"
                             placeholder="Collection amount"
                             value={collection}
                             onChange={(e) => setCollection(Number(e.target.value))}
@@ -315,8 +315,8 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                                 <SelectValue placeholder="gender" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value='male'>male</SelectItem>
-                                <SelectItem value='female'>female</SelectItem>
+                                <SelectItem value='male'>Male</SelectItem>
+                                <SelectItem value='female'>Female</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -335,9 +335,9 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                                     <SelectValue placeholder="status" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value='married'>married</SelectItem>
-                                    <SelectItem value='unmarried'>unmarried</SelectItem>
-                                    <SelectItem value='divorced'>divorced</SelectItem>
+                                    <SelectItem value='married'>Married</SelectItem>
+                                    <SelectItem value='unmarried'>Unmarried</SelectItem>
+                                    <SelectItem value='divorced'>Divorced</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

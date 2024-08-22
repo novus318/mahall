@@ -171,7 +171,7 @@ const Page = () => {
                         disabled={loading}
                     />
                     <Input
-                        type="number"
+                        type="text"
                         name="balance"
                         placeholder="Balance"
                         value={selectedAccount?.balance || 0}

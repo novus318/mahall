@@ -115,7 +115,6 @@ const Page = () => {
                 Back
             </Link>
         </div>
-
         <div className='mx-auto p-4 bg-white rounded-md border my-8'>
           <h2 className='text-2xl font-semibold mb-4'>Add New Building</h2>
           <div className='space-y-4 mb-2'>

@@ -12,12 +12,8 @@ const page = () => {
     </div>
     <div className="w-full md:w-5/6 p-4 bg-white">
       <div className="flex justify-between items-center mb-4 gap-2">
-        <Input
-          placeholder="Search buildings..."
-          className="w-full sm:w-1/2"
-        />
         <Link href='/rent/create-building' className='bg-gray-900 text-white py-1 px-2 rounded-md'>
-        Create Building</Link>
+        Create category</Link>
       </div>
       </div>
     </div>

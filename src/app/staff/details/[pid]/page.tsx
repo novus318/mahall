@@ -67,7 +67,7 @@ const PageComponent = ({ params }: PageProps) => {
     const [paySlips, setPaySlips] = useState<any>([])
 
     const fetchStaffDetails = async () => {
-        axios.get(`${apiUrl}/api/staff/get/${pid}`)
+        axios.get(`₹{apiUrl}/api/staff/get/₹{pid}`)
         .then(response => {
             if (response.data.success) {
                 setStaff(response.data.staff)
@@ -214,15 +214,15 @@ const PageComponent = ({ params }: PageProps) => {
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell className="font-medium">Liam Johnson</TableCell>
-                  <TableCell>$6,800</TableCell>
+                  <TableCell className="font-medium">August</TableCell>
+                  <TableCell>₹6,800</TableCell>
                   <TableCell>
                     <Badge variant="secondary">Pending</Badge>
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="font-medium">Isabella Garcia</TableCell>
-                  <TableCell>$4,900</TableCell>
+                  <TableCell className="font-medium">July</TableCell>
+                  <TableCell>₹4,900</TableCell>
                   <TableCell>
                     <Badge variant="outline">Approved</Badge>
                   </TableCell>
@@ -245,7 +245,7 @@ const PageComponent = ({ params }: PageProps) => {
             <TableBody>
               <TableRow>
                 <TableCell>April 2023</TableCell>
-                <TableCell>$6,666.67</TableCell>
+                <TableCell>₹6,666.67</TableCell>
                 <TableCell>
                   <Button variant="outline" size="sm">
                     <DownloadIcon className="h-4 w-4 mr-2" />

@@ -16,12 +16,12 @@ const LinechartChart = (props:any) => {
         <LineChart
           accessibilityLayer
           data={[
-            { month: "January", desktop: 186 },
-            { month: "February", desktop: 305 },
-            { month: "March", desktop: 237 },
-            { month: "April", desktop: 73 },
-            { month: "May", desktop: 209 },
-            { month: "June", desktop: 214 },
+            { month: "January", donation: 186 },
+            { month: "February", donation: 305 },
+            { month: "March", donation: 237 },
+            { month: "April", donation: 73 },
+            { month: "May", donation: 209 },
+            { month: "June", donation: 214 },
           ]}
           margin={{
             left: 12,
@@ -37,7 +37,7 @@ const LinechartChart = (props:any) => {
             tickFormatter={(value) => value.slice(0, 3)}
           />
           <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-          <Line dataKey="desktop" type="natural" stroke="var(--color-desktop)" strokeWidth={2} dot={false} />
+          <Line dataKey="donation" type="natural" stroke="#82ca9d" strokeWidth={2} dot={false} />
         </LineChart>
       </ChartContainer>
     </div>

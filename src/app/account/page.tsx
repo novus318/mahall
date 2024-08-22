@@ -176,7 +176,7 @@ const Page = () => {
                         placeholder="Balance"
                         value={selectedAccount?.balance || 0}
                         onChange={handleInputChange}
-                        disabled={loading}
+                        disabled
                     />
                     <Select
                         value={selectedAccount?.accountType || ''}

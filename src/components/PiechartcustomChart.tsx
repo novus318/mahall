@@ -6,28 +6,23 @@ const PiechartcustomChart = (props:any) => {
     <div{...props}>
     <ChartContainer
       config={{
-        visitors: {
-          label: "Visitors",
+        salary: {
+          label: "Salary",
         },
-        chrome: {
-          label: "Chrome",
-          color: "hsl(var(--chart-1))",
+        rent: {
+          label: "Rent",
         },
-        safari: {
-          label: "Safari",
-          color: "hsl(var(--chart-2))",
+        kudiCollection: {
+          label: "Collection",
         },
-        firefox: {
-          label: "Firefox",
-          color: "hsl(var(--chart-3))",
+        donation: {
+          label: "Donation",
         },
-        edge: {
-          label: "Edge",
-          color: "hsl(var(--chart-4))",
+        pravasi: {
+          label: "Pravasi",
         },
-        other: {
-          label: "Other",
-          color: "hsl(var(--chart-5))",
+        expenses: {
+          label: "Expenses",
         },
       }}
     >
@@ -35,14 +30,15 @@ const PiechartcustomChart = (props:any) => {
         <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
         <Pie
           data={[
-            { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-            { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-            { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-            { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-            { browser: "other", visitors: 90, fill: "var(--color-other)" },
+            { asset: "Salary", percentage: 30, fill: '#8884d8'},
+            { asset: "Rent", percentage: 20 ,fill: '#82ca9d' },
+            { asset: "Kudi Collection", percentage: 25,fill:'#0088FE' },
+            { asset: "Donation", percentage: 15 ,fill:'	#dba054' },
+            { asset: "Pravasi Income", percentage: 10,fill:'#FF8042' },
+            { asset: "Other expences", percentage: 10, fill:'	#FFBB28' },
           ]}
-          dataKey="visitors"
-          nameKey="browser"
+          dataKey="percentage"
+          nameKey="asset"
         />
       </PieChart>
     </ChartContainer>

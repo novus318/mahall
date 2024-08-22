@@ -22,28 +22,28 @@ function Home() {
             <Card>
               <CardHeader>
                 <CardTitle>Total Assets</CardTitle>
-                <CardDescription>The total number of assets managed by the NGO.</CardDescription>
+                <CardDescription>The total number of assets managed by the accounts</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold">1,234</div>
+                <div className="text-4xl font-bold">₹1234</div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
                 <CardTitle>Total Donations</CardTitle>
-                <CardDescription>The total amount of donations received by the NGO.</CardDescription>
+                <CardDescription>The total amount of donations received</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold">$567,890</div>
+                <div className="text-4xl font-bold">₹567,890</div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Volunteer Hours</CardTitle>
-                <CardDescription>The total number of volunteer hours contributed to the NGO.</CardDescription>
+                <CardTitle>Total Expenses</CardTitle>
+                <CardDescription>The total Expenses of the month.</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold">12,345</div>
+                <div className="text-4xl font-bold">₹12,345</div>
               </CardContent>
             </Card>
           </div>
@@ -51,10 +51,10 @@ function Home() {
             <Card>
               <CardHeader>
                 <CardTitle>Asset Distribution</CardTitle>
-                <CardDescription>A breakdown of the NGOs assets by category.</CardDescription>
+                <CardDescription>A breakdown the assets by category.</CardDescription>
               </CardHeader>
               <CardContent>
-                <PiechartcustomChart className="aspect-[4/3]" />
+                <PiechartcustomChart className="aspect-[5/3]" />
               </CardContent>
             </Card>
             <Card>
@@ -63,7 +63,7 @@ function Home() {
                 <CardDescription>A line chart showing the trend of donations over time.</CardDescription>
               </CardHeader>
               <CardContent>
-                <LinechartChart className="aspect-[4/3]" />
+                <LinechartChart className="aspect-[5/3]" />
               </CardContent>
             </Card>
             </div>

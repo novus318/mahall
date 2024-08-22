@@ -67,7 +67,7 @@ const PageComponent = ({ params }: PageProps) => {
     const [paySlips, setPaySlips] = useState<any>([])
 
     const fetchStaffDetails = async () => {
-        axios.get(`₹{apiUrl}/api/staff/get/₹{pid}`)
+        axios.get(`${apiUrl}/api/staff/get/${pid}`)
         .then(response => {
             if (response.data.success) {
                 setStaff(response.data.staff)

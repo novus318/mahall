@@ -34,6 +34,7 @@ const PageComponent = ({ params }: PageProps) => {
   const { toast } = useToast()
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [members, setMembers] = useState<Member[]>([])
+  const [loading, setLoading] = useState(false);
   const [newMember, setNewMember] = useState<Member>({
     name: '',
     status: '',
@@ -138,6 +139,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
   // Handle form submission for creating a new member
   const handleCreateMember = async() => {
     if (!validate()) return;
+    setLoading(true);
    try {
     const data = {
       newMember,
@@ -158,9 +160,15 @@ const dobYear = new Date(newMember.DOB).getFullYear();
       })
       setSelectedRelation({ memberId: '', relation: '' })
       router.push(`/house/house-details/${pid}`);
+      setLoading(false)
    }
-  } catch (error) {
-    
+  } catch (error:any) {
+    toast({
+        title: "Error creating member",
+        description: error?.response?.data?.message || error.message || 'Something went wrong',
+        variant: "destructive",
+    });
+    setLoading(false);
    }
     
 
@@ -199,7 +207,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
               placeholder='Enter name'
               value={newMember.name}
               onChange={handleChange}
-              className=' block w-full border p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+              className=' block w-full border p-2 rounded-md shadow-sm  sm:text-sm'
             />
           </div>
 
@@ -211,7 +219,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
               placeholder='Current occupation'
               value={newMember.status}
               onChange={handleChange}
-              className=' block w-full border px-2 py-4 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+              className=' block w-full border px-2 py-4 rounded-md shadow-sm  sm:text-sm'
             />
             <Select
                 name='gender'
@@ -265,14 +273,22 @@ const dobYear = new Date(newMember.DOB).getFullYear();
           </div>
 
           <div>
-            <Input
-              type='text'
-              name='education'
-              placeholder='Enter education'
-              value={newMember.education}
-              onChange={handleChange}
-              className=' block w-full border p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-            />
+          <Select
+                                name='education'
+                                onValueChange={(value) => setNewMember((prev) => ({ ...prev, education: value }))}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Education" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                <SelectItem value="Below 10th">Below 10th</SelectItem>
+                                <SelectItem value="SSLC">SSLC</SelectItem>
+                                <SelectItem value="Plus Two">Plus Two</SelectItem>
+                                    <SelectItem value="Bachelors">Bachelors</SelectItem>
+                                    <SelectItem  value="Diploma">Diploma</SelectItem>
+                                    <SelectItem value="Masters">Masters</SelectItem>
+                                </SelectContent>
+                            </Select>
           </div>
 
           <div>
@@ -282,11 +298,14 @@ const dobYear = new Date(newMember.DOB).getFullYear();
               placeholder='Enter mobile number'
               value={newMember.mobile}
               onChange={handleChange}
-              className=' block w-full border p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+              className=' block w-full border p-2 rounded-md shadow-sm  sm:text-sm'
             />
           </div>
           <div>
-                    <Select
+          <Label>
+                            Select place
+                        </Label>
+          <Select
                 name='place'
                 onValueChange={(value) => setNewMember((prev) => ({ ...prev, place: value }))}
               >
@@ -294,8 +313,8 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                   <SelectValue placeholder="Place" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value='house'>
-                   House
+                    <SelectItem value='Kerala'>
+                   Kerala
                   </SelectItem>
                   <SelectItem value='UAE'>
                     UAE
@@ -306,8 +325,11 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                   <SelectItem value='Singapore'>
                   Singapore
                   </SelectItem>
-                  <SelectItem value='Local'>
-                  Local
+                  <SelectItem value='Kuwait'>
+                  Kuwait
+                  </SelectItem>
+                  <SelectItem value='Outside kerala'>
+                  Outside kerala
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -355,7 +377,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
         </div>
       ) : null}
         <Button
-            className='w-full'
+            disabled={loading}
             onClick={handleCreateMember}
           >
             Add Member

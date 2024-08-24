@@ -7,6 +7,7 @@ import { Loader2 } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import axios from 'axios'
 import { useToast } from './ui/use-toast'
+import { Label } from './ui/label'
 
 const CreateAccount = ({fetchAccounts}:any) => {
     const { toast } = useToast()
@@ -77,6 +78,9 @@ const CreateAccount = ({fetchAccounts}:any) => {
                     Create New Account
                 </DialogTitle>
                 <div>
+                    <Label>
+                       Account Name
+                    </Label>
                     <Input
                         type="text"
                         name="name"
@@ -87,6 +91,9 @@ const CreateAccount = ({fetchAccounts}:any) => {
                     />
                 </div>
                 <div>
+                <Label>
+                       Account Holder name
+                    </Label>
                     <Input
                         type="text"
                         name="holderName"
@@ -97,8 +104,11 @@ const CreateAccount = ({fetchAccounts}:any) => {
                     />
                 </div>
                 <div>
+                <Label>
+                       Account Open balance
+                    </Label>
                     <Input
-                        type="number"
+                        type="text"
                         name="balance"
                         placeholder="Balance"
                         value={formData.balance}

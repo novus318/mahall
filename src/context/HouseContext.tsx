@@ -15,15 +15,12 @@ interface House {
 interface HouseContextType {
   houses: House[];
   fetchHouses: () => void;
-  searchTerm: string;
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const HouseContext = createContext<HouseContextType | undefined>(undefined);
 
 export const HouseProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [houses, setHouses] = useState<House[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>('');
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchHouses = async () => {
@@ -40,7 +37,7 @@ export const HouseProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, []);
 
   return (
-    <HouseContext.Provider value={{ houses, fetchHouses, searchTerm, setSearchTerm }}>
+    <HouseContext.Provider value={{ houses, fetchHouses}}>
       {children}
     </HouseContext.Provider>
   );

@@ -12,6 +12,7 @@ import DatePicker from '@/components/DatePicker'
 import { useToast } from '@/components/ui/use-toast'
 import Spinner from '@/components/Spinner'
 import { useRouter } from 'next/navigation'
+import { Label } from '@/components/ui/label'
 
 
 interface Member {
@@ -33,7 +34,7 @@ const Page = () => {
     const [status, setStatus] = useState<string>('');
     const [rationstatus, setRationStatus] = useState<string>('');
     const [houseAddress, setHouseAddress] = useState<string>('');
-    const [collection, setCollection] = useState<number>(0);
+    const [collection, setCollection] = useState<number>();
     const [loading, setloading] = useState(false);
     const router = useRouter();
     const [newMember, setNewMember] = useState<Member>({
@@ -95,7 +96,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
             });
             isValid = false;
         }
-        if(!collection && collection < 1){
+        if(collection !== undefined && collection < 1){
             toast({
                 title: "Please enter valid collection Amount",
                 variant: "destructive",
@@ -182,6 +183,8 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                 setHouseNumber('');
                 setHouseName('');
                 setHouseAddress('');
+                setStatus('');
+                setRationStatus('');
                 setCollection(0);
                 setNewMember(
                     {
@@ -268,13 +271,24 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <Input
-                            type="text"
-                            placeholder="Ration status"
-                            value={rationstatus}
-                            onChange={(e) => setRationStatus(e.target.value)}
-                            disabled={loading}
-                        />
+              <Select
+                name='Rationstatus'
+                onValueChange={(value) => 
+                    setRationStatus(value)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Ration Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='APL'>
+                    APL
+                  </SelectItem>
+                  <SelectItem value='BPL'>
+                 BPL
+                  </SelectItem>
+                </SelectContent>
+              </Select>
                     </div>
                     <div>
                         <Input
@@ -295,7 +309,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                             placeholder='Enter name'
                             value={newMember.name}
                             onChange={handleChange}
-                            className='block w-full border p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                            className='block w-full border p-2 rounded-md shadow-sm  sm:text-sm'
                         />
                     </div>
                     <div className='grid grid-cols-2 gap-2'>
@@ -305,7 +319,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                             placeholder='Current occupation'
                             value={newMember.status}
                             onChange={handleChange}
-                            className='block w-full border px-2 py-4 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                            className='block w-full border px-2 py-4 rounded-md shadow-sm  sm:text-sm'
                         />
                         <Select
                             name='gender'
@@ -343,14 +357,22 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                         </div>
                     </div>
                     <div>
-                        <Input
-                            type='text'
-                            name='education'
-                            placeholder='Enter education'
-                            value={newMember.education}
-                            onChange={handleChange}
-                            className='block w-full border p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                        />
+                    <Select
+                                name='education'
+                                onValueChange={(value) => setNewMember((prev) => ({ ...prev, education: value }))}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Education" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                <SelectItem value="Below 10th">Below 10th</SelectItem>
+                                <SelectItem value="SSLC">SSLC</SelectItem>
+                                <SelectItem value="Plus Two">Plus Two</SelectItem>
+                                    <SelectItem value="Bachelors">Bachelors</SelectItem>
+                                    <SelectItem  value="Diploma">Diploma</SelectItem>
+                                    <SelectItem value="Masters">Masters</SelectItem>
+                                </SelectContent>
+                            </Select>
                     </div>
                     <div>
                         <Input
@@ -359,10 +381,13 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                             placeholder='Enter mobile number'
                             value={newMember.mobile}
                             onChange={handleChange}
-                            className='block w-full border p-2 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
+                            className='block w-full border p-2 rounded-md shadow-sm  sm:text-sm'
                         />
                     </div>
                     <div>
+                        <Label>
+                            Select place
+                        </Label>
                     <Select
                 name='place'
                 onValueChange={(value) => setNewMember((prev) => ({ ...prev, place: value }))}
@@ -371,8 +396,8 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                   <SelectValue placeholder="Place" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value='house'>
-                   House
+                    <SelectItem value='Kerala'>
+                   Kerala
                   </SelectItem>
                   <SelectItem value='UAE'>
                     UAE
@@ -383,15 +408,19 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                   <SelectItem value='Singapore'>
                   Singapore
                   </SelectItem>
-                  <SelectItem value='Local'>
-                  Local
+                  <SelectItem value='Kuwait'>
+                  Kuwait
+                  </SelectItem>
+                  <SelectItem value='Outside kerala'>
+                  Outside kerala
                   </SelectItem>
                 </SelectContent>
               </Select>
                     </div>
                 </div>
                 <div className='mt-4'>
-                        <Button onClick={handleSubmit}>Create House</Button>
+                        <Button disabled={loading}
+                         onClick={handleSubmit}>Create House</Button>
                 </div>
             </div>
         </div>

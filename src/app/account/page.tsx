@@ -44,19 +44,10 @@ const Page = () => {
     }));
   };
 
-  const handleSelectChange = (value: any) => {
-    setSelectedAccount((prev: any) => ({
-      ...prev,
-      accountType: value,
-      accountNumber: '',
-      ifscCode: '',
-    }));
-  };
 
   const fetchAccounts = () => {
     axios.get(`${apiUrl}/api/account/get`).then(response => {
       setBank(response.data.accounts)
-      console.log(response.data.accounts)
     })
       .catch(error => {
         console.log("Error fetching accounts:", error)

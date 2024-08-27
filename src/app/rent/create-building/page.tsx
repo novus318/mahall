@@ -16,6 +16,7 @@ const Page = () => {
   const [buildingName, setBuildingName] = useState('')
   const [buildingPlace, setBuildingPlace] = useState('')
   const [roomNumbers, setRoomNumbers] = useState([''])
+  const [loading, setLoading] = useState(false)
 
   const handleRoomChange = (index:any, value:any) => {
     const updatedRooms = [...roomNumbers]
@@ -37,13 +38,6 @@ const Page = () => {
 
   const validate = () => {
     const uniqueRooms = new Set(roomNumbers)
-    if (uniqueRooms.size !== roomNumbers.length) {
-      toast({
-        title: 'All room numbers should be unique',
-        variant: 'destructive',
-      })
-      return
-    }
     let isValid = true;
     if (!buildingId) {
       toast({
@@ -80,10 +74,18 @@ const Page = () => {
       })
       return false;
     }
+    if (roomNumbers.some((room: any) => room === '')) {
+      toast({
+        title: 'All room numbers should not be empty',
+        variant: 'destructive',
+      })
+      return false;
+    }
     return isValid;
 };
   const handleSubmit = async() => {
     if (!validate()) return;
+    setLoading(true)
     const data = {
       buildingName:buildingName,
       place:buildingPlace,
@@ -103,8 +105,13 @@ const Page = () => {
         setRoomNumbers([''])
         router.push('/rent')
       }
-    } catch (error) {
-      
+    } catch (error:any) {
+      toast({
+        title: 'Failed to add building',
+        description: error.response?.data?.message || error.message || 'Something went wrong',
+        variant: 'destructive',
+      })
+      setLoading(false)
     }
   }
   return (
@@ -167,7 +174,8 @@ const Page = () => {
               size='sm' type="button" onClick={addRoomField}>Add Room</Button>
             </div>
             <div className='mt-4'>
-              <Button onClick={handleSubmit}>Create Building</Button>
+              <Button
+              disabled={loading} onClick={handleSubmit}>Create Building</Button>
             </div>
           </div>
         </div>

@@ -148,11 +148,26 @@ const PageComponent = ({ params }: PageProps) => {
                     title: 'Contract created successfully',
                     variant: 'default',
                 });
+                setContract({
+                    fromDate: '',
+                    toDate: '',
+                    rent: 0,
+                    deposit: 0,
+                    tenant: {
+                        name: '',
+                        aadhaar: '',
+                        place: '',
+                        number: '',
+                    },
+                });
                 router.push(`/rent/room-details/${pid}/${roomId}`);
             } 
-        } catch (error) {
-            // Handle error
-            console.error('Error creating contract', error);
+        } catch (error:any)   {
+            toast({
+                title: 'Error creating contract',
+                description: error.response?.data?.message || error.message || 'Something went wrong',
+                variant: 'destructive',
+            });
         } finally {
             setLoading(false);
         }
@@ -186,7 +201,7 @@ const PageComponent = ({ params }: PageProps) => {
                                 Rent
                             </Label>
                             <Input
-                                type='number'
+                                type='text'
                                 name='rent'
                                 value={contract.rent}
                                 placeholder='Rent Amount'
@@ -199,7 +214,7 @@ const PageComponent = ({ params }: PageProps) => {
                                 Deposit
                             </Label>
                             <Input
-                                type='number'
+                                type='text'
                                 name='deposit'
                                 value={contract.deposit}
                                 placeholder='Deposit Amount'
@@ -247,7 +262,6 @@ const PageComponent = ({ params }: PageProps) => {
                         />
                     </div>
                     <Button
-                        className='w-full'
                         onClick={handleSubmit}
                         disabled={loading}
                     >

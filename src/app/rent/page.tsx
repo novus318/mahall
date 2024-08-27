@@ -85,14 +85,17 @@ const Page = () => {
         <Sidebar />
       </div>
       <div className="w-full md:w-5/6 p-4 bg-white">
-        <div className="flex justify-between items-center mb-4 gap-2">
+        <div className="grid grid-cols-4 md:grid-cols-6 justify-between items-center mb-4 gap-2">
           <Input
             placeholder="Search buildings..."
-            className="w-2/3"
+            className="w-2/3 col-span-4"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Link href='/rent/create-building' className='bg-gray-900 text-white py-1 px-2 rounded text-xs md:text-base'>
+           <Link href='/rent/pending-rents' className='bg-gray-900 col-span-2 md:col-span-1 text-white py-1 px-2 rounded text-xs md:text-base'>
+            Pending rents
+          </Link>
+          <Link href='/rent/create-building' className='bg-gray-900 col-span-2 md:col-span-1 text-white py-1 px-2 rounded text-xs md:text-base'>
             Create Building
           </Link>
         </div>

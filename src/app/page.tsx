@@ -2,6 +2,7 @@
 import CreateAccount from "@/components/CreateAccount";
 import LinechartChart from "@/components/LinechartChart";
 import PiechartcustomChart from "@/components/PiechartcustomChart";
+import RecentTransactions from "@/components/RecentTransactions";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +11,36 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 function Home() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const [asset, setAsset] = useState(0);
+  const [donations, setDonations] = useState(0);
+  const [expense, setExpense] = useState(0);
+const[expensePercentage,setExpensePercentage] =useState(0)
+const fetchAssets = async ()=>{
+  try {
+    const response = await axios.get(`${apiUrl}/api/dashboard/get-assets`);
+    setAsset(response.data.asset);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const fetchDonations = async ()=>{}
+
+const fetchExpenses = async ()=>{
+  try {
+    const response = await axios.get(`${apiUrl}/api/dashboard/get-expenses`);
+    setExpense(response.data.currentMonthTotal);
+    setExpensePercentage(response.data.percentageChange)
+  } catch (error) {
+    console.log(error);
+  }
+  }
+  useEffect(() => {
+    fetchAssets();
+    fetchDonations();
+    fetchExpenses();
+  }, []);
 
 
   return (
@@ -25,7 +56,7 @@ function Home() {
                 <CardDescription>The total number of assets managed by the accounts</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold">₹1234</div>
+                <div className="text-4xl font-bold">₹{asset?.toFixed(2)}</div>
               </CardContent>
             </Card>
             <Card>
@@ -43,8 +74,13 @@ function Home() {
                 <CardDescription>The total Expenses of the month.</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold">₹12,345</div>
+                <div className="text-4xl font-bold">₹{expense?.toFixed(2)}</div>
               </CardContent>
+              <CardFooter>
+                <div className="text-sm text-gray-600">
+                  {expensePercentage > 0? '+': ''}{expensePercentage}%
+                </div>
+              </CardFooter>
             </Card>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
@@ -67,6 +103,7 @@ function Home() {
               </CardContent>
             </Card>
             </div>
+            <RecentTransactions/>
       </div>
     </div>
   );

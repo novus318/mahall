@@ -43,9 +43,14 @@ const Page = () => {
       <div className="w-full md:w-5/6 p-6 bg-white shadow-md">
       <div className="mb-4 flex justify-between items-center">
           <h2 className="text-2xl font-semibold">Staff Management</h2>
-          <Link href='/staff/create-staff' className='bg-gray-900 text-white py-1 px-2 rounded'>
+        <div className='space-x-2'>
+        <Link href='/staff/pending-salaries' className='bg-gray-900 text-white py-1 px-2 rounded'>
+          Pending salary
+          </Link>
+        <Link href='/staff/create-staff' className='bg-gray-900 text-white py-1 px-2 rounded'>
           Create  staff
           </Link>
+        </div>
         </div>
         <div className="mt-6 overflow-x-auto">
           <Table className="min-w-full bg-white">

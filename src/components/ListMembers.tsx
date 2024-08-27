@@ -4,6 +4,7 @@ import { ArrowDownIcon, ArrowRightIcon, ArrowLeftIcon } from 'lucide-react'; // 
 import { Dialog, DialogContent, DialogTitle } from './ui/dialog';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import { Button } from './ui/button';
 const ListMembers = ({ members, familyHead }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<any>(null);
@@ -102,31 +103,31 @@ const ListMembers = ({ members, familyHead }: any) => {
         <DialogContent className='px-3 rounded-md'>
         <DialogTitle className="text-xl font-semibold mb-4">User Details</DialogTitle>
         <div className="space-y-4">
-          <div className="flex justify-between">
+          <div className="flex gap-2">
             <span className="font-medium">Name:</span>
             <span>{selectedMember?.name}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-2">
             <span className="font-medium">Date of Birth:</span>
             <span>{selectedMember?.DOB && format(selectedMember.DOB, "PPP")}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-2">
             <span className="font-medium">Gender:</span>
             <span>{selectedMember?.gender}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-2">
             <span className="font-medium">Mobile:</span>
             <span>{selectedMember?.mobile || 'Not found'}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-2">
             <span className="font-medium">Education:</span>
             <span>{selectedMember?.education}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-2">
             <span className="font-medium">Marital Status:</span>
             <span>{selectedMember?.maritalStatus}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-2">
             <span className="font-medium">Status:</span>
             <span>{selectedMember?.status}</span>
           </div>

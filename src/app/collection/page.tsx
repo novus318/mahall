@@ -2,6 +2,8 @@
 import DataTable from '@/components/DataTable'
 import Sidebar from '@/components/Sidebar'
 import { withAuth } from '@/components/withAuth'
+import { Currency, History } from 'lucide-react'
+import Link from 'next/link'
 import React from 'react'
 
 const page = () => {
@@ -16,12 +18,19 @@ const page = () => {
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
             <p className="text-muted-foreground">
-              Here&apos;s a list of your houses to collect!
+              Here&apos;s a list of your Unpaid Collectons!
             </p>
           </div>
-          <p className="text-xs font-medium text-muted-foreground">
-              Select and generate collection
-            </p>
+          <Link href='/collection/transactions'
+            className='flex items-center gap-1 bg-gray-900 text-white py-1 px-3 rounded-md text-sm'>
+              <History className='h-4 w-4'/>
+            Transactions
+            </Link>
+            <Link href='/collection/paid-collection'
+            className='flex items-center gap-1 bg-gray-900 text-white py-1 px-3 rounded-md text-sm'>
+              <Currency className='h-4 w-4'/>
+            Paid Collection
+            </Link>
         </div>
         <DataTable />
       </div>

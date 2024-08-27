@@ -41,7 +41,7 @@ const TransactionsPage: React.FC = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/api/transactions/get/self-transfer`);
+        const response = await axios.get(`${apiUrl}/api/transactions/get/kudi-collection`);
         setTransactions(response.data.data);
         setLoading(false);
       } catch (err) {
@@ -71,10 +71,10 @@ const TransactionsPage: React.FC = () => {
   return (
     <div className="container mx-auto p-4">
        <div className="mb-4 flex justify-between items-center">
-        <Link href='/account' className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
+        <Link href='/collection' className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
           Back
         </Link>
-        <h2 className="text-lg md:text-2xl font-semibold mb-4">Self-Transfer Transactions</h2>
+        <h2 className="text-lg md:text-2xl font-semibold mb-4">Kudi collection Transactions</h2>
       </div>
    <div className='rounded-t-md bg-gray-100 p-1'>
    <Table className="bg-white">
@@ -86,7 +86,7 @@ const TransactionsPage: React.FC = () => {
     </TableRow>
   </TableHeader>
   <TableBody>
-    {transactions.map((transaction) => {
+  {transactions.map((transaction) => {
       const { dayMonthYear, time } = formatDate(transaction?.date);
       const formattedAmount = formatAmount(transaction?.amount, transaction?.type);
       return (
@@ -102,6 +102,12 @@ const TransactionsPage: React.FC = () => {
         </TableRow>
       );
     })}
+    {transactions.length === 0 && (
+        <TableCell colSpan={3} className="text-center text-gray-600 text-sm">
+          <h4 className="text-lg font-bold">No transactions...</h4>
+        </TableCell>
+      ) 
+    }
   </TableBody>
 </Table>
    </div>

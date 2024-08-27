@@ -7,10 +7,10 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 
 
-const TransactionsSkeleton: React.FC = () => {
+const CollectionsSkeleton: React.FC = () => {
     return (
       <div className="container mx-auto p-4">
-        <h2 className="text-2xl font-semibold mb-4">Self-Transfer Transactions</h2>
+        <h2 className="text-2xl font-semibold mb-4">Collections</h2>
         <div className="space-y-2">
           {[...Array(5)].map((_, index) => (
             <div key={index} className="flex space-x-4">
@@ -24,33 +24,48 @@ const TransactionsSkeleton: React.FC = () => {
       </div>
     );
   };
-interface Transaction {
+interface Collection {
   _id: string;
   description: string;
   amount: number;
-  type: 'Credit' | 'Debit';
-  date: string;
+  status: string
+  PaymentDate: string;
+  kudiCollectionType:string
+category:{
+name: string;
+description:string;
+}
+houseId:{
+    _id: string;
+    address: string;
+    name: string;
+    number: string;
+}
+memberId:{
+    _id: string;
+    name: string;
+}
 }
 
-const TransactionsPage: React.FC = () => {
+const CollectionsPage: React.FC = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [Collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchTransactions = async () => {
+    const fetchCollections = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/api/transactions/get/self-transfer`);
-        setTransactions(response.data.data);
+        const response = await axios.get(`${apiUrl}/api/house/get/paid/collections`);
+        setCollections(response.data.houses);
         setLoading(false);
       } catch (err) {
-        setError('Failed to fetch transactions');
+        setError('Failed to fetch Collections');
         setLoading(false);
       }
     };
 
-    fetchTransactions();
+    fetchCollections();
   }, []);
 
   const formatDate = (dateString:any) => {
@@ -65,16 +80,16 @@ const TransactionsPage: React.FC = () => {
     return type === 'Credit' ? `+${amount}` : `-${amount}`;
   };
 
-  if (loading) return <TransactionsSkeleton />;
+  if (loading) return <CollectionsSkeleton />;
   if (error) return <p>{error}</p>;
 
   return (
     <div className="container mx-auto p-4">
        <div className="mb-4 flex justify-between items-center">
-        <Link href='/account' className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
+        <Link href='/collection' className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
           Back
         </Link>
-        <h2 className="text-lg md:text-2xl font-semibold mb-4">Self-Transfer Transactions</h2>
+        <h2 className="text-lg md:text-2xl font-semibold mb-4">Kudi collection Collections</h2>
       </div>
    <div className='rounded-t-md bg-gray-100 p-1'>
    <Table className="bg-white">
@@ -83,25 +98,38 @@ const TransactionsPage: React.FC = () => {
       <TableHead className="font-medium">Date</TableHead>
       <TableHead className="font-medium">Description</TableHead>
       <TableHead className="font-medium">Amount</TableHead>
+      <TableHead className="font-medium">Status</TableHead>
+      <TableHead className="font-medium">Reciept</TableHead>
     </TableRow>
   </TableHeader>
   <TableBody>
-    {transactions.map((transaction) => {
-      const { dayMonthYear, time } = formatDate(transaction?.date);
-      const formattedAmount = formatAmount(transaction?.amount, transaction?.type);
+  {Collections.map((collection) => {
+      const { dayMonthYear, time } = formatDate(collection?.PaymentDate);
       return (
-        <TableRow key={transaction._id}>
+        <TableRow key={collection._id}>
           <TableCell>
             <div className='text-sm'>{dayMonthYear}</div>
             <div className="text-xs text-gray-500">{time}</div>
           </TableCell>
-          <TableCell className='text-xs'>{transaction?.description}</TableCell>
-          <TableCell className={transaction?.type === 'Credit' ? 'text-green-700 font-bold' : 'text-red-600 font-bold'}>
-            {formattedAmount}
+          <TableCell className='text-xs'>{collection?.description}</TableCell>
+          <TableCell>
+          ₹{collection?.amount.toFixed(2)}
+          </TableCell>
+          <TableCell>{collection?.status}</TableCell>
+          <TableCell>
+            <Link target='_blank' href={`/payment-reciept/${collection.memberId._id}`} className='text-white bg-gray-900 py-1 px-2 rounded-md'>
+              Receipt
+            </Link>
           </TableCell>
         </TableRow>
       );
     })}
+    {Collections.length === 0 && (
+        <TableCell colSpan={3} className="text-center text-gray-600 text-sm">
+          <h4 className="text-lg font-bold">No Collections...</h4>
+        </TableCell>
+      ) 
+    }
   </TableBody>
 </Table>
    </div>
@@ -109,12 +137,12 @@ const TransactionsPage: React.FC = () => {
   );
 };
 
-const TransactionsWrapper: React.FC = () => {
+const CollectionsWrapper: React.FC = () => {
   return (
-    <Suspense fallback={<TransactionsSkeleton />}>
-      <TransactionsPage />
+    <Suspense fallback={<CollectionsSkeleton />}>
+      <CollectionsPage />
     </Suspense>
   );
 };
 
-export default TransactionsWrapper;
+export default CollectionsWrapper;

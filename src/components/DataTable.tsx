@@ -11,15 +11,23 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input'; // Assuming you have an Input component
-import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from './ui/badge';
+import { format } from 'date-fns';
+import { toast } from './ui/use-toast';
+import { Dialog, DialogContent, DialogTitle, DialogFooter } from './ui/dialog';
+import { Button } from './ui/button';
+import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from './ui/select';
+import { DialogDescription } from '@radix-ui/react-dialog';
 
 const DataTable = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [houses, setHouses] = useState<any[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [selectedHouse, setSelectedHouse] = useState<any>(null);
+  const [paymentType, setPaymentType] = useState<string>('');
 
   useEffect(() => {
     fetchHouses();
@@ -27,42 +35,59 @@ const DataTable = () => {
 
   const fetchHouses = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/api/house/get-all`);
+      const response = await axios.get(`${apiUrl}/api/house/get/pending/collections`);
       if (response.data.success) {
         setHouses(response.data.houses);
       }
-    } catch (error) {
-      console.error('Failed to fetch houses', error);
+    } catch (error: any) {
+      toast({
+        title: 'Failed to fetch houses',
+        description: error.response?.data?.message || error.message || 'Something went wrong',
+        variant: 'destructive',
+      });
     }
   };
 
-  const handleSelectAll = (isChecked: boolean) => {
-    if (isChecked) {
-      const allIds = houses.map((house) => house.familyHead._id);
-      setSelectedIds(allIds);
-    } else {
-      setSelectedIds([]);
-    }
+  const formatDate = (dateString: any) => {
+    const date = new Date(dateString);
+    return {
+      dayMonthYear: format(date, 'dd MMM yyyy'),
+      time: format(date, 'hh:mm a'),
+    };
   };
 
-  const handleSelect = (id: string, isChecked: boolean) => {
-    if (isChecked) {
-      setSelectedIds((prev) => [...prev, id]);
-    } else {
-      setSelectedIds((prev) => prev.filter((selectedId) => selectedId !== id));
-    }
+  const handleOpenDialog = (house: any) => {
+    setSelectedHouse(house);
+    setIsDialogOpen(true);
   };
 
-  const handleGenerateCollection = () => {
-    console.log('Generate collection for IDs:', selectedIds);
+  const handleSubmitPayment = async () => {
+    try {
+      const response = await axios.put(`${apiUrl}/api/house/update/collection/${selectedHouse?._id}`, {
+        paymentType,
+      });
+      if (response.data.success) {
+        toast({
+          title: 'Payment updated successfully',
+          variant: 'default',
+        });
+        setIsDialogOpen(false);
+        fetchHouses();
+      } 
+    } catch (error: any) {
+      toast({
+        title: 'Failed to update payment',
+        description: error.response?.data?.message || error.message || 'Something went wrong',
+        variant: 'destructive',
+      });
+    }
   };
 
   const filteredHouses = houses.filter((house) => {
     return (
-      house.number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      house.LastCollection?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      house.collectionAmount.toString().includes(searchQuery) ||
-      house.familyHead.name.toLowerCase().includes(searchQuery.toLowerCase())
+      house?.houseId?.number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      house.amount.toString().includes(searchQuery) ||
+      house.memberId.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
@@ -74,56 +99,81 @@ const DataTable = () => {
         onChange={(e) => setSearchQuery(e.target.value)}
         className="mb-4"
       />
-      {selectedIds.length > 0 && (
-        <Button
-          size='sm'
-          onClick={handleGenerateCollection}
-          className="mb-4"
-        >
-          Generate Collection
-        </Button>
-      )}
+
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>
-              <Checkbox
-                checked={selectedIds.length === filteredHouses.length}
-                onCheckedChange={(isChecked) => handleSelectAll(!!isChecked)}
-              />
-            </TableHead>
+            <TableHead>Date</TableHead>
             <TableHead>House</TableHead>
-            <TableHead>Last Collection</TableHead>
             <TableHead>Collection Amount</TableHead>
             <TableHead>Family Head</TableHead>
+            <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredHouses.map((house, index) => (
-            <TableRow key={index}>
-              <TableCell>
-                <Checkbox
-                  checked={selectedIds.includes(house.familyHead?._id)}
-                  onCheckedChange={(isChecked) => handleSelect(house.familyHead?._id, !!isChecked)}
-                />
-              </TableCell>
-              <TableCell>{house?.number}</TableCell>
-              <TableCell>{house?.LastCollection || 'no collection'}</TableCell>
-              <TableCell>{house?.collectionAmount}</TableCell>
-              <TableCell>{house?.familyHead?.name}</TableCell>
-            </TableRow>
-          ))}
+          {filteredHouses.map((house, index) => {
+            const { dayMonthYear, time } = formatDate(house?.date);
+            return (
+              <TableRow key={index}>
+                <TableCell>
+                  <div className='text-sm'>{dayMonthYear}</div>
+                  <div className="text-xs text-gray-500">{time}</div>
+                </TableCell>
+                <TableCell>{house?.houseId?.number}</TableCell>
+                <TableCell>₹{(house?.amount).toFixed(2)}</TableCell>
+                <TableCell>{house?.memberId?.name}</TableCell>
+                <TableCell>
+                  <Badge onClick={() => handleOpenDialog(house)} className="cursor-pointer">
+                    {house?.status}
+                  </Badge>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+          {filteredHouses.length === 0 && (
+            <TableCell colSpan={5} className="text-center text-gray-600 text-sm">
+              <h4 className="text-lg font-bold">No collections...</h4>
+            </TableCell>
+          )}
         </TableBody>
-        {selectedIds?.length > 0 && (
-  <TableFooter>
-   <p>{selectedIds?.length} are selected</p>
-  </TableFooter>
-)}
+        <TableFooter>
+          <p>{filteredHouses?.length} houses are Unpaid</p>
+        </TableFooter>
       </Table>
+
+      <Dialog open={isDialogOpen}>
+        <DialogContent>
+          <DialogTitle>
+            Update Payment for {selectedHouse?.houseId?.number}
+          </DialogTitle>
+          <DialogDescription className='text-muted-foreground font-semibold text-sm'>
+            House: {selectedHouse?.houseId?.name}
+            <br/>
+            Collection Amount: ₹{(selectedHouse?.amount ?? 0).toFixed(2)}
+            <br />
+            Family Head: {selectedHouse?.memberId?.name}
+          </DialogDescription>
+          <Select onValueChange={(value) => setPaymentType(value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select Payment Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Online">Online</SelectItem>
+              <SelectItem value="Cash">Cash</SelectItem>
+            </SelectContent>
+          </Select>
+          <DialogFooter>
+          <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSubmitPayment} disabled={!paymentType}>
+              Submit
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
 export default DataTable;
-
-

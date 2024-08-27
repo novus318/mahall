@@ -258,7 +258,7 @@ const Page = () => {
                             Salary
                         </Label>
                         <Input
-                            type='number'
+                            type='text'
                             name='salary'
                             value={staff.salary}
                             onChange={handleChange}

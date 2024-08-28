@@ -78,7 +78,7 @@ const fetchExpenses = async ()=>{
               </CardContent>
               <CardFooter>
                 <div className="text-sm text-gray-600">
-                  {expensePercentage > 0? '+': ''}{expensePercentage}%
+                  {expensePercentage > 0? '+': ''}{expensePercentage}%  from last month
                 </div>
               </CardFooter>
             </Card>
@@ -95,8 +95,8 @@ const fetchExpenses = async ()=>{
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Donation Trends</CardTitle>
-                <CardDescription>A line chart showing the trend of donations over time.</CardDescription>
+                <CardTitle>Donation & Expense Trends</CardTitle>
+                <CardDescription>A line chart showing the trend of donations & expenses over time.</CardDescription>
               </CardHeader>
               <CardContent>
                 <LinechartChart className="aspect-[5/3]" />

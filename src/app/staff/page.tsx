@@ -41,13 +41,13 @@ const Page = () => {
         <Sidebar />
       </div>
       <div className="w-full md:w-5/6 p-6 bg-white shadow-md">
-      <div className="mb-4 flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">Staff Management</h2>
-        <div className='space-x-2'>
-        <Link href='/staff/pending-salaries' className='bg-gray-900 text-white py-1 px-2 rounded'>
+      <div className="mb-4 grid grid-cols-2 md:grid-cols-5 justify-between items-center">
+          <h2 className="text-2xl font-semibold col-span-2 md:col-span-3">Staff Management</h2>
+        <div className='space-x-2 col-span-2'>
+        <Link href='/staff/pending-salaries' className='bg-gray-900 text-white py-1 px-2 rounded-sm'>
           Pending salary
           </Link>
-        <Link href='/staff/create-staff' className='bg-gray-900 text-white py-1 px-2 rounded'>
+        <Link href='/staff/create-staff' className='bg-gray-900 text-white py-1 px-2 rounded-sm'>
           Create  staff
           </Link>
         </div>

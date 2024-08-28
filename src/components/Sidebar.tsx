@@ -21,9 +21,9 @@ const Sidebar: React.FC = () => {
   return (
     <div className="flex">
       {/* Mobile header */}
-      <div className="md:hidden flex justify-between items-center  text-white p-1 w-full">
+      <div className="md:hidden flex justify-between items-center bg-gray-100 text-gray-950 p-1 w-full">
         <Link href="/">
-         <span >Mahal</span>
+         <span className='font-extrabold tracking-wide text-xl mx-2'>Mahal</span>
         </Link>
         <Button onClick={() => setIsOpen(!isOpen)}
             size='icon'>
@@ -40,7 +40,7 @@ const Sidebar: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
           <Link href="/">
             <div className="flex items-center justify-center px-4">
-            <span>Mahal</span>
+            <span className='font-extrabold tracking-wide text-xl mx-2'>Mahal</span>
             </div>
           </Link>
           <Button

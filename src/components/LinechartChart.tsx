@@ -1,6 +1,6 @@
 import React from 'react'
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from './ui/chart'
-import { Pie, PieChart, CartesianGrid, XAxis, Line, LineChart } from "recharts"
+import { ChartContainer, ChartTooltipContent } from './ui/chart'
+import {  CartesianGrid, XAxis, Line, LineChart, Tooltip, } from "recharts"
 
 const LinechartChart = (props:any) => {
   return (
@@ -16,12 +16,12 @@ const LinechartChart = (props:any) => {
         <LineChart
           accessibilityLayer
           data={[
-            { month: "January", donation: 186 },
-            { month: "February", donation: 305 },
-            { month: "March", donation: 237 },
-            { month: "April", donation: 73 },
-            { month: "May", donation: 209 },
-            { month: "June", donation: 214 },
+            { month: "January", donation: 186, expense: 120 },
+            { month: "February", donation: 305, expense: 200 },
+            { month: "March", donation: 237, expense: 180 },
+            { month: "April", donation: 73, expense: 95 },
+            { month: "May", donation: 209, expense: 150 },
+            { month: "June", donation: 214, expense: 175 },
           ]}
           margin={{
             left: 12,
@@ -36,8 +36,21 @@ const LinechartChart = (props:any) => {
             tickMargin={8}
             tickFormatter={(value) => value.slice(0, 3)}
           />
-          <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-          <Line dataKey="donation" type="natural" stroke="#82ca9d" strokeWidth={2} dot={false} />
+          <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+          <Line 
+            dataKey="donation" 
+            type="natural" 
+            stroke="#82ca9d" 
+            strokeWidth={2} 
+            dot={false} 
+          />
+          <Line 
+            dataKey="expense" 
+            type="natural" 
+            stroke="#8884d8" 
+            strokeWidth={2} 
+            dot={false} 
+          />
         </LineChart>
       </ChartContainer>
     </div>

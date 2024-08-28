@@ -99,7 +99,7 @@ const DataTable = () => {
         onChange={(e) => setSearchQuery(e.target.value)}
         className="mb-4"
       />
-
+<p className='text-sm font-semibold text-muted-foreground ms-1'>{filteredHouses?.length} houses are Unpaid</p>
       <Table>
         <TableHeader>
           <TableRow>
@@ -136,9 +136,6 @@ const DataTable = () => {
             </TableCell>
           )}
         </TableBody>
-        <TableFooter>
-          <p>{filteredHouses?.length} houses are Unpaid</p>
-        </TableFooter>
       </Table>
 
       <Dialog open={isDialogOpen}>

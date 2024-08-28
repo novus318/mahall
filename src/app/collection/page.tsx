@@ -14,8 +14,8 @@ const page = () => {
     </div>
     <div className="w-full md:w-5/6 p-4 md:p-8 lg:p-10">
     <div className="h-full flex-1 flex-col md:flex">
-        <div className="flex items-center justify-between space-y-2">
-          <div>
+        <div className="grid grid-cols-2 md:grid-cols-5 items-center justify-between space-y-2 space-x-2">
+          <div className='col-span-2 md:col-span-3'>
             <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
             <p className="text-muted-foreground">
               Here&apos;s a list of your Unpaid Collectons!

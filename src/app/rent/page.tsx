@@ -4,10 +4,11 @@ import Sidebar from '@/components/Sidebar'
 import { Input } from '@/components/ui/input'
 import Link from 'next/link'
 import axios from 'axios'
-import { PlusIcon } from 'lucide-react'
+import { Loader2, PlusIcon, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { Card, CardContent } from '@/components/ui/card'
+import { Dialog, DialogContent, DialogFooter, DialogTitle } from '@/components/ui/dialog'
 
 
 type Room = {
@@ -51,27 +52,76 @@ const Page = () => {
   const [buildings, setBuildings] = useState<Building[]>([])
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
+  const [showRoomDialog, setShowRoomDialog] = useState(false);
+  const [roomNumber, setRoomNumber] = useState('')
+  const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null);
+
+  const fetchBuildings = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/rent/get-buildings`)
+      if (response.data.success) {
+        setBuildings(response.data.buildings)
+        setLoading(false)
+      }
+    } catch (error) {
+      setLoading(false)
+      toast({
+        title: 'network error',
+        variant: 'destructive',
+      })
+    }
+  }
 
   useEffect(() => {
-    const fetchBuildings = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/rent/get-buildings`)
-        if (response.data.success) {
-          setBuildings(response.data.buildings)
-          setLoading(false)
-        }
-      } catch (error) {
-        setLoading(false)
-        toast({
-          title: 'network error',
-          variant: 'destructive',
-        })
-      }
-    }
 
     fetchBuildings()
   }, [])
 
+  const handleAdd = (building:any) => {
+    console.log(building)
+    setSelectedBuilding(building);
+    setShowRoomDialog(true);
+  }
+
+  const validate = () => {
+    let isValid = true;
+    if (!roomNumber) {
+      toast({
+        title: 'A number is required',
+        variant: 'destructive',
+      });
+      isValid = false;
+    }
+    return isValid;
+};
+
+const handleSubmit = async() => {
+  if (!validate()) return;
+  setLoading(true)
+  const data = {
+    roomNumber,
+    buildingID:selectedBuilding
+  }
+  try {
+    const response = await axios.post(`${apiUrl}/api/rent/add-room`, data)
+    if (response.data.success) {
+      toast({
+        title: 'Building added successfully',
+        variant:'default',
+      })
+      setShowRoomDialog(false);
+      setRoomNumber('')
+      fetchBuildings()
+    }
+  } catch (error:any) {
+    toast({
+      title: 'Failed to add building',
+      description: error.response?.data?.message || error.message || 'Something went wrong',
+      variant: 'destructive',
+    })
+    setLoading(false)
+  }
+}
   // Filter buildings based on search term
   const filteredBuildings = buildings.filter(building =>
     building.buildingName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -92,10 +142,10 @@ const Page = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-           <Link href='/rent/pending-rents' className='bg-gray-900 col-span-2 md:col-span-1 text-white py-1 px-2 rounded text-xs md:text-base'>
+           <Link href='/rent/pending-rents' className='bg-gray-900 col-span-2 md:col-span-1 text-white py-1 px-2 rounded-sm text-xs md:text-base'>
             Pending rents
           </Link>
-          <Link href='/rent/create-building' className='bg-gray-900 col-span-2 md:col-span-1 text-white py-1 px-2 rounded text-xs md:text-base'>
+          <Link href='/rent/create-building' className='bg-gray-900 col-span-2 md:col-span-1 text-white py-1 px-2 rounded-sm text-xs md:text-base'>
             Create Building
           </Link>
         </div>
@@ -115,7 +165,8 @@ const Page = () => {
                  <p className="text-muted-foreground">Place: {building?.place}</p>
                </div>
               <Button
-              size='sm'>
+              size='sm'
+              onClick={() => handleAdd(building?._id)}>
               <PlusIcon className="w-4 h-4" />
               Add Room
               </Button>
@@ -150,6 +201,29 @@ const Page = () => {
            </div>
      )}
         </div>
+        <Dialog open={showRoomDialog} onOpenChange={setShowRoomDialog}>
+        <DialogContent>
+          <DialogTitle>Add Room to </DialogTitle>
+                  <Input
+                    type="text"
+                    placeholder={`Room Number`}
+                    value={roomNumber}
+                    onChange={(e:any) => setRoomNumber(e.target.value)}
+                    className='flex-grow py-2'
+                  />
+          <DialogFooter>
+            <Button size='sm' variant="outline" onClick={() => setShowRoomDialog(false)}>Cancel</Button>
+            {loading ? (
+              <Button size='sm' disabled>
+                <Loader2 className='animate-spin' />
+              </Button>
+            ) : (
+              <Button size='sm'
+              disabled={loading} onClick={handleSubmit}>Update</Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       </div>
     </div>
   )

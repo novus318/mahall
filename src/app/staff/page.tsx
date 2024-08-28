@@ -2,6 +2,7 @@
 import Sidebar from '@/components/Sidebar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { withAuth } from '@/components/withAuth'
 import axios from 'axios'
 import { MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
@@ -85,4 +86,4 @@ const Page = () => {
   )
 }
 
-export default Page
+export default withAuth(Page)

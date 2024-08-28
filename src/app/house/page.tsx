@@ -16,6 +16,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { withAuth } from '@/components/withAuth';
 
 
 const Page = () => {
@@ -206,4 +207,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default withAuth(Page);

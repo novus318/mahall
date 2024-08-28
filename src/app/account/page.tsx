@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label'
 import { toast } from '@/components/ui/use-toast'
 import Link from 'next/link'
+import { withAuth } from '@/components/withAuth'
 
 interface BankAccount {
   _id: string;
@@ -263,4 +264,4 @@ const Page = () => {
   )
 }
 
-export default Page
+export default withAuth(Page)

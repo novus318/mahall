@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { Banknote, Building, Home, LayoutDashboard, ListOrdered, ListTree, LogOut, MenuIcon, ReceiptIndianRupee, ReceiptIndianRupeeIcon, SendIcon, User2Icon, X } from 'lucide-react';
+import { Banknote, Building, FolderOutput, Home, LayoutDashboard, ListOrdered, ListTree, LogOut, LucideCreditCard, LucideOctagonPause, MenuIcon, ReceiptIndianRupee, ReceiptIndianRupeeIcon, SendIcon, SquareArrowOutDownLeft, User2Icon, X } from 'lucide-react';
 import { useRouter,usePathname } from 'next/navigation';
 
 const Sidebar: React.FC = () => {
@@ -145,6 +145,18 @@ const Sidebar: React.FC = () => {
               >
                 <ReceiptIndianRupeeIcon className="mr-3" />
                 <span className="text-lg">Reciept</span>
+              </div>
+            </Link>
+          </li>
+          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
+            <Link href="/expense">
+              <div
+                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
+                  CurrentPage('/expense') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
+                }`}
+              >
+                <LucideCreditCard className="mr-3" />
+                <span className="text-lg">Claim Expense</span>
               </div>
             </Link>
           </li>

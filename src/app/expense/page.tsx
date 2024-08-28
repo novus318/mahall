@@ -1,11 +1,10 @@
 'use client'
 import Sidebar from '@/components/Sidebar'
-import { Input } from '@/components/ui/input'
 import { withAuth } from '@/components/withAuth'
 import Link from 'next/link'
 import React from 'react'
 
-const page = () => {
+const Page = () => {
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
     <div className="w-full md:w-1/6 bg-gray-100">
@@ -21,4 +20,4 @@ const page = () => {
   )
 }
 
-export default withAuth(page)
+export default withAuth(Page)

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from '@/components/ui/dialog'
+import { withAuth } from '@/components/withAuth'
 
 
 type Room = {
@@ -229,4 +230,4 @@ const handleSubmit = async() => {
   )
 }
 
-export default Page
+export default withAuth(Page)

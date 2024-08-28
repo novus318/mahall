@@ -39,4 +39,4 @@ const page = () => {
   )
 }
 
-export default withAuth (page)
+export default withAuth(page)

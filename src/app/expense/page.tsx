@@ -12,8 +12,9 @@ const Page = () => {
     </div>
     <div className="w-full md:w-5/6 p-4 bg-white">
       <div className="flex justify-between items-center mb-4 gap-2">
-        <Link href='/rent/create-building' className='bg-gray-900 text-white py-1 px-2 rounded-md'>
-        Create category</Link>
+        <h1 className='text-3xl text-muted-foreground font-extrabold'>
+          Comming soon....
+        </h1>
       </div>
       </div>
     </div>

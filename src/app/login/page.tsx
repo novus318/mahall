@@ -54,7 +54,7 @@ const Login = () => {
   (<Spinner/>):( <>
     <div className="flex items-center justify-center h-screen text-white">
      <div className="bg-white p-8 rounded shadow-md max-w-4xl mx-3">
-       <div className="flex justify-center mb-10 border p-6 rounded-md bg-stone-950">
+       <div className="flex justify-center mb-10 border p-6 rounded-md bg-stone-200">
         <img src='/logow.png' alt="" className='h-9' />
        </div>
        <h2 className="text-3xl text-zinc-800 font-bold mb-6">Welcome to Mahal</h2>

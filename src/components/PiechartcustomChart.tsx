@@ -1,9 +1,9 @@
 import React from 'react'
 import { ChartTooltipContent, ChartTooltip, ChartContainer } from "@/components/ui/chart"
 import { Pie, PieChart, } from "recharts"
-const PiechartcustomChart = (props:any) => {
+const PiechartcustomChart = (data:any) => {
   return (
-    <div{...props}>
+    <div className='aspect-[5/3]'>
     <ChartContainer
       config={{
         salary: {
@@ -42,6 +42,7 @@ const PiechartcustomChart = (props:any) => {
         />
       </PieChart>
     </ChartContainer>
+    <h2 className='text-muted-foreground font-extrabold'>Comming soon...</h2>
   </div>
   )
 }

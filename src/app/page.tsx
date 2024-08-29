@@ -15,7 +15,9 @@ function Home() {
   const [asset, setAsset] = useState(0);
   const [donations, setDonations] = useState(0);
   const [expense, setExpense] = useState(0);
+  const [lineData, setlineData] = useState([]);
 const[expensePercentage,setExpensePercentage] =useState(0)
+  const [pieChartData, setPieChartData] = useState([]);
 const fetchAssets = async ()=>{
   try {
     const response = await axios.get(`${apiUrl}/api/dashboard/get-assets`);
@@ -25,7 +27,14 @@ const fetchAssets = async ()=>{
   }
 }
 
-const fetchDonations = async ()=>{}
+const fetchDonations = async ()=>{
+  try {
+    const response = await axios.get(`${apiUrl}/api/dashboard/get-donations`);
+    setDonations(response.data.totalDonations);
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 const fetchExpenses = async ()=>{
   try {
@@ -36,10 +45,19 @@ const fetchExpenses = async ()=>{
     console.log(error);
   }
   }
+  const fetchLineData = async ()=>{
+    try {
+      const response = await axios.get(`${apiUrl}/api/dashboard/get-donation-expense-trends`);
+      setlineData(response.data.trends);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   useEffect(() => {
     fetchAssets();
     fetchDonations();
     fetchExpenses();
+    fetchLineData();
   }, []);
 
 
@@ -62,10 +80,10 @@ const fetchExpenses = async ()=>{
             <Card>
               <CardHeader>
                 <CardTitle>Total Donations</CardTitle>
-                <CardDescription>The total amount of donations received</CardDescription>
+                <CardDescription>The total amount of donations received this month</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold">₹567,890</div>
+                <div className="text-4xl font-bold">₹{donations?.toFixed(2)}</div>
               </CardContent>
             </Card>
             <Card>
@@ -90,7 +108,7 @@ const fetchExpenses = async ()=>{
                 <CardDescription>A breakdown the assets by category.</CardDescription>
               </CardHeader>
               <CardContent>
-                <PiechartcustomChart className="aspect-[5/3]" />
+               <PiechartcustomChart  />
               </CardContent>
             </Card>
             <Card>
@@ -99,7 +117,7 @@ const fetchExpenses = async ()=>{
                 <CardDescription>A line chart showing the trend of donations & expenses over time.</CardDescription>
               </CardHeader>
               <CardContent>
-                <LinechartChart className="aspect-[5/3]" />
+                <LinechartChart data={lineData} />
               </CardContent>
             </Card>
             </div>

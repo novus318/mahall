@@ -38,12 +38,18 @@ const PageComponent = ({ params }: PageProps) => {
     const [loading, setLoading]=useState(true)
     const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
-    const formatDate = (dateString:any) => {
-      const date = new Date(dateString);
+    const formatDate = (collection:any) => {
+      if(collection?.status === 'Paid'){
       return {
-        dayMonthYear: format(date, 'dd MMM yyyy'),
-        time: format(date, 'hh:mm a'),
+        dayMonthYear: format(collection?.PaymentDate, 'dd MMM yyyy'),
+        time: format(collection?.PaymentDate, 'hh:mm a'),
       };
+    }else{
+      return {
+        dayMonthYear: 'payment',
+        time: 'pending',
+      };
+    }
     };
 
 
@@ -79,9 +85,9 @@ const PageComponent = ({ params }: PageProps) => {
         <Document>
         <Page size="A5" style={styles.page}>
           <View style={styles.header}>
-            <Text style={styles.organization}>Top Organization</Text>
-            <Text style={styles.contact}>123 Business Rd, Business City</Text>
-            <Text style={styles.contact}>Phone: (123) 456-7890</Text>
+            <Text style={styles.organization}>Vellap Mahal</Text>
+            <Text style={styles.contact}>Juma masjid, vellap, thrikkaripur</Text>
+            <Text style={styles.contact}>Phone: +91 9876543210</Text>
           </View>
   
           <View style={styles.dateSection}>
@@ -89,7 +95,7 @@ const PageComponent = ({ params }: PageProps) => {
               <Text style={styles.dateText}>Date: {dayMonthYear}</Text>
               <Text style={styles.dateText}>Day: {day}</Text>
             </View>
-            <Text style={styles.receiptNumber}>Receipt No: {collection?._id}</Text>
+            <Text style={styles.receiptNumber}>Receipt No: {collection?.receiptNumber}</Text>
           </View>
   
           <View style={styles.details}>
@@ -134,11 +140,12 @@ const PageComponent = ({ params }: PageProps) => {
         textAlign: 'center',
       },
       organization: {
-        fontSize: 16,
-        fontWeight: 'bold',
+        fontSize: 20,
+        fontWeight: 'extrabold',
       },
       contact: {
-        fontSize: 12,
+        color: '#333',
+        fontSize: 10,
         marginBottom: 4,
       },
       dateSection: {
@@ -150,11 +157,12 @@ const PageComponent = ({ params }: PageProps) => {
         fontSize: 12,
       },
       receiptNumber: {
-        fontSize: 12,
+        fontSize: 9,
         textAlign: 'right',
       },
       details: {
-        marginBottom: 20,
+        fontSize:15,
+        marginBottom: 15,
       },
       table: {
         width: '100%',
@@ -185,7 +193,7 @@ const PageComponent = ({ params }: PageProps) => {
       regards: {
         marginTop: 20,
         textAlign: 'left',
-        fontSize: 12,
+        fontSize: 10,
       },
     });
 
@@ -208,12 +216,12 @@ const PageComponent = ({ params }: PageProps) => {
   </TableHeader>
   <TableBody>
   {collection?.map((collection:any) => {
-      const { dayMonthYear, time } = formatDate(collection?.PaymentDate);
+      const { dayMonthYear, time } = formatDate(collection);
       return (
         <TableRow key={collection._id}>
           <TableCell>
-            <div className='text-sm'>{dayMonthYear}</div>
-            <div className="text-xs text-gray-500">{time}</div>
+             <div className='text-sm'>{dayMonthYear}</div>
+             <div className="text-xs text-gray-500">{time}</div>
           </TableCell>
           <TableCell className='text-xs'>{collection?.description}</TableCell>
           <TableCell>

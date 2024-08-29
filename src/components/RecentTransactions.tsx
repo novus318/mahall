@@ -91,6 +91,11 @@ const RecentTransactions = () => {
         </TableRow>
       );
     })}
+    {transactions.length === 0 && (
+        <TableCell colSpan={3} className="text-center text-gray-600 text-sm">
+          <h4 className="text-lg font-bold">No transactions...</h4>
+        </TableCell>
+        )}
   </TableBody>
 </Table>
    </div>

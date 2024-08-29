@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ChartContainer, ChartTooltipContent } from './ui/chart'
 import {  CartesianGrid, XAxis, Line, LineChart, Tooltip, } from "recharts"
+import axios from 'axios'
 
-const LinechartChart = (props:any) => {
+const LinechartChart = ({data}:any) => {
+console.log(data)
   return (
-    <div {...props}>
+    <div className='aspect-[5/3]'>
       <ChartContainer
         config={{
           desktop: {
@@ -15,14 +17,7 @@ const LinechartChart = (props:any) => {
       >
         <LineChart
           accessibilityLayer
-          data={[
-            { month: "January", donation: 186, expense: 120 },
-            { month: "February", donation: 305, expense: 200 },
-            { month: "March", donation: 237, expense: 180 },
-            { month: "April", donation: 73, expense: 95 },
-            { month: "May", donation: 209, expense: 150 },
-            { month: "June", donation: 214, expense: 175 },
-          ]}
+          data={data}
           margin={{
             left: 12,
             right: 12,

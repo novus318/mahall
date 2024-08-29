@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { Banknote, Building, FolderOutput, Home, LayoutDashboard, ListOrdered, ListTree, LogOut, LucideCreditCard, LucideOctagonPause, MenuIcon, ReceiptIndianRupee, ReceiptIndianRupeeIcon, SendIcon, SquareArrowOutDownLeft, User2Icon, X } from 'lucide-react';
+import { Banknote, Building, Home, HousePlusIcon, LayoutDashboard, LogOut, LucideCreditCard, MenuIcon, ReceiptIndianRupee, ReceiptIndianRupeeIcon, SendIcon, User2Icon, X } from 'lucide-react';
 import { useRouter,usePathname } from 'next/navigation';
 
 const Sidebar: React.FC = () => {
@@ -95,7 +95,7 @@ const Sidebar: React.FC = () => {
                   CurrentPage('/collection') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
                 }`}
               >
-                <ListTree className="mr-3" />
+                <HousePlusIcon className="mr-3" />
                 <span className="text-lg">Kudi collection</span>
               </div>
             </Link>

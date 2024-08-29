@@ -19,11 +19,12 @@ import { Dialog, DialogContent, DialogTitle, DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from './ui/select';
 import { DialogDescription } from '@radix-ui/react-dialog';
+import { Loader2 } from 'lucide-react';
 
 const DataTable = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [houses, setHouses] = useState<any[]>([]);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [selectedHouse, setSelectedHouse] = useState<any>(null);
@@ -62,6 +63,15 @@ const DataTable = () => {
   };
 
   const handleSubmitPayment = async () => {
+    if (!paymentType) {
+      toast({
+        title: 'Please select a payment type',
+        description: 'You must select a payment type before submitting',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setLoading(true);
     try {
       const response = await axios.put(`${apiUrl}/api/house/update/collection/${selectedHouse?._id}`, {
         paymentType,
@@ -71,10 +81,13 @@ const DataTable = () => {
           title: 'Payment updated successfully',
           variant: 'default',
         });
+        setPaymentType('');
         setIsDialogOpen(false);
         fetchHouses();
+        setLoading(false);
       } 
     } catch (error: any) {
+      setLoading(false)
       toast({
         title: 'Failed to update payment',
         description: error.response?.data?.message || error.message || 'Something went wrong',
@@ -138,7 +151,7 @@ const DataTable = () => {
         </TableBody>
       </Table>
 
-      <Dialog open={isDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogTitle>
             Update Payment for {selectedHouse?.houseId?.number}
@@ -163,8 +176,8 @@ const DataTable = () => {
           <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSubmitPayment} disabled={!paymentType}>
-              Submit
+            <Button onClick={handleSubmitPayment} disabled={!paymentType || loading}>
+              {loading ? <Loader2 className='animate-spin' /> : 'Update Payment'}
             </Button>
           </DialogFooter>
         </DialogContent>

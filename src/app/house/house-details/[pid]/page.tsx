@@ -180,22 +180,22 @@ const PageComponent = ({ params }: PageProps) => {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>This Week</CardDescription>
-            <CardTitle className="text-3xl">455</CardTitle>
+            <CardTitle className="text-3xl">0</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-xs text-muted-foreground">
-              1% from last week
+              0% from last week
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>This Month</CardDescription>
-            <CardTitle className="text-3xl">453 AED</CardTitle>
+            <CardTitle className="text-3xl">0</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-xs text-muted-foreground">
-              2% from last month
+              0% from last month
             </div>
           </CardContent>
         </Card>

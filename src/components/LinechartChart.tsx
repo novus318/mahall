@@ -4,7 +4,6 @@ import {  CartesianGrid, XAxis, Line, LineChart, Tooltip, } from "recharts"
 import axios from 'axios'
 
 const LinechartChart = ({data}:any) => {
-console.log(data)
   return (
     <div className='aspect-[5/3]'>
       <ChartContainer

@@ -1,10 +1,10 @@
 'use client'
+import { Skeleton } from '@/components/ui/skeleton';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { withAuth } from '@/components/withAuth'
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { Skeleton } from './ui/skeleton';
 import { format } from 'date-fns';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
-import Link from 'next/link';
+import React, { useEffect, useState } from 'react'
 
 
 interface Transaction {
@@ -33,47 +33,44 @@ interface Transaction {
       </div>
     );
   };
-const RecentTransactions = () => {
+const Page = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-      const fetchTransactions = async () => {
-        try {
-          const response = await axios.get(`${apiUrl}/api/dashboard/get-transactions`);
-          setTransactions(response.data.recentTransactions);
-          setLoading(false);
-        } catch (err) {
-          setLoading(false);
-        }
-      };
-  
-      fetchTransactions();
-    }, []);
-    const formatDate = (dateString:any) => {
-      const date = new Date(dateString);
-      return {
-        dayMonthYear: format(date, 'dd MMM yyyy'),
-        time: format(date, 'hh:mm a'),
-      };
-    };
+        const fetchTransactions = async () => {
+          try {
+            const response = await axios.get(`${apiUrl}/api/transactions/recent/transactions`);
+            setTransactions(response.data.data);
+            setLoading(false);
+          } catch (err) {
+            setLoading(false);
+          }
+        };
     
-    const formatAmount = (amount:any, type:any) => {
-      return type === 'Credit' ? `+${amount}` : `-${amount}`;
-    };
-  
-    if (loading) return <TransactionsSkeleton />;
-
+        fetchTransactions();
+      }, []);
+      const formatDate = (dateString:any) => {
+        const date = new Date(dateString);
+        return {
+          dayMonthYear: format(date, 'dd MMM yyyy'),
+          time: format(date, 'hh:mm a'),
+        };
+      };
+      
+      const formatAmount = (amount:any, type:any) => {
+        return type === 'Credit' ? `+${amount}` : `-${amount}`;
+      };
+    
+      if (loading) return <TransactionsSkeleton />;
   return (
- <div>
-  <div className='flex justify-between px-2 my-2'>
-    <h2 className="text-sm md:text-xl font-bold">Self-Transfer Transactions</h2>
-    <Link href="/all-transactions" className="text-sm text-gray-800 hover:text-gray-900 bg-gray-200 py-1 px-2 rounded-md">
-    All Transactions
-    </Link>
-  </div>
-     <div className='rounded-t-md bg-gray-100 p-1'>
+  <div className='w-full py-5'>
+      <div className='max-w-6xl m-auto my-5'>
+        <div>
+            <h2 className="text-2xl font-semibold mb-4">Recent Transactions</h2>
+        </div>
+        <div className='rounded-t-md bg-gray-100 p-1'>
    <Table className="bg-white">
   <TableHeader className='bg-gray-100'>
     <TableRow>
@@ -107,8 +104,9 @@ const RecentTransactions = () => {
   </TableBody>
 </Table>
    </div>
- </div>
+    </div>
+  </div>
   )
 }
 
-export default RecentTransactions
+export default withAuth(Page)

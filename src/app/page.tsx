@@ -53,11 +53,20 @@ const fetchExpenses = async ()=>{
       console.log(error);
     }
   }
+  const fetchPieChartData = async ()=>{
+    try {
+      const response = await axios.get(`${apiUrl}/api/dashboard/get-expense-categories`);
+      setPieChartData(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   useEffect(() => {
     fetchAssets();
     fetchDonations();
     fetchExpenses();
     fetchLineData();
+    fetchPieChartData();
   }, []);
 
 
@@ -108,7 +117,7 @@ const fetchExpenses = async ()=>{
                 <CardDescription>A breakdown the assets by category.</CardDescription>
               </CardHeader>
               <CardContent>
-               <PiechartcustomChart  />
+               <PiechartcustomChart data={pieChartData} />
               </CardContent>
             </Card>
             <Card>

@@ -12,18 +12,18 @@ const PageComponent = ({ params }: any) => {
     const upiApps = [
         {
             name: 'Google Pay',
-            upiId: 'nizamudheen.tech-1@oksbi',
-            payurl: `tez://upi/pay?pa=nizamudheen.tech-1@oksbi&pn=${name}&am=${amount}&cu=INR&tn=${encodeURIComponent(url)}`
+            upiId: '7560845014@jupiteraxis',
+            payurl: `tez://upi/pay?pa=7560845014@jupiteraxis&pn=${name}&am=${amount}&cu=INR&tn=${encodeURIComponent(url)}`
         },
         {
             name: 'PhonePe',
-            upiId: '7560845014@ybl',
-             payurl: `phonepe://pay?pa=7560845014@ybl&pn=${name}&am=${amount}&cu=INR&tn=${encodeURIComponent(url)}`
+            upiId: '7560845014@jupiteraxis',
+             payurl: `phonepe://pay?pa=7560845014@jupiteraxis&pn=${name}&am=${amount}&cu=INR&tn=${encodeURIComponent(url)}`
         },
         {
             name: 'Paytm',
-            upiId: '7560845014@pthdfc',
-            payurl:`paytm://pay?pa=7560845014@ybl&pn=${name}&am=${amount}&cu=INR&tn=${encodeURIComponent(url)}`
+            upiId: '7560845014@jupiteraxis',
+            payurl:`paytm://pay?pa=7560845014@jupiteraxis&pn=${name}&am=${amount}&cu=INR&tn=${encodeURIComponent(url)}`
         },
     ];
 

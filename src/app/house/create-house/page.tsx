@@ -13,6 +13,7 @@ import { useToast } from '@/components/ui/use-toast'
 import Spinner from '@/components/Spinner'
 import { useRouter } from 'next/navigation'
 import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 
 interface Member {
@@ -20,11 +21,27 @@ interface Member {
     status: string,
     DOB: Date,
     maritalStatus: string
-    education: string,
+    education: {
+      level: string,
+      description: string
+    },
+    bloodGroup: string,
+    madrassa: {
+      studying: boolean,
+      currentClass: string,
+      lastClassStudied: string,
+    },
     gender: string,
     mobile: string,
-    place:string
-}
+    whatsappNumber:'',
+    place: string,
+    idCards: {
+      aadhaar: boolean,
+      drivingLicense: boolean,
+      voterID: boolean,
+      panCard: boolean,
+    },
+  }
 
 const Page = () => {
     const { toast } = useToast()
@@ -32,6 +49,8 @@ const Page = () => {
     const [houseNumber, setHouseNumber] = useState<string>('');
     const [houseName, setHouseName] = useState<string>('');
     const [status, setStatus] = useState<string>('');
+    const [panchayathNumber, setPanchayathNumber] = useState<string>('');
+    const [wardNumber, setWardNumber] = useState<string>('');
     const [rationstatus, setRationStatus] = useState<string>('');
     const [houseAddress, setHouseAddress] = useState<string>('');
     const [collection, setCollection] = useState<number>();
@@ -43,10 +62,26 @@ const Page = () => {
         DOB: new Date(),
         maritalStatus: '',
         gender: '',
-        education: '',
+        education: {
+          level: '',
+          description: ''
+        },
+        bloodGroup: '',
+        madrassa: {
+          studying: false,
+          currentClass: '',
+          lastClassStudied: '',
+        },
         mobile: '',
-        place:''
-    });
+        whatsappNumber:'',
+        place: '',
+        idCards: {
+          aadhaar: false,
+          drivingLicense: false,
+          voterID: false,
+          panCard: false,
+        },
+      })
 
     const handleChange = (e: any) => {
         const { name, value } = e.target;
@@ -56,6 +91,19 @@ const Page = () => {
     const handleDateChange = (date: any) => {
         setNewMember((prev) => ({ ...prev, DOB: date }));
     };
+    const handleMadrassaChange = (field:any, value:any) => {
+        setNewMember((prev) => ({
+          ...prev,
+          madrassa: { ...prev.madrassa, [field]: value },
+        }));
+      };
+      const handleIdCardChange = (card:any, value:any) => {
+        setNewMember((prev) => ({
+          ...prev,
+          idCards: { ...prev.idCards, [card]: value },
+        }));
+      };
+
 
     const validate = () => {
         const currentYear = new Date().getFullYear();
@@ -64,6 +112,13 @@ const dobYear = new Date(newMember.DOB).getFullYear();
         if (!houseNumber) {
             toast({
                 title: "House Number is required",
+                variant: "destructive",
+            });
+            isValid = false;
+        }
+        if (!wardNumber) {
+            toast({
+                title: "Ward Number is required",
                 variant: "destructive",
             });
             isValid = false;
@@ -131,13 +186,27 @@ const dobYear = new Date(newMember.DOB).getFullYear();
             });
             isValid = false;
         }
-        if (!newMember.education) {
+        if (!newMember.education.level) {
             toast({
-                title: "Please fill education if there else NILL",
-                variant: "destructive",
+              title: "Please fill education level",
+              variant: "destructive",
             });
             isValid = false;
-        }
+          }
+          if (!newMember.madrassa.studying) {
+            toast({
+              title: "Please fill madrassa details",
+              variant: "destructive",
+            });
+            isValid = false;
+          }
+          if (!newMember.bloodGroup) {
+            toast({
+              title: "Please fill blood group",
+              variant: "destructive",
+            });
+            return false;
+          }
         if (!newMember.DOB || dobYear === currentYear) {
             toast({
                 title: "Please enter a valid Date of Birth",
@@ -186,17 +255,32 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                 setStatus('');
                 setRationStatus('');
                 setCollection(0);
-                setNewMember(
-                    {
-                        name: '',
-                        status: '',
-                        DOB: new Date(),
-                        maritalStatus: '',
-                        gender: '',
-                        education: '',
-                        mobile: '',
-                        place:''
-                    })
+                setNewMember({
+                    name: '',
+                    status: '',
+                    DOB: new Date(),
+                    maritalStatus: '',
+                    gender: '',
+                    education: {
+                      level: '',
+                      description: ''
+                    },
+                    bloodGroup: '',
+                    madrassa: {
+                      studying: false,
+                      currentClass: '',
+                      lastClassStudied: '',
+                    },
+                    mobile: '',
+                    whatsappNumber:'',
+                    place: '',
+                    idCards: {
+                      aadhaar: false,
+                      drivingLicense: false,
+                      voterID: false,
+                      panCard: false,
+                    },
+                  })
                     setloading(false);
                     router.push('/house');
             }
@@ -232,6 +316,24 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                             placeholder="House Number"
                             value={houseNumber}
                             onChange={(e) => setHouseNumber(e.target.value)}
+                            disabled={loading}
+                        />
+                    </div>
+                    <div>
+                        <Input
+                            type="text"
+                            placeholder="Panchayath Number"
+                            value={houseNumber}
+                            onChange={(e) => setPanchayathNumber(e.target.value)}
+                            disabled={loading}
+                        />
+                    </div>
+                    <div>
+                        <Input
+                            type="text"
+                            placeholder="Ward Number"
+                            value={houseNumber}
+                            onChange={(e) => setWardNumber(e.target.value)}
                             disabled={loading}
                         />
                     </div>
@@ -356,24 +458,191 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                             </Select>
                         </div>
                     </div>
-                    <div>
-                    <Select
-                                name='education'
-                                onValueChange={(value) => setNewMember((prev) => ({ ...prev, education: value }))}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Education" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                <SelectItem value="Below 10th">Below 10th</SelectItem>
-                                <SelectItem value="SSLC">SSLC</SelectItem>
-                                <SelectItem value="Plus Two">Plus Two</SelectItem>
-                                    <SelectItem value="Bachelors">Bachelors</SelectItem>
-                                    <SelectItem  value="Diploma">Diploma</SelectItem>
-                                    <SelectItem value="Masters">Masters</SelectItem>
-                                </SelectContent>
-                            </Select>
-                    </div>
+                    <p className='text-base font-bold'>ID cards</p>
+            <div className='space-y-2 grid grid-cols-2'>
+            <div>
+              <p className='text-sm'>Aadhaar</p>
+              <RadioGroup
+              className='flex'
+                value={newMember.idCards.aadhaar ? 'yes' : 'no'}
+                onValueChange={(value) => handleIdCardChange('aadhaar', value === 'yes')}
+              >
+                <Label>
+                  Yes
+                </Label>
+                <RadioGroupItem value="yes">Yes</RadioGroupItem>
+                <Label>No</Label>
+                <RadioGroupItem value="no">No</RadioGroupItem>
+              </RadioGroup>
+            </div>
+
+            <div>
+              <p className='text-sm'>Driving License</p>
+              <RadioGroup
+              className='flex'
+                value={newMember.idCards.drivingLicense ? 'yes' : 'no'}
+                onValueChange={(value) => handleIdCardChange('drivingLicense', value === 'yes')}
+              >
+                <Label>
+                  Yes
+                </Label>
+                <RadioGroupItem value="yes">Yes</RadioGroupItem>
+                <Label>No</Label>
+                <RadioGroupItem value="no">No</RadioGroupItem>
+              </RadioGroup>
+            </div>
+
+            <div>
+              <p className='text-sm'>Voter ID</p>
+              <RadioGroup
+              className='flex'
+                value={newMember.idCards.voterID ? 'yes' : 'no'}
+                onValueChange={(value) => handleIdCardChange('voterID', value === 'yes')}
+              >
+                <Label>
+                  Yes
+                </Label>
+                <RadioGroupItem value="yes">Yes</RadioGroupItem>
+                <Label>No</Label>
+                <RadioGroupItem value="no">No</RadioGroupItem>
+              </RadioGroup>
+            </div>
+
+            <div>
+              <p className='text-sm'>PAN Card</p>
+              <RadioGroup
+              className='flex'
+                value={newMember.idCards.panCard ? 'yes' : 'no'}
+                onValueChange={(value) => handleIdCardChange('panCard', value === 'yes')}
+              >
+                 <Label>
+                  Yes
+                </Label>
+                <RadioGroupItem value="yes">Yes</RadioGroupItem>
+                <Label>No</Label>
+                <RadioGroupItem value="no">No</RadioGroupItem>
+              </RadioGroup>
+            </div>
+          </div>
+          <div>
+              <p className='text-sm font-medium'>Blood Group</p>
+              <Select
+                name='bloodGroup'
+                onValueChange={(value) => setNewMember((prev) => ({ ...prev, bloodGroup: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Blood Group" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='A+'>A+</SelectItem>
+                  <SelectItem value='A-'>A-</SelectItem>
+                  <SelectItem value='B+'>B+</SelectItem>
+                  <SelectItem value='B-'>B-</SelectItem>
+                  <SelectItem value='O+'>O+</SelectItem>
+                  <SelectItem value='O-'>O-</SelectItem>
+                  <SelectItem value='AB+'>AB+</SelectItem>
+                  <SelectItem value='AB-'>AB-</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className='grid grid-cols-2 gap-2'>
+            <div>
+              <p className='text-sm font-medium'>Madrassa</p>
+              <Select
+                name='madrassaStudying'
+                onValueChange={(value) => handleMadrassaChange('studying', value === 'yes')}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Studying Madrassa Y/N" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='yes'>Yes</SelectItem>
+                  <SelectItem value='no'>No</SelectItem>
+                </SelectContent>
+              </Select>
+              </div>
+              {newMember.madrassa.studying ? (
+               <div>
+               <p className='text-sm font-medium'>Class</p>
+                <Input
+                  type='text'
+                  name='currentClass'
+                  placeholder='Current Class'
+                  value={newMember.madrassa.currentClass}
+                  onChange={(e) => handleMadrassaChange('currentClass', e.target.value)}
+                  className='block w-full border p-2 rounded-md shadow-sm sm:text-sm'
+                />
+                </div>
+              ) : (
+                <div>
+                <p className='text-sm font-medium'>Class</p>
+                <Input
+                  type='text'
+                  name='lastClassStudied'
+                  placeholder='Last Class Studied'
+                  value={newMember.madrassa.lastClassStudied}
+                  onChange={(e) => handleMadrassaChange('lastClassStudied', e.target.value)}
+                  className='block w-full border p-2 rounded-md shadow-sm sm:text-sm'
+                />
+                </div>
+              )}
+            </div>
+            <div className='grid grid-cols-2 gap-2'>
+              <div>
+                <Label>
+                  Education level
+                </Label>
+                <Select
+                  name='education'
+                  onValueChange={(value) => {
+                    setNewMember((prev) => (
+                      {
+                        ...prev, education: {
+                          level: value,
+                          description: ''
+                        }
+                      }
+                    ));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Education" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Below 10th">Below 10th</SelectItem>
+                    <SelectItem value="SSLC">SSLC</SelectItem>
+                    <SelectItem value="Plus Two">Plus Two</SelectItem>
+                    <SelectItem value="Diploma">Diploma</SelectItem>
+                    <SelectItem value="Bachelors">Bachelors</SelectItem>
+                    <SelectItem value="Masters">Masters</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {(newMember.education.level === 'Below 10th' ||
+                newMember.education.level === 'Diploma' ||
+                newMember.education.level === 'Bachelors' ||
+                newMember.education.level === 'Masters') && (
+                  <div>
+                    <Label>
+                      Education description
+                    </Label>
+                    <Input
+                      name='educationDescription'
+                      placeholder='Enter description'
+                      value={newMember.education.description}
+                      onChange={(e) =>
+                        setNewMember((prev) => ({
+                          ...prev,
+                          education: {
+                            ...prev.education,
+                            description: e.target.value
+                          }
+                        }))
+                      }
+                    />
+                  </div>
+                )}
+            </div>
                     <div>
                         <Input
                             type='tel'
@@ -384,6 +653,16 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                             className='block w-full border p-2 rounded-md shadow-sm  sm:text-sm'
                         />
                     </div>
+                    <div>
+              <Input
+                type='tel'
+                name='whatsappNumber'
+                placeholder='Enter Whatsapp number'
+                value={newMember.whatsappNumber}
+                onChange={handleChange}
+                className=' block w-full border p-2 rounded-md shadow-sm  sm:text-sm'
+              />
+            </div>
                     <div>
                         <Label>
                             Select place

@@ -114,7 +114,7 @@ const fetchExpenses = async ()=>{
             <Card>
               <CardHeader>
                 <CardTitle>Asset Distribution</CardTitle>
-                <CardDescription>A breakdown the assets by category.</CardDescription>
+                <CardDescription>A breakdown the assets of month by category.</CardDescription>
               </CardHeader>
               <CardContent>
                <PiechartcustomChart data={pieChartData} />

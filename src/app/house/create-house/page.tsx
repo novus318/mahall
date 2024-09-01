@@ -193,13 +193,6 @@ const dobYear = new Date(newMember.DOB).getFullYear();
             });
             isValid = false;
           }
-          if (!newMember.madrassa.studying) {
-            toast({
-              title: "Please fill madrassa details",
-              variant: "destructive",
-            });
-            isValid = false;
-          }
           if (!newMember.bloodGroup) {
             toast({
               title: "Please fill blood group",
@@ -230,6 +223,8 @@ const dobYear = new Date(newMember.DOB).getFullYear();
         try {
             const newHouse = {
                 number: houseNumber,
+                panchayathNumber:panchayathNumber,
+                wardNumber:wardNumber,
                 name: houseName,
                 address: houseAddress,
                 status: status,
@@ -323,7 +318,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                         <Input
                             type="text"
                             placeholder="Panchayath Number"
-                            value={houseNumber}
+                            value={panchayathNumber}
                             onChange={(e) => setPanchayathNumber(e.target.value)}
                             disabled={loading}
                         />
@@ -332,7 +327,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                         <Input
                             type="text"
                             placeholder="Ward Number"
-                            value={houseNumber}
+                            value={wardNumber}
                             onChange={(e) => setWardNumber(e.target.value)}
                             disabled={loading}
                         />

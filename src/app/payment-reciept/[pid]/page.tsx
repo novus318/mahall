@@ -214,7 +214,6 @@ const PageComponent = ({ params }: PageProps) => {
   <TableHeader className='bg-gray-100'>
     <TableRow>
       <TableHead className="font-medium">Date</TableHead>
-      <TableHead className="font-medium">Description</TableHead>
       <TableHead className="font-medium">Amount</TableHead>
       <TableHead className="font-medium">Status</TableHead>
       <TableHead className="font-medium">Reciept</TableHead>
@@ -229,7 +228,6 @@ const PageComponent = ({ params }: PageProps) => {
              <div className='text-sm'>{dayMonthYear}</div>
              <div className="text-xs text-gray-500">{time}</div>
           </TableCell>
-          <TableCell className='text-xs'>{collection?.description}</TableCell>
           <TableCell>
           ₹{collection?.amount.toFixed(2)}
           </TableCell>

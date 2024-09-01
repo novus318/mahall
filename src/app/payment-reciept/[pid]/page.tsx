@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button';
 import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
+import { useRouter } from 'next/navigation';
 
 interface PageProps {
     params: {
@@ -33,8 +34,9 @@ interface PageProps {
     );
   };
 const PageComponent = ({ params }: PageProps) => {
+  const router = useRouter()
     const { pid } = params  
-    const [collection,setCollection]=useState<any>([])
+    const [collections,setCollections]=useState<any>([])
     const [loading, setLoading]=useState(true)
     const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
@@ -60,7 +62,7 @@ const PageComponent = ({ params }: PageProps) => {
       try {
         const response = await axios.get(`${apiUrl}/api/house/kudi-collections/${pid}`)
         if(response.data.success){
-          setCollection(response.data.collections)
+          setCollections(response.data.collections)
           setLoading(false)
         }
       } catch (error:any) {
@@ -78,6 +80,10 @@ const PageComponent = ({ params }: PageProps) => {
         day: format(dateString, 'EEEE'),
       };
     };
+
+    const handlePayNowClick =async(c:any)=>{
+      router.push(`/pay/${c.houseId.number}/${c.amount}/${c.memberId.name}`)
+    }
   
     const handleReceiptClick = async (collection: any) => {
       const { dayMonthYear, day } = formatDaterec(collection?.PaymentDate);
@@ -201,7 +207,7 @@ const PageComponent = ({ params }: PageProps) => {
   return (
     <div className="container mx-auto p-4">
        <div className="mb-4 flex justify-between items-center">
-        <h2 className="text-lg md:text-2xl font-semibold mb-4">Kudi Pirivu of {(collection ? collection[0]?.memberId?.name : '')}</h2>
+        <h2 className="text-lg md:text-2xl font-semibold mb-4">Kudi Pirivu of {(collections ? collections[0]?.memberId?.name : '')}</h2>
       </div>
    <div className='rounded-t-md bg-gray-100 p-1'>
    <Table className="bg-white">
@@ -215,7 +221,7 @@ const PageComponent = ({ params }: PageProps) => {
     </TableRow>
   </TableHeader>
   <TableBody>
-  {collection?.map((collection:any) => {
+  {collections?.map((collection:any) => {
       const { dayMonthYear, time } = formatDate(collection);
       return (
         <TableRow key={collection._id}>
@@ -229,18 +235,28 @@ const PageComponent = ({ params }: PageProps) => {
           </TableCell>
           <TableCell>{collection?.status}</TableCell>
           <TableCell>
-            <Button
-            size='sm'
-            disabled={collection?.status === 'Unpaid' || collection?.status === 'Rejected'}
-            onClick={() => handleReceiptClick(collection)}
-            >
-              Receipt
-            </Button>
-          </TableCell>
+  <Button
+  className={`${collection?.status === 'Unpaid' ? 'bg-gray-200 text-gray-950': ''} ${collection?.status === 'Rejected' ? 'bg-red-500': ''}`}
+    size="sm"
+    disabled={collection?.status === 'Rejected'}
+    onClick={() => {
+      if (collection?.status === 'Paid') {
+        handleReceiptClick(collection);
+      } else if (collection?.status === 'Unpaid') {
+        handlePayNowClick(collection); // Assume this is your function to handle payment
+      }
+    }}
+  >
+    {collection?.status === 'Unpaid' && 'Pay Now'}
+    {collection?.status === 'Paid' && 'Receipt'}
+    {collection?.status === 'Rejected' && 'Rejected'}
+  </Button>
+</TableCell>
+
         </TableRow>
       );
     })}
-    {collection?.length === 0 && (
+    {collections?.length === 0 && (
         <TableCell colSpan={3} className="text-center text-gray-600 text-sm">
           <h4 className="text-lg font-bold">No Collections...</h4>
         </TableCell>

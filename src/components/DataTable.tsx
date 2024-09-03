@@ -15,10 +15,9 @@ import { Input } from '@/components/ui/input';
 import { Badge } from './ui/badge';
 import { format } from 'date-fns';
 import { toast } from './ui/use-toast';
-import { Dialog, DialogContent, DialogTitle, DialogFooter } from './ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogFooter, DialogDescription } from './ui/dialog';
 import { Button } from './ui/button';
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from './ui/select';
-import { DialogDescription } from '@radix-ui/react-dialog';
 import { Loader2 } from 'lucide-react';
 
 const DataTable = () => {

@@ -10,23 +10,16 @@ import {
 } from "@/components/ui/table"
 import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
-import { Dialog, DialogContent, DialogTitle, DialogFooter, DialogDescription } from './ui/dialog';
 import { Button } from './ui/button';
-import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from './ui/select';
 import axios from 'axios'
 import { toast } from './ui/use-toast'
 import { format } from 'date-fns'
-import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
 
-const PendingTransactions = ({ id }: any) => {
-    const router = useRouter()
+
+const HouseContribution = ({id,contribution}:any) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL
     const [collections,setCollections]=useState<any>([])
     const [loading, setLoading] = useState(true);
-    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-    const [selectedHouse, setSelectedHouse] = useState<any>(null);
-    const [paymentType, setPaymentType] = useState<string>('');
 
     useEffect(() => {
         fetchCollection(id);
@@ -34,9 +27,10 @@ const PendingTransactions = ({ id }: any) => {
 
     const fetchCollection=async (pid:any)=>{
         try {
-          const response = await axios.get(`${apiUrl}/api/house/kudi-collections/${pid}`)
+          const response = await axios.get(`${apiUrl}/api/house/kudi-contribution/${pid}`)
           if(response.data.success){
-            setCollections(response.data.collections)
+            setCollections(response.data.receipts)
+            contribution(response.data.totalContributions)
             setLoading(false)
           }
         } catch (error:any) {
@@ -50,10 +44,10 @@ const PendingTransactions = ({ id }: any) => {
       }
 
       const formatDate = (collection:any) => {
-        if(collection?.status === 'Paid'){
+        if(collection?.status === 'Completed'){
         return {
-          dayMonthYear: format(collection?.PaymentDate, 'dd MMM yyyy'),
-          time: format(collection?.PaymentDate, 'hh:mm a'),
+          dayMonthYear: format(collection?.updatedAt, 'dd MMM yyyy'),
+          time: format(collection?.updatedAt, 'hh:mm a'),
         };
       }else{
         return {
@@ -68,46 +62,8 @@ const PendingTransactions = ({ id }: any) => {
           day: format(dateString, 'EEEE'),
         };
       };
-  
-      const handlePayNowClick =async(c:any)=>{
-        setSelectedHouse(c);
-        setIsDialogOpen(true);
-    }
-    const handleSubmitPayment = async () => {
-        if (!paymentType) {
-          toast({
-            title: 'Please select a payment type',
-            description: 'You must select a payment type before submitting',
-            variant: 'destructive',
-          });
-          return;
-        }
-        setLoading(true);
-        try {
-          const response = await axios.put(`${apiUrl}/api/house/update/collection/${selectedHouse?._id}`, {
-            paymentType,
-          });
-          if (response.data.success) {
-            toast({
-              title: 'Payment updated successfully',
-              variant: 'default',
-            });
-            setPaymentType('');
-            setIsDialogOpen(false);
-            setLoading(false);
-          } 
-        } catch (error: any) {
-          setLoading(false)
-          toast({
-            title: 'Failed to update payment',
-            description: error.response?.data?.message || error.message || 'Something went wrong',
-            variant: 'destructive',
-          });
-        }
-      };
-    
-      const handleReceiptClick = async (collection: any) => {
-        const { dayMonthYear, day } = formatDaterec(collection?.PaymentDate);
+    const handleReceiptClick = async (collection: any) => {
+        const { dayMonthYear, day } = formatDaterec(collection?.updatedAt);
         const doc = (
           <Document>
           <Page size="A5" style={styles.page}>
@@ -148,7 +104,7 @@ const PendingTransactions = ({ id }: any) => {
     
             <View style={styles.regards}>
               <Text>Regards,</Text>
-              <Text>Top Organization</Text>
+              <Text>VKIJ</Text>
             </View>
           </Page>
         </Document>
@@ -223,8 +179,6 @@ const PendingTransactions = ({ id }: any) => {
           fontSize: 10,
         },
       });
-
-
     return (
         <div className='rounded-t-md bg-gray-100 p-1'>
         <Table className="bg-white">
@@ -233,7 +187,6 @@ const PendingTransactions = ({ id }: any) => {
            <TableHead className="font-medium">Date</TableHead>
            <TableHead className="font-medium">Description</TableHead>
            <TableHead className="font-medium">Amount</TableHead>
-           <TableHead className="font-medium">Status</TableHead>
            <TableHead className="font-medium">Reciept</TableHead>
          </TableRow>
        </TableHeader>
@@ -252,23 +205,19 @@ const PendingTransactions = ({ id }: any) => {
                <TableCell>
                ₹{collection?.amount.toFixed(2)}
                </TableCell>
-               <TableCell>{collection?.status}</TableCell>
                <TableCell>
        <Button
-       className={`${collection?.status === 'Unpaid' ? 'bg-gray-200 text-gray-950': ''} ${collection?.status === 'Rejected' ? 'bg-red-500': ''}`}
+       className={` ${collection?.status === 'Pending' ? 'bg-gray-200': ''}`}
          size="sm"
-         disabled={collection?.status === 'Rejected'}
+         disabled={collection?.status === 'Pending'}
          onClick={() => {
-           if (collection?.status === 'Paid') {
+           if (collection?.status === 'Completed') {
              handleReceiptClick(collection);
-           } else if (collection?.status === 'Unpaid') {
-             handlePayNowClick(collection); // Assume this is your function to handle payment
            }
          }}
        >
-         {collection?.status === 'Unpaid' && 'Pay Now'}
-         {collection?.status === 'Paid' && 'Receipt'}
-         {collection?.status === 'Rejected' && 'Rejected'}
+         {collection?.status === 'Completed' && 'Receipt'}
+         {collection?.status === 'Pending' && 'Pending'}
        </Button>
      </TableCell>
      
@@ -277,45 +226,14 @@ const PendingTransactions = ({ id }: any) => {
          })}
          {collections?.length === 0 && (
              <TableCell colSpan={3} className="text-center text-gray-600 text-sm">
-               <h4 className="text-lg font-bold">No Collections...</h4>
+               <h4 className="text-lg font-bold">No Contributions...</h4>
              </TableCell>
            ) 
          }
        </TableBody>
      </Table>
-     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogTitle>
-            Update Payment for {selectedHouse?.houseId?.number}
-          </DialogTitle>
-          <DialogDescription className='text-muted-foreground font-semibold text-sm'>
-            House: {selectedHouse?.houseId?.name}
-            <br/>
-            Collection Amount: ₹{(selectedHouse?.amount ?? 0).toFixed(2)}
-            <br />
-            Family Head: {selectedHouse?.memberId?.name}
-          </DialogDescription>
-          <Select onValueChange={(value) => setPaymentType(value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select Payment Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Online">Online</SelectItem>
-              <SelectItem value="Cash">Cash</SelectItem>
-            </SelectContent>
-          </Select>
-          <DialogFooter>
-          <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubmitPayment} disabled={!paymentType || loading}>
-              {loading ? <Loader2 className='animate-spin' /> : 'Update Payment'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
         </div>
     )
 }
 
-export default PendingTransactions
+export default HouseContribution

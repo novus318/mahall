@@ -35,7 +35,7 @@ const ListMembers = ({ members, familyHead }: any) => {
       {/* Members with Relations */}
       <div className="flex flex-col space-y-6 md:space-y-8 w-full">
         {membersWithRelations.map((member: any, index: any) => (
-          <div key={index} className="flex flex-row items-center justify-between space-y-1 md:space-y-0 md:space-x-8 w-full">
+          <div key={member._id} className="flex flex-row items-center justify-between space-y-1 md:space-y-0 md:space-x-8 w-full">
             <div
              onClick={
               () => {
@@ -102,7 +102,7 @@ const ListMembers = ({ members, familyHead }: any) => {
     }}>
         <DialogContent className='px-3 rounded-md'>
         <DialogTitle className="text-xl font-semibold mb-4">User Details</DialogTitle>
-        <div className="space-y-4">
+        <div className="space-y-2">
           <div className="flex gap-2">
             <span className="font-medium">Name:</span>
             <span>{selectedMember?.name}</span>
@@ -120,8 +120,20 @@ const ListMembers = ({ members, familyHead }: any) => {
             <span>{selectedMember?.mobile || 'Not found'}</span>
           </div>
           <div className="flex gap-2">
+            <span className="font-medium">Whatsapp number:</span>
+            <span>{selectedMember?.whatsappNumber || 'Not found'}</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="font-medium">Blood group:</span>
+            <span>{selectedMember?.bloodGroup || 'Not found'}</span>
+          </div>
+          <div className="flex gap-2">
             <span className="font-medium">Education:</span>
-            <span>{selectedMember?.education}</span>
+            <span>{selectedMember?.education.level} / {selectedMember?.education?.description}</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="font-medium">Madrassa:</span>
+            <span>{selectedMember?.madrassa?.studying ? `Studying ${selectedMember?.madrassa?.currentClass} class`: `Studied ${selectedMember?.madrassa?.lastClassStudied} class`}</span>
           </div>
           <div className="flex gap-2">
             <span className="font-medium">Marital Status:</span>
@@ -130,6 +142,16 @@ const ListMembers = ({ members, familyHead }: any) => {
           <div className="flex gap-2">
             <span className="font-medium">Status:</span>
             <span>{selectedMember?.status}</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="font-medium">ID Cards:</span>
+           <div>
+           <span>Aadhaar - {selectedMember?.idCards.aadhaar ? 'Yes': 'No'}</span><br/>
+            <span>Driving License - {selectedMember?.idCards.drivingLicense? 'Yes': 'No'}</span><br />
+            <span>Voter ID - {selectedMember?.idCards.voterID? 'Yes': 'No'}</span><br />
+            <span>Pan Card - {selectedMember?.idCards.panCard? 'Yes': 'No'}</span><br />
+            <span>Health Card - {selectedMember?.idCards.HealthCard? 'Yes': 'No'}</span>
+           </div>
           </div>
          <div className='flex justify-center'>
          <Link className='bg-gray-900 text-white font-medium py-1 px-3 rounded-md' href={`/house/edit-member/${selectedMember?._id}`}>

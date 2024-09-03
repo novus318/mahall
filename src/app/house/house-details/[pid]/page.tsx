@@ -1,4 +1,5 @@
 'use client'
+import HouseContribution from '@/components/HouseContribution'
 import ListMembers from '@/components/ListMembers'
 import PendingTransactions from '@/components/PendingTransactions'
 import { Button } from '@/components/ui/button'
@@ -60,6 +61,7 @@ const PageComponent = ({ params }: PageProps) => {
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setloading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [totalContribution, setTotalContribution] = useState(<Loader2 className='animate-spin'/>);
   const [familyHead, setFamilyHead] = useState({ memberId: '', amount: 0 })
 
 
@@ -179,29 +181,22 @@ const PageComponent = ({ params }: PageProps) => {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>This Week</CardDescription>
-            <CardTitle className="text-3xl">0</CardTitle>
+            <CardDescription className='text-lg'>Total Contributions from house</CardDescription>
+            <CardTitle className="text-4xl font-extrabold tracking-wider text-gray-800">₹ {totalContribution}</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-xs text-muted-foreground">
-              0% from last week
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>This Month</CardDescription>
-            <CardTitle className="text-3xl">0</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xs text-muted-foreground">
-              0% from last month
-            </div>
-          </CardContent>
         </Card>
       </div>
-      <PendingTransactions id={pid} />
+     <div className='my-6'>
+       <h2 className='text-lg font-extrabold text-muted-foreground mb-2'>House Collections</h2>
+     <PendingTransactions id={house?.familyHead._id} />
+     </div>
       <ListMembers members={members} familyHead={house?.familyHead}/>
+      <div className='my-6'>
+        <h2 className='text-lg font-extrabold text-muted-foreground mb-2'>
+          Contributions from House {house?.number}
+        </h2>
+        <HouseContribution id={house?._id} contribution={setTotalContribution}/>
+      </div>
       <Dialog
         open={isOpen} onOpenChange={(v) => {
           if (!v) {

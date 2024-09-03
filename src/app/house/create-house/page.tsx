@@ -40,6 +40,7 @@ interface Member {
       drivingLicense: boolean,
       voterID: boolean,
       panCard: boolean,
+      HealthCard:boolean,
     },
   }
 
@@ -80,6 +81,7 @@ const Page = () => {
           drivingLicense: false,
           voterID: false,
           panCard: false,
+          HealthCard:false
         },
       })
 
@@ -274,6 +276,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                       drivingLicense: false,
                       voterID: false,
                       panCard: false,
+                      HealthCard:false
                     },
                   })
                     setloading(false);
@@ -509,6 +512,22 @@ const dobYear = new Date(newMember.DOB).getFullYear();
               className='flex'
                 value={newMember.idCards.panCard ? 'yes' : 'no'}
                 onValueChange={(value) => handleIdCardChange('panCard', value === 'yes')}
+              >
+                 <Label>
+                  Yes
+                </Label>
+                <RadioGroupItem value="yes">Yes</RadioGroupItem>
+                <Label>No</Label>
+                <RadioGroupItem value="no">No</RadioGroupItem>
+              </RadioGroup>
+            </div>
+
+            <div>
+              <p className='text-sm'>Health Card</p>
+              <RadioGroup
+              className='flex'
+                value={newMember.idCards.HealthCard ? 'yes' : 'no'}
+                onValueChange={(value) => handleIdCardChange('HealthCard', value === 'yes')}
               >
                  <Label>
                   Yes

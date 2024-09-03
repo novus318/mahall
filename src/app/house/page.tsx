@@ -125,6 +125,28 @@ const Page = () => {
             />
           </div>
           <div>
+                        <Input
+                            type="text"
+                            placeholder="Panchayath Number"
+                            value={editHouse?.panchayathNumber}
+                            onChange={(e) => 
+                              setEditHouse({...editHouse, panchayathNumber: e.target.value })
+                            }
+                            disabled={loading}
+                        />
+                    </div>
+                    <div>
+                        <Input
+                            type="text"
+                            placeholder="Ward Number"
+                            value={editHouse?.wardNumber}
+                            onChange={(e) => 
+                              setEditHouse({...editHouse, wardNumber: e.target.value })
+                            }
+                            disabled={loading}
+                        />
+                    </div>
+          <div>
             <Input
               disabled={loading}
               type="text"

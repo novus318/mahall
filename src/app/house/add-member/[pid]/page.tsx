@@ -43,6 +43,7 @@ interface Member {
     drivingLicense: boolean,
     voterID: boolean,
     panCard: boolean,
+    HealthCard:boolean,
   },
 }
 
@@ -77,6 +78,7 @@ const PageComponent = ({ params }: PageProps) => {
       drivingLicense: false,
       voterID: false,
       panCard: false,
+      HealthCard:false,
     },
   })
   const [selectedRelation, setSelectedRelation] = useState({ memberId: '', relation: '' })
@@ -137,13 +139,6 @@ const PageComponent = ({ params }: PageProps) => {
     if (!newMember.education.level) {
       toast({
         title: "Please fill education level",
-        variant: "destructive",
-      });
-      isValid = false;
-    }
-    if (!newMember.madrassa.studying) {
-      toast({
-        title: "Please fill madrassa details",
         variant: "destructive",
       });
       isValid = false;
@@ -221,6 +216,7 @@ const PageComponent = ({ params }: PageProps) => {
             drivingLicense: false,
             voterID: false,
             panCard: false,
+            HealthCard:false,
           },
         })
         setSelectedRelation({ memberId: '', relation: '' })
@@ -415,7 +411,24 @@ const PageComponent = ({ params }: PageProps) => {
                 <RadioGroupItem value="no">No</RadioGroupItem>
               </RadioGroup>
             </div>
+            <div>
+              <p className='text-sm'>Health Card</p>
+              <RadioGroup
+              className='flex'
+                value={newMember.idCards.HealthCard ? 'yes' : 'no'}
+                onValueChange={(value) => handleIdCardChange('HealthCard', value === 'yes')}
+              >
+                 <Label>
+                  Yes
+                </Label>
+                <RadioGroupItem value="yes">Yes</RadioGroupItem>
+                <Label>No</Label>
+                <RadioGroupItem value="no">No</RadioGroupItem>
+              </RadioGroup>
+            </div>
+
           </div>
+
             <div>
               <p className='text-sm font-medium'>Blood Group</p>
               <Select

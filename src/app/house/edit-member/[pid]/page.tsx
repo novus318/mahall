@@ -199,6 +199,8 @@ const PageComponent = ({ params }: PageProps) => {
     'daughter',
     'brother',
     'sister',
+    'Son in law',
+    'Daughter in law'
   ]
   const handleChange = (e: any) => {
     const { name, value } = e.target;

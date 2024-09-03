@@ -19,6 +19,19 @@ import { Dialog, DialogContent, DialogTitle, DialogFooter, DialogDescription } f
 import { Button } from './ui/button';
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from './ui/select';
 import { Loader2 } from 'lucide-react';
+import { Label } from './ui/label';
+
+interface BankAccount {
+  _id: string;
+  accountNumber: string;
+  accountType: string;
+  balance: number;
+  createdAt: string;
+  holderName: string;
+  ifscCode: string;
+  name: string;
+  primary:boolean;
+}
 
 const DataTable = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -28,11 +41,22 @@ const DataTable = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [selectedHouse, setSelectedHouse] = useState<any>(null);
   const [paymentType, setPaymentType] = useState<string>('');
+  const [bank, setBank] = useState<BankAccount[]>([])
+  const [targetAccount, setTargetAccount] = useState<string | null>(null);
 
   useEffect(() => {
     fetchHouses();
+    fetchAccounts()
   }, []);
 
+  const fetchAccounts = () => {
+    axios.get(`${apiUrl}/api/account/get`).then(response => {
+      setBank(response.data.accounts)
+    })
+      .catch(error => {
+        console.log("Error fetching accounts:", error)
+      })
+  }
   const fetchHouses = async () => {
     try {
       const response = await axios.get(`${apiUrl}/api/house/get/pending/collections`);
@@ -74,6 +98,7 @@ const DataTable = () => {
     try {
       const response = await axios.put(`${apiUrl}/api/house/update/collection/${selectedHouse?._id}`, {
         paymentType,
+        targetAccount,
       });
       if (response.data.success) {
         toast({
@@ -162,6 +187,24 @@ const DataTable = () => {
             <br />
             Family Head: {selectedHouse?.memberId?.name}
           </DialogDescription>
+          <Label>
+            Select account
+          </Label>
+          <Select onValueChange={setTargetAccount}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select target account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {bank.map((acc) => (
+                    <SelectItem key={acc._id} value={acc._id}>
+                      {acc.name} - {acc.holderName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Label>
+            Select type
+          </Label>
           <Select onValueChange={(value) => setPaymentType(value)}>
             <SelectTrigger>
               <SelectValue placeholder="Select Payment Type" />
@@ -175,7 +218,7 @@ const DataTable = () => {
           <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSubmitPayment} disabled={!paymentType || loading}>
+            <Button onClick={handleSubmitPayment} disabled={!paymentType ||!targetAccount || loading}>
               {loading ? <Loader2 className='animate-spin' /> : 'Update Payment'}
             </Button>
           </DialogFooter>

@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import DatePicker from '@/components/DatePicker';
+import { Loader2 } from 'lucide-react';
+import { withAuth } from '@/components/withAuth';
 
 interface Staff {
     name: string,
@@ -16,6 +18,7 @@ interface Staff {
     department: string,
     position: string,
     salary: number,
+    firstSalary: number, 
     joinDate: Date,
     contactInfo: {
         phone: string,
@@ -28,6 +31,7 @@ const Page = () => {
     const { toast } = useToast()
     const router = useRouter();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const [loading, setLoading] = useState(false);
     const [staff, setStaff] = useState<Staff>({
         name: '',
         age: 0,
@@ -35,6 +39,7 @@ const Page = () => {
         department: '',
         position: '',
         salary: 0,
+        firstSalary:0,
         joinDate: new Date(),
         contactInfo: {
             phone: '',
@@ -120,7 +125,6 @@ const Page = () => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
     
-        // Check if the name includes 'contactInfo', which indicates it's a nested field
         if (name.includes('contactInfo.')) {
             const key = name.split('.')[1]; // Get the nested field name (phone, email, address)
             setStaff(prevState => ({
@@ -144,6 +148,7 @@ const Page = () => {
 
 
     const handleSubmit = async (e: React.FormEvent) => {
+        setLoading(true);
         e.preventDefault();
         if (!validate()) return;
         try {
@@ -160,6 +165,7 @@ const Page = () => {
                     department: '',
                     position: '',
                     salary: 0,
+                    firstSalary:0,
                     joinDate: new Date(),
                     contactInfo: {
                         phone: '',
@@ -167,11 +173,16 @@ const Page = () => {
                         address: ''
                     }
                 });
+                setLoading(false);
                 router.push('/staff');
             } 
-        } catch (error) {
-            // Handle error
-            console.error('Error adding staff:', error);
+        } catch (error:any) {
+            setLoading(false);
+            toast({
+                title: 'Failed to add staff',
+                description: error.response?.data?.message || error.message || 'something went wrong',
+                variant: 'destructive',
+            })
         }
     };
 
@@ -203,9 +214,9 @@ const Page = () => {
                             Age
                         </Label>
                         <Input
-                            type='number'
+                            type='text'
                             name='age'
-                            value={staff.age}
+                            value={staff.age === 0 ?'' : staff?.age}
                             onChange={handleChange}
                             placeholder='Age'
                             className='w-full'
@@ -260,9 +271,22 @@ const Page = () => {
                         <Input
                             type='text'
                             name='salary'
-                            value={staff.salary}
+                            value={staff.salary ===0 ? '': staff?.salary}
                             onChange={handleChange}
                             placeholder='Salary'
+                            className='w-full'
+                        />
+                    </div>
+                    <div className='mb-4'>
+                        <Label>
+                          First Salary
+                        </Label>
+                        <Input
+                            type='text'
+                            name='firstSalary'
+                            value={staff.firstSalary ===0 ? '' :staff?.firstSalary}
+                            onChange={handleChange}
+                            placeholder='First Salary'
                             className='w-full'
                         />
                     </div>
@@ -293,8 +317,9 @@ const Page = () => {
                             className='w-full'
                         />
                     </div>
-                    <Button type='submit' onClick={handleSubmit}>
-                        Add Staff
+                    <Button
+                    disabled={loading} type='submit' onClick={handleSubmit}>
+                        {loading ? <Loader2 className='animate-spin' /> : 'Add staff'}
                     </Button>
                 </div>
             </div>
@@ -302,4 +327,4 @@ const Page = () => {
     )
 }
 
-export default Page;
+export default withAuth(Page);

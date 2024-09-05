@@ -68,7 +68,7 @@ const RecentTransactions = () => {
   return (
  <div>
   <div className='flex justify-between px-2 my-2'>
-    <h2 className="text-sm md:text-xl font-bold">Self-Transfer Transactions</h2>
+    <h2 className="text-sm md:text-xl font-bold">Recent Transactions</h2>
     <Link href="/all-transactions" className="text-sm text-gray-800 hover:text-gray-900 bg-gray-200 py-1 px-2 rounded-md">
     All Transactions
     </Link>

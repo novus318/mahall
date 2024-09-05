@@ -79,7 +79,7 @@ const fetchExpenses = async ()=>{
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Card>
               <CardHeader>
-                <CardTitle>Total Assets</CardTitle>
+                <CardTitle>Total Accounts</CardTitle>
                 <CardDescription>The total number of assets managed by the accounts</CardDescription>
               </CardHeader>
               <CardContent>

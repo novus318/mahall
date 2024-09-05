@@ -48,11 +48,6 @@ const Page = () => {
       const response = await axios.put(`${apiUrl}/api/setting/update-receipt-numbers`, formData);
 if(response.data.success)
     {  
-      setFormData({
-        collectionReceiptNumber: '',
-        paymentReceiptNumber:'',
-        receiptReceiptNumber:''
-      });
       setShowResetDialog(false);
       setLoading(false);
     }

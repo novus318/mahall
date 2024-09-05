@@ -111,7 +111,7 @@ const CreateAccount = ({fetchAccounts}:any) => {
                         type="text"
                         name="balance"
                         placeholder="Balance"
-                        value={formData.balance}
+                        value={formData.balance ===0 ? '': formData.balance}
                         onChange={handleInputChange}
                         disabled={loading}
                     />

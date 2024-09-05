@@ -1,46 +1,37 @@
-'use client';
-
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
-import { toast } from '@/components/ui/use-toast';
+'use client'
+import React, { useEffect, useState } from 'react'
+import { Card,CardHeader,CardDescription,CardTitle,CardContent } from './ui/card'
+import { Table,TableBody,TableCell,TableHeader,TableRow,TableHead } from './ui/table'
+import axios from 'axios'
+import { Badge } from './ui/badge'
+import { format } from 'date-fns'
+import { toast } from './ui/use-toast'
 import { Dialog, DialogContent, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DialogDescription } from '@radix-ui/react-dialog';
-import Link from 'next/link';
-import Spinner from '@/components/Spinner';
 import { Label } from '@/components/ui/label';
 import { PlusCircle, Trash } from 'lucide-react';
 import DatePicker from '@/components/DatePicker';
-import { withAuth } from '@/components/withAuth';
+import { Input } from './ui/input'
 
 
 interface BankAccount {
-  _id: string;
-  accountNumber: string;
-  accountType: string;
-  balance: number;
-  createdAt: string;
-  holderName: string;
-  ifscCode: string;
-  name: string;
-  primary:boolean;
-}
-const Page = () => {
+    _id: string;
+    accountNumber: string;
+    accountType: string;
+    balance: number;
+    createdAt: string;
+    holderName: string;
+    ifscCode: string;
+    name: string;
+    primary:boolean;
+  }
+
+const PendingSalaries = ({id,fetchStaffDetails}:any) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const [salaries, setSalaries] = useState<any[]>([]);
+    const [pendingPaySlips, setPendingPaySlips] = useState<any>([])
+    const [paySlipModalOpen, setPaySlipModalOpen] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const [selectedSalary, setSelectedSalary] = useState<any>(null);
     const [loading,setLoading] = useState(true)
@@ -49,44 +40,41 @@ const Page = () => {
     const [deductions, setDeductions] = useState<any[]>([]);
     const [targetAccount, setTargetAccount] = useState<any>(null);
     const [payDate, setPayDate] = useState(null);
-  
-    const addDeduction = () => {
-      setDeductions([...deductions, { name: '', amount: 0 }]);
-    };
-  
-    const removeDeduction = (index:any) => {
-      const updatedDeductions = deductions.filter((_, i) => i !== index);
-      setDeductions(updatedDeductions);
-    };
-  
-    const handleDeductionChange = (index:any, key:any, value:any) => {
-      const updatedDeductions = [...deductions];
-      updatedDeductions[index][key] = value;
-      setDeductions(updatedDeductions);
-    };
-    const netPay = selectedSalary?.basicPay - selectedSalary?.advancePay - deductions.reduce((acc, deduction) => acc + parseFloat(deduction.amount || 0), 0);
-  
-    useEffect(() => {
-        fetchSalary();
-        fetchAccounts();
-      }, []);
 
-      const fetchSalary = async () => {
-        try {
-          const response = await axios.get(`${apiUrl}/api/staff/pending-salaries`);
-          if (response.data.success) {
-            setSalaries(response.data.payslips);
-            setLoading(false)
-          }
-        } catch (error: any) {
-          toast({
-            title: 'Failed to fetch salaries',
-            description: error.response?.data?.message || error.message || 'Something went wrong',
-            variant: 'destructive',
-          });
-          setLoading(false)
-        }
+    const fetchPendingCollections = async () => {
+        axios.get(`${apiUrl}/api/staff/pending-salary/${id}`)
+          .then(response => {
+            if (response.data.success) {
+              setPendingPaySlips(response.data.payslips)
+            }
+          })
+          .catch(error => {
+            console.error("Error fetching pending collections:", error)
+          })
+      }
+
+      useEffect(() => {
+        fetchPendingCollections()
+        fetchAccounts();
+      }, [id])
+
+      const addDeduction = () => {
+        setDeductions([...deductions, { name: '', amount: 0 }]);
       };
+    
+      const removeDeduction = (index:any) => {
+        const updatedDeductions = deductions.filter((_, i) => i !== index);
+        setDeductions(updatedDeductions);
+      };
+    
+      const handleDeductionChange = (index:any, key:any, value:any) => {
+        const updatedDeductions = [...deductions];
+        updatedDeductions[index][key] = value;
+        setDeductions(updatedDeductions);
+      };
+       const netPay = selectedSalary?.basicPay-selectedSalary?.advancePay - deductions.reduce((acc, deduction) => acc + parseFloat(deduction.amount || 0), 0);
+  
+
       const fetchAccounts = () => {
         axios.get(`${apiUrl}/api/account/get`).then(response => {
           setBank(response.data.accounts)
@@ -100,7 +88,7 @@ const Page = () => {
         const date = new Date(dateString);
         return date.toLocaleString('default', { month: 'long' }); // e.g., "June"
       }
-    
+
       const handleOpenDialog = (salary: any) => {
         setSelectedSalary(salary);
         setIsDialogOpen(true);
@@ -125,7 +113,8 @@ const Page = () => {
             setTargetAccount(null)
             setPayDate(null)
             setDeductions([])
-            fetchSalary();
+            fetchPendingCollections();
+            fetchStaffDetails()
           }
         } catch (error: any) {
           toast({
@@ -177,7 +166,8 @@ const Page = () => {
             setTargetAccount(null)
             setPayDate(null)
             setDeductions([])
-            fetchSalary();
+            fetchPendingCollections();
+            fetchStaffDetails()
           } 
         } catch (error: any) {
           toast({
@@ -189,60 +179,45 @@ const Page = () => {
           setBtLoading(false)
         }
       };
-    
   return (
-<>
-{
-    loading ? (<Spinner/>):
-    ( <div className='p-2'>
-      <div className='max-w-5xl mx-auto'>
-          <div className="mb-4 flex justify-between items-center">
-              <Link href={`/staff`} className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
-                  Back
-              </Link>
-          </div>
-          <div>
-          <div className='w-full p-2 rounded-md border my-2 md:my-4 mx-auto'>
-        <Table>
-          <TableHeader>
-            <TableRow>
-            <TableHead>ID</TableHead>
-              <TableHead>Month</TableHead>
-              <TableHead>House</TableHead>
-              <TableHead>Salary</TableHead>
-              <TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {salaries.map((salary, index) => {
-              return (
-                <TableRow key={index}>
-                  <TableCell>{salary?.staffId?.employeeId}</TableCell>
-                  <TableCell>
-                  {formatMonth(salary?.salaryPeriod?.startDate)}
-                  </TableCell>
-                  <TableCell>{salary?.staffId?.name}</TableCell>
-                  <TableCell>₹{(salary?.basicPay).toFixed(2)}</TableCell>
-                  <TableCell>
-                    <Badge onClick={() => handleOpenDialog(salary)} className="cursor-pointer">
-                      {salary?.status}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-            {salaries.length === 0 && (
-              <TableCell colSpan={5} className="text-center text-gray-600 text-sm">
-                <p className="text-base font-bold">No pending salaries...</p>
+ <>
+    <Card>
+    <CardHeader>
+      <CardTitle>Pending Salaries</CardTitle>
+      <CardDescription>pending employee salaries.</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Month</TableHead>
+            <TableHead>Pending Salary</TableHead>
+            <TableHead>Status</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {pendingPaySlips?.map((payslip: any) => (
+            <TableRow key={payslip?._id}>
+              <TableCell className="font-medium">
+                {payslip?.salaryPeriod?.startDate && format(payslip?.salaryPeriod?.startDate, 'MMM yyyy')}
               </TableCell>
-            )}
-          </TableBody>
-          <TableFooter>
-            <p>{salaries?.length} salaries are Unpaid</p>
-          </TableFooter>
-        </Table>
-  
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <TableCell>₹{payslip?.basicPay}</TableCell>
+              <TableCell>
+                <Badge variant="outline"
+                onClick={() => handleOpenDialog(payslip)}>{payslip?.status}</Badge>
+              </TableCell>
+            </TableRow>
+          ))}
+          {pendingPaySlips?.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={3}>No pending payslips found.</TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </CardContent>
+  </Card>
+  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogContent>
         <DialogTitle>
           Update Payment for {selectedSalary?.staffId?.employeeId}
@@ -320,7 +295,7 @@ const Page = () => {
           </Button>
           <Button
         variant="destructive"
-        onClick={handleRejectPayment} // Add your rejection logic here
+        onClick={handleRejectPayment} 
         disabled={btLoading}
       >
         Reject
@@ -331,12 +306,8 @@ const Page = () => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-      </div>
-          </div>
-      </div>
-  </div>)
-   }</>
+  </>
   )
 }
 
-export default withAuth(Page)
+export default PendingSalaries

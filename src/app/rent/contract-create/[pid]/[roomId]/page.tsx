@@ -29,6 +29,7 @@ const PageComponent = ({ params }: PageProps) => {
         fromDate: '',
         toDate: '',
         rent: 0,
+        firstRent:0,
         deposit: 0,
         tenant: {
             name: '',
@@ -140,6 +141,7 @@ const PageComponent = ({ params }: PageProps) => {
                 to: contract.toDate,
                 tenant: contract.tenant,
                 rent: contract.rent,
+                firstRent:contract.firstRent,
                 deposit: contract.deposit,
             }
             const response = await axios.post(`${apiUrl}/api/rent/add-contract/${pid}/${roomId}`, data);
@@ -152,6 +154,7 @@ const PageComponent = ({ params }: PageProps) => {
                     fromDate: '',
                     toDate: '',
                     rent: 0,
+                    firstRent: 0,
                     deposit: 0,
                     tenant: {
                         name: '',
@@ -185,7 +188,7 @@ const PageComponent = ({ params }: PageProps) => {
             <div className='mx-auto p-4 bg-white rounded-md border my-8 max-w-5xl'>
                 <h2 className='text-2xl font-semibold mb-4'>Create Contract</h2>
                 <div className='space-y-4'>
-                    <div className='grid grid-cols-2 gap-1'>
+                    <div className='grid grid-cols-2 gap-2'>
                         <div>
                             <p className='text-sm font-medium'>From Date</p>
                             <DatePicker date={contract.fromDate} setDate={(date: any) => handleDateChange(date, 'fromDate')} />
@@ -195,7 +198,7 @@ const PageComponent = ({ params }: PageProps) => {
                             <DatePicker date={contract.toDate} setDate={(date: any) => handleDateChange(date, 'toDate')} />
                         </div>
                     </div>
-                    <div className='grid grid-cols-2 gap-1'>
+                    <div className='grid grid-cols-2 gap-2'>
                         <div>
                             <Label>
                                 Rent
@@ -203,7 +206,7 @@ const PageComponent = ({ params }: PageProps) => {
                             <Input
                                 type='text'
                                 name='rent'
-                                value={contract.rent}
+                                value={contract.rent ===0 ? '' : contract.rent}
                                 placeholder='Rent Amount'
                                 onChange={handleChange}
                                 className='block w-full border px-2 py-4 rounded-md shadow-sm  sm:text-sm'
@@ -216,14 +219,26 @@ const PageComponent = ({ params }: PageProps) => {
                             <Input
                                 type='text'
                                 name='deposit'
-                                value={contract.deposit}
+                                value={contract.deposit === 0 ? '': contract.deposit}
                                 placeholder='Deposit Amount'
                                 onChange={handleChange}
                                 className='block w-full border px-2 py-4 rounded-md shadow-sm  sm:text-sm'
                             />
                         </div>
                     </div>
-
+                    <div>
+                            <Label>
+                                First Rent
+                            </Label>
+                            <Input
+                                type='text'
+                                name='firstRent'
+                                value={contract.firstRent ===0 ? '' : contract.firstRent}
+                                placeholder='Rent Amount'
+                                onChange={handleChange}
+                                className='block w-full border px-2 py-4 rounded-md shadow-sm  sm:text-sm'
+                            />
+                        </div>
                     <h2 className='text-2xl font-semibold mb-4'>Tenant Details</h2>
                     <div className='grid grid-cols-2 gap-2'>
                         <Input

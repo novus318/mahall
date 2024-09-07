@@ -394,7 +394,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                         <Input
                             type="text"
                             placeholder="Collection amount"
-                            value={collection}
+                            value={collection === 0 ? '' : collection}
                             onChange={(e) => setCollection(Number(e.target.value))}
                             disabled={loading}
                         />

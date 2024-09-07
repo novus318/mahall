@@ -6,7 +6,7 @@ import axios from 'axios'
 import { format } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button';
-import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, pdf, Font,Image } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import { useRouter } from 'next/navigation';
 
@@ -33,6 +33,11 @@ interface PageProps {
       </div>
     );
   };
+
+  Font.register({
+    family: 'Roboto',
+    src: 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf'
+  });
 const PageComponent = ({ params }: PageProps) => {
   const router = useRouter()
     const { pid } = params  
@@ -90,9 +95,9 @@ const PageComponent = ({ params }: PageProps) => {
       const doc = (
         <Document>
         <Page size="A5" style={styles.page}>
-          <View style={styles.header}>
-            <Text style={styles.organization}>Vellap Mahal</Text>
-            <Text style={styles.contact}>Juma masjid, vellap, thrikkaripur</Text>
+        <View style={styles.header}>
+            <Image src='/google-pay.png' style={styles.logo} />
+            <Text style={styles.contact}>Juma Masjid, Vellap, Thrikkaripur</Text>
             <Text style={styles.contact}>Phone: +91 9876543210</Text>
           </View>
   
@@ -103,10 +108,7 @@ const PageComponent = ({ params }: PageProps) => {
             </View>
             <Text style={styles.receiptNumber}>Receipt No: {collection?.receiptNumber}</Text>
           </View>
-  
-          <View style={styles.details}>
-            <Text>Details:</Text>
-          </View>
+          <View style={styles.separator} />
   
           <View>
           <View style={styles.table}>
@@ -119,15 +121,15 @@ const PageComponent = ({ params }: PageProps) => {
               <Text style={[styles.tableCell, styles.amountCell]}>{collection?.amount.toFixed(2)}</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, styles.descriptionCell]}>Total</Text>
-              <Text style={[styles.tableCell, styles.amountCell, styles.total]}>Rs.{collection?.amount.toFixed(2)}</Text>
+              <Text style={[styles.tableCell, styles.descriptionCell, styles.total]}>Total:</Text>
+              <Text style={[styles.tableCell, styles.amountCell, styles.total]}>₹{collection?.amount.toFixed(2)}</Text>
             </View>
           </View>
         </View>
   
-          <View style={styles.regards}>
+        <View style={styles.footer}>
             <Text>Regards,</Text>
-            <Text>Top Organization</Text>
+            <Text style={styles.signature}>VKJ</Text>
           </View>
         </Page>
       </Document>
@@ -138,42 +140,47 @@ const PageComponent = ({ params }: PageProps) => {
     };
     const styles = StyleSheet.create({
       page: {
-        padding: 30,
-        fontFamily: 'Helvetica',
+        padding: 20,
+        fontFamily: 'Roboto',
+        fontSize: 12,
+        lineHeight: 1.6,
       },
       header: {
-        marginBottom: 20,
         textAlign: 'center',
+        marginBottom: 5,
       },
-      organization: {
-        fontSize: 20,
-        fontWeight: 'extrabold',
+      logo: {
+        width: 50,
+        height: 50,
+        alignSelf: 'center',
       },
       contact: {
-        color: '#333',
-        fontSize: 10,
-        marginBottom: 4,
+        fontSize: 11,
+        color: '#9CA3AF',
+      },
+      separator: {
+        borderBottom: '1px solid #E5E7EB',
+        marginVertical: 10,
       },
       dateSection: {
-        marginBottom: 20,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        textAlign: 'right',
+        marginBottom: 15,
       },
       dateText: {
-        fontSize: 12,
+        fontSize: 11,
+        color: '#4B5563',
       },
       receiptNumber: {
         fontSize: 9,
         textAlign: 'right',
-      },
-      details: {
-        fontSize:15,
-        marginBottom: 15,
+        color: '#4B5563',
       },
       table: {
         width: '100%',
         borderRadius: 5,
         border: '1px solid #ccc',
+        marginBottom: 10,
+        marginTop: 5,
       },
       tableRow: {
         flexDirection: 'row',
@@ -196,10 +203,15 @@ const PageComponent = ({ params }: PageProps) => {
         fontWeight: 'bold',
         textAlign: 'right',
       },
-      regards: {
-        marginTop: 20,
+      footer: {
         textAlign: 'left',
         fontSize: 10,
+      },
+      signature: {
+        fontWeight: 'bold',
+        fontSize: 12,
+        color: '#4B5563',
+        marginTop: 5,
       },
     });
 

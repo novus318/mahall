@@ -3,13 +3,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from '@/components/ui/use-toast';
 import axios from 'axios';
+import { PlusCircle, Trash } from 'lucide-react';
 import Link from 'next/link';
 import React, { Suspense, useEffect, useState } from 'react'
+
+
+
 interface RentCollection {
     buildingName: string;
     roomNumber: string;
@@ -19,6 +24,17 @@ interface RentCollection {
     dueDate: string;
     status: 'Pending' | 'Overdue' | 'Paid';
   }
+  interface BankAccount {
+    _id: string;
+    accountNumber: string;
+    accountType: string;
+    balance: number;
+    createdAt: string;
+    holderName: string;
+    ifscCode: string;
+    name: string;
+    primary: boolean;
+  }
 const Page = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -27,11 +43,41 @@ const Page = () => {
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const [selectedCollection, setSelectedCollection] = useState<any>(null);
     const [paymentType, setPaymentType] = useState<string>('');
+    const [bank, setBank] = useState<BankAccount[]>([])
+    const [targetAccount, setTargetAccount] = useState<string | null>(null);
+    const [deductions, setDeductions] = useState<any[]>([]);
 
+    const addDeduction = () => {
+      setDeductions([...deductions, { name: '', amount: 0 }]);
+    };
+  
+    const removeDeduction = (index:any) => {
+      const updatedDeductions = deductions.filter((_, i) => i !== index);
+      setDeductions(updatedDeductions);
+    };
+  
+    const handleDeductionChange = (index:any, key:any, value:any) => {
+      const updatedDeductions = [...deductions];
+      updatedDeductions[index][key] = value;
+      setDeductions(updatedDeductions);
+    };
+
+    const amount = selectedCollection?.amount - deductions.reduce((acc, deduction) => acc + parseFloat(deduction.amount || 0), 0)
     useEffect(() => {
        fetchPendingCollections();
+       fetchAccounts()
       }, []);
 
+      const fetchAccounts = () => {
+        axios.get(`${apiUrl}/api/account/get`).then(response => {
+          setBank(response.data.accounts)
+        })
+          .catch(error => {
+            console.log("Error fetching accounts:", error)
+          })
+      }
+    
+  
       const fetchPendingCollections = async () => {
         try {
             const response = await axios.get(`${apiUrl}/api/rent/rent-collections/pending`);
@@ -69,8 +115,13 @@ const Page = () => {
         }
         setLoading(true);
         try {
-          const response = await axios.put(`${apiUrl}/api/house/update/collection/`, {
-            paymentType,
+          const response = await axios.put(`${apiUrl}/api/rent/update/rent-collection/${selectedCollection.buildingId}/${selectedCollection.roomId}`, {
+            rentCollectionId:selectedCollection.rentId,
+            paymentType, 
+            newStatus: 'Paid', 
+            accountId:targetAccount,
+            deductions,
+            amount 
           });
           if (response.data.success) {
             toast({
@@ -156,6 +207,30 @@ const Page = () => {
             <br />
             Name: {selectedCollection?.tenantName}
           </DialogDescription>
+          {bank.length > 1 ? (
+            <>
+            <Label>
+              Select bank
+            </Label>
+              <Select onValueChange={setTargetAccount}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {bank.map((acc) => (
+                    <SelectItem key={acc._id} value={acc._id}>
+                      {acc.name} - {acc.holderName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </>
+          ) : (
+            <p>Please close and open again.</p>
+          )}
+           <Label>
+              Select type
+            </Label>
           <Select onValueChange={(value) => setPaymentType(value)}>
             <SelectTrigger>
               <SelectValue placeholder="Select Payment Type" />
@@ -165,11 +240,48 @@ const Page = () => {
               <SelectItem value="Cash">Cash</SelectItem>
             </SelectContent>
           </Select>
+          {deductions.map((deduction, index) => (
+            <div key={index} className="grid grid-cols-5 gap-2 items-center">
+             <div className='col-span-2'>
+             <Label >
+                  Deduction Name
+  </Label>
+              <Input
+                type="text"
+                placeholder="Deduction Name"
+                value={deduction.name}
+                onChange={(e) => handleDeductionChange(index, 'name', e.target.value)}
+              />
+             </div>
+             <div className='col-span-2'>
+              <Label>
+                Amount
+              </Label>
+             <Input
+                type="text"
+                placeholder="Amount"
+                value={deduction.amount === 0 ? '': deduction?.amount}
+                onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*\.?\d*$/.test(value)) {
+                  handleDeductionChange(index, 'amount', value ? value : 0)}}
+                    }
+              />
+             </div>
+              <Button className='mt-4' variant="destructive" size='sm' onClick={() => removeDeduction(index)}>
+                <Trash className='h-5'/>
+              </Button>
+            </div>
+          ))}
+          <Button className='mt-3' variant="outline" size='sm' onClick={addDeduction}>
+            <PlusCircle className='h-4'/> Add deductions
+          </Button>
+          <h4 className='font-semibold text-muted-foreground'>Amount : ₹{amount}</h4>
           <DialogFooter>
           <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSubmitPayment} disabled={!paymentType}>
+            <Button onClick={handleSubmitPayment} disabled={!paymentType || !targetAccount}>
               Submit
             </Button>
           </DialogFooter>

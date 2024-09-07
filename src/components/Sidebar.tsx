@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { Banknote, Building, Home, HousePlusIcon, LayoutDashboard, LogOut, LucideCreditCard, MenuIcon, MessageCircle, ReceiptIndianRupee, ReceiptIndianRupeeIcon, SendIcon, Settings, User2Icon, X } from 'lucide-react';
+import { Banknote, BookIcon, Building, Home, HousePlusIcon, LayoutDashboard, LogOut,  MenuIcon, MessageCircle, ReceiptIndianRupeeIcon, SendIcon, Settings, User2Icon, X } from 'lucide-react';
 import { useRouter,usePathname } from 'next/navigation';
 
 const Sidebar: React.FC = () => {
@@ -149,14 +149,14 @@ const Sidebar: React.FC = () => {
             </Link>
           </li>
           <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/expense">
+            <Link href="/reports">
               <div
                 className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/expense') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
+                  CurrentPage('/reports') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
                 }`}
               >
-                <LucideCreditCard className="mr-3" />
-                <span className="text-lg">Claim Expense</span>
+                <BookIcon className="mr-3"/>
+                <span className="text-lg">Reports</span>
               </div>
             </Link>
           </li>

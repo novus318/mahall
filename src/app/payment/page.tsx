@@ -10,6 +10,7 @@ import { toast } from '@/components/ui/use-toast'
 import { withAuth } from '@/components/withAuth'
 import axios from 'axios'
 import { Loader2, PlusCircle } from 'lucide-react'
+import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
 interface BankAccount {
@@ -41,15 +42,14 @@ const Page = () => {
   const [targetAccount, setTargetAccount] = useState<string | null>(null);
   const [paymentTo, setPaymentTo] = useState<string | null>(null); // Added state for paymentTo
   const [selectedMember, setSelectedMember] = useState<string | null>(null); // Added state for selected member
-  const [otherName, setOtherName] = useState<string>(''); // Added state for other name
-  const [otherNumber, setOtherNumber] = useState<string>(''); // Added state for other number
+  const [otherName, setOtherName] = useState<string>(''); // Added state for other name// Added state for other number
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [items, setItems] = useState<Item[]>([{ description: '', amount: 0 }]); // Initial item
-  const [total, setTotal] = useState<number>(0); 
-  const [date, setdate] = useState(null);
+  const [total, setTotal] = useState<number>(0);
+  const [date, setdate] = useState(new Date())
   const [targetCategory, setTargetCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [paymentRecieptNo, setpaymentRecieptNo] = useState<any>('');
   // Filter members based on the search query
   const filteredMembers = members?.filter((member) =>
     member.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -63,29 +63,51 @@ const Page = () => {
         console.log("Error fetching accounts:", error)
       })
   }
-  
+
   const fetchPayCategories = () => {
     axios.get(`${apiUrl}/api/pay/category/all`).then(response => {
       setPayCategories(response.data.categories)
     })
-     .catch(error => {
+      .catch(error => {
         console.log("Error fetching pay categories:", error)
       })
   }
-  
-  const fetchMembers = () => {
-    axios.get(`${apiUrl}/api/member/all/names-and-ids`).then(response => {
-      setMembers(response.data.members)
-    })
-     .catch(error => {
-        console.log("Error fetching members:", error)
+
+  const fetchMembers = (searchQuery: string) => {
+    axios
+      .get(`${apiUrl}/api/member/all/names-and-ids`, { params: { search: searchQuery } })
+      .then((response) => {
+        setMembers(response.data.members);
       })
+      .catch((error) => {
+        console.log('Error fetching members:', error);
+      });
+  };
+  useEffect(() => {
+    if (searchQuery.length > 0) {
+      fetchMembers(searchQuery);
+    } else {
+      setMembers([]); // Clear members list if search is empty
+    }
+  }, [searchQuery]);
+
+  const PaymentRecieptNumber = () => {
+    axios
+      .get(`${apiUrl}/api/pay/get-payment/number`)
+      .then((response) => {
+        if (response.data.success) {
+          setpaymentRecieptNo(response.data.paymentNumber);
+        }
+      })
+      .catch((error) => {
+        console.log('Error fetching payment number:', error);
+      });
   }
 
   useEffect(() => {
     fetchAccounts()
     fetchPayCategories()
-    fetchMembers() // Fetch members when the component mounts
+    PaymentRecieptNumber()
   }, [])
   useEffect(() => {
     // Calculate the total whenever items change
@@ -113,119 +135,121 @@ const Page = () => {
     setItems(newItems);
   }
   const validate = () => {
-    const bankAccount =bank.find(ac => ac._id === targetAccount)
+    const bankAccount = bank.find(ac => ac._id === targetAccount)
     let isValid = true;
-    if (!targetAccount) {{
+    if (!targetAccount) {
+      {
+        toast({
+          title: 'Please select a bank account',
+          variant: 'destructive',
+        })
+        isValid = false;
+      }
+    }
+    if (!bankAccount || bankAccount.balance < total) {
       toast({
-        title: 'Please select a bank account',
+        title: 'Insufficient balance in selected account',
         variant: 'destructive',
       })
       isValid = false;
     }
-  }
-  if (!bankAccount || bankAccount.balance < total) {
-    toast({
-      title: 'Insufficient balance in selected account',
-      variant: 'destructive',
-    })
-    isValid = false;
-  }
-  if (!date) {
-    toast({
-      title: 'Please select a payment date',
-      variant: 'destructive',
-    })
-    isValid = false;
-  }
-  if (!targetCategory) {
-    toast({
-      title: 'Please select a pay category',
-      variant: 'destructive',
-    })
-    isValid = false;
-  }
-  if (!selectedMember && paymentTo === 'Other') {
-    toast({
-      title: 'Please select a member or enter other recipient details',
-      variant: 'destructive',
-    })
-    isValid = false;
-  }
-  if (paymentTo === 'Other' && (!otherName ||!otherNumber)) {
-    toast({
-      title: 'Please enter other recipient details',
-      variant: 'destructive',
-    })
-    isValid = false;
-  }
-  if (selectedMember && paymentTo === 'Member') {
-    toast({
-      title: 'Please select a member',
-      variant: 'destructive',
-    })
-    isValid = false;
-  }
-  if (!items[0].description) {
-    toast({
-      title: 'Please enter description for at least one item',
-      variant: 'destructive',
-    })
-    isValid = false;
-  }
-  if (!items[0].amount) {
-    toast({
-      title: 'Please enter valid amount',
-      variant: 'destructive',
-    })
-    isValid = false;
-  }
+    if (!date) {
+      toast({
+        title: 'Please select a payment date',
+        variant: 'destructive',
+      })
+      isValid = false;
+    }
+    if (!targetCategory) {
+      toast({
+        title: 'Please select a pay category',
+        variant: 'destructive',
+      })
+      isValid = false;
+    }
+    if (!selectedMember && paymentTo === 'Other') {
+      toast({
+        title: 'Please select a member or enter other recipient details',
+        variant: 'destructive',
+      })
+      isValid = false;
+    }
+    if (paymentTo === 'Other' && (!otherName )) {
+      toast({
+        title: 'Please enter other recipient details',
+        variant: 'destructive',
+      })
+      isValid = false;
+    }
+    if (selectedMember && paymentTo === 'Member') {
+      toast({
+        title: 'Please select a member',
+        variant: 'destructive',
+      })
+      isValid = false;
+    }
+    if (!items[0].description) {
+      toast({
+        title: 'Please enter description for at least one item',
+        variant: 'destructive',
+      })
+      isValid = false;
+    }
+    if (!items[0].amount) {
+      toast({
+        title: 'Please enter valid amount',
+        variant: 'destructive',
+      })
+      isValid = false;
+    }
 
     return isValid;
-};
+  };
 
-  const handleSubmit =async()=>{
+  const handleSubmit = async () => {
     if (!validate()) return;
-  setLoading(true);
-try{
-    const recipient ={
-    name:otherName,
-    number:otherNumber
+    setLoading(true);
+    try {
+      const recipient = {
+        name: otherName,
+      }
+      const data = {
+        items,
+        date,
+        accountId: targetAccount,
+        categoryId: payCategories.find(c => c._id === targetCategory),
+        paymentType: 'Cash',
+        memberId: selectedMember,
+        otherRecipient: recipient,
+        receiptNumber: paymentRecieptNo
+      }
+      const response = await axios.post(`${apiUrl}/api/pay/create-payment`, data)
+      if (response.data.success) {
+        setItems([{ description: '', amount: 0 }])
+        setTargetAccount(null)
+        setOtherName('')
+        setTotal(0)
+        setTargetCategory(null)
+        setPaymentTo('')
+        setSearchQuery('')
+        setSelectedMember(null)
+        PaymentRecieptNumber()
+        toast({
+          title: 'Payment created successfully',
+          description: 'You have created a new payment.',
+          variant: 'default'
+        })
+        setLoading(false)
+      }
+    } catch (error: any) {
+      setLoading(false)
+      toast({
+        title: 'Failed to create payment',
+        description: error.response?.data?.message || error.message || 'Something went wrong',
+        variant: 'destructive'
+      })
+    }
   }
-  const data = {
-    items,
-    date, 
-    accountId:targetAccount, 
-    categoryId:payCategories.find(c => c._id === targetCategory), 
-    paymentType:'Cash', 
-    memberId:selectedMember, 
-    otherRecipient:recipient
-  }
-  const response = await axios.post(`${apiUrl}/api/pay/create-payment`, data)
-  if(response.data.success){
-    setItems([{ description: '', amount: 0 }])
-    setTargetAccount(null)
-    setOtherName('')
-    setOtherNumber('')
-    setTotal(0)
-    setTargetCategory(null)
-    setPaymentTo(null)
-    setSearchQuery('')
-    setSelectedMember(null)
-    toast({
-      title: 'Payment created successfully',
-      description: 'You have created a new payment.',
-      variant:'default'
-    })
-    setLoading(false)
-  }}catch(error:any){
-    setLoading(false)
-    toast({
-      title: 'Failed to create payment',
-      description: error.response?.data?.message || error.message || 'Something went wrong',
-      variant:'destructive'
-    })
-  }
-}
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
       <div className="w-full md:w-1/6 bg-gray-100">
@@ -233,152 +257,151 @@ try{
       </div>
       <div className="w-full md:w-5/6 p-4 bg-white">
         <div className="flex justify-between items-center mb-4 gap-2">
-          <CreatePayCategory fetchCategories={fetchPayCategories}/>
+          <CreatePayCategory fetchCategories={fetchPayCategories} />
+          <Link href={'/payment/recent-payments'} className='bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium'>
+            Recent Payments
+          </Link>
         </div>
-
         <div className="p-4 bg-white rounded-md border my-8 max-w-2xl mx-auto">
-  <h2 className="text-2xl font-semibold mb-4">New Payment</h2>
-  <div className="space-y-4">
-    <div className="max-w-full">
-      <p className="text-sm font-medium">Date</p>
-      <DatePicker date={date} setDate={setdate} />
-    </div>
-    
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div className="w-full">
-        <Label>Select account</Label>
-        <Select onValueChange={setTargetAccount}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select target account" />
-          </SelectTrigger>
-          <SelectContent>
-            {bank?.map((acc) => (
-              <SelectItem key={acc._id} value={acc._id}>
-                {acc.name} - {acc.holderName}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="w-full">
-        <Label>Select category</Label>
-        <Select onValueChange={setTargetCategory}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select category" />
-          </SelectTrigger>
-          <SelectContent>
-            {payCategories?.map((c) => (
-              <SelectItem key={c._id} value={c._id}>
-                {c.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
-
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div className="w-full">
-        <Label>Payment to</Label>
-        <Select onValueChange={setPaymentTo}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select payment to" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="member">Member</SelectItem>
-            <SelectItem value="other">Other</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {paymentTo === 'member' && (
-        <div className="w-full">
-          <Label>Select Member</Label>
-          <Select onValueChange={setSelectedMember}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select member" />
-            </SelectTrigger>
-            <SelectContent>
-              <div className="px-3 py-2">
-                <Input
-                  type="text"
-                  className="w-full border border-gray-300 rounded-md"
-                  placeholder="Search member"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
+          <div className='flex justify-between'>
+            <h2 className="text-lg md:text-xl lg:text-2xl font-semibold mb-4">New Payment</h2>
+            <p className='font-bold text-muted-foreground'>Reciept No.{paymentRecieptNo}</p>
+          </div>
+          <div className="space-y-4">
+            <div className="max-w-full">
+              <p className="text-sm font-medium">Date</p>
+              <DatePicker date={date} setDate={setdate} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="w-full">
+                <Label>Select account</Label>
+                <Select value={targetAccount || 'Select target account'} onValueChange={setTargetAccount}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select target account" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {bank?.map((acc) => (
+                      <SelectItem key={acc._id} value={acc._id}>
+                        {acc.name} - {acc.holderName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              {filteredMembers?.map((member) => (
-                <SelectItem key={member._id} value={member._id}>
-                  {member.name}
-                </SelectItem>
+
+              <div className="w-full">
+                <Label>Select category</Label>
+                <Select value={targetCategory || 'Select category'} onValueChange={setTargetCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {payCategories?.map((c) => (
+                      <SelectItem key={c._id} value={c._id}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="w-full">
+                <Label>Payment to</Label>
+                <Select value={paymentTo || 'Select payment to'} onValueChange={setPaymentTo}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select payment to" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="member">Member</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {paymentTo === 'member' && (
+                <div className="w-full">
+                  <Label>Select Member</Label>
+                  <Select onValueChange={setSelectedMember}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select member" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <div className="px-3 py-2">
+                        <Input
+                          type="text"
+                          className="w-full border border-gray-300 rounded-md"
+                          placeholder="Search member"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                      </div>
+                      {filteredMembers?.map((member) => (
+                        <SelectItem key={member._id} value={member._id}>
+                          {member.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+
+              {paymentTo === 'other' && (
+                <div className="w-full">
+                  <Label>Name</Label>
+                  <Input
+                    value={otherName}
+                    onChange={(e) => setOtherName(e.target.value)}
+                    placeholder="Enter name"
+                  />
+                  </div>
+              )}
+            </div>
+
+            <div className="mt-8 space-y-2">
+              <h3 className="text-lg font-medium mb-2">Items</h3>
+              {items.map((item, index) => (
+                <div key={index} className="flex flex-col md:flex-row gap-4 items-center mb-2">
+                  <Input
+                    className="flex-1"
+                    placeholder="Description"
+                    value={item.description}
+                    onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                  />
+                  <Input
+                    className="w-full md:w-32"
+                    type="text"
+                    placeholder="Amount"
+                    value={item.amount === 0 ? '' : item.amount}
+                    onChange={(e) => handleItemChange(index, 'amount', e.target.value)}
+                  />
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => handleRemoveItem(index)}
+                  >
+                    Remove
+                  </Button>
+                </div>
               ))}
-            </SelectContent>
-          </Select>
+              <Button size="sm" variant="secondary" onClick={handleAddItem}>
+                <PlusCircle className='h-4' />Add Item
+              </Button>
+            </div>
+
+            <div className="mt-4">
+              <h3 className="text-lg font-bold">Total: ₹{total.toFixed(2)}</h3>
+            </div>
+
+            <div className="flex justify-end mt-4">
+              <Button onClick={handleSubmit}>
+                {loading ? <Loader2 className="animate-spin" /> : 'Create'}
+              </Button>
+            </div>
+          </div>
         </div>
-      )}
-
-      {paymentTo === 'other' && (
-        <div className="w-full">
-          <Label>Name</Label>
-          <Input
-            value={otherName}
-            onChange={(e) => setOtherName(e.target.value)}
-            placeholder="Enter name"
-          />
-          <Label className="mt-2">Number</Label>
-          <Input
-            value={otherNumber}
-            onChange={(e) => setOtherNumber(e.target.value)}
-            placeholder="Enter number"
-          />
-        </div>
-      )}
-    </div>
-
-    <div className="mt-8 space-y-2">
-      <h3 className="text-lg font-medium mb-2">Items</h3>
-      {items.map((item, index) => (
-        <div key={index} className="flex flex-col md:flex-row gap-4 items-center mb-2">
-          <Input
-            className="flex-1"
-            placeholder="Description"
-            value={item.description}
-            onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-          />
-          <Input
-            className="w-full md:w-32"
-            type="text"
-            placeholder="Amount"
-            value={item.amount}
-            onChange={(e) => handleItemChange(index, 'amount', e.target.value)}
-          />
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={() => handleRemoveItem(index)}
-          >
-            Remove
-          </Button>
-        </div>
-      ))}
-      <Button size="sm" variant="secondary" onClick={handleAddItem}>
-      <PlusCircle className='h-4'/>Add Item
-      </Button>
-    </div>
-
-    <div className="mt-4">
-      <h3 className="text-lg font-bold">Total: ₹{total.toFixed(2)}</h3>
-    </div>
-
-    <div className="flex justify-end mt-4">
-      <Button onClick={handleSubmit}>
-        {loading ? <Loader2 className="animate-spin" /> : 'Create'}
-      </Button>
-    </div>
-  </div>
-</div>
 
       </div>
     </div>

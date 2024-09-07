@@ -11,6 +11,7 @@ import { toast } from '@/components/ui/use-toast'
 import { withAuth } from '@/components/withAuth'
 import axios from 'axios'
 import { Loader2} from 'lucide-react'
+import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
 
@@ -48,9 +49,10 @@ const Page = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [description,setDescription] =useState('')
  const [amount, setAmount] = useState<number>(0); 
-  const [date, setdate] = useState(null);
+  const [date, setdate] = useState(new Date());
   const [targetCategory, setTargetCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [recieptRecieptNo, setrecieptRecieptNo] = useState<any>(''); 
 
     // Filter members based on the search query
     const filteredMembers = members?.filter((member) =>
@@ -75,19 +77,41 @@ const Page = () => {
         })
     }
     
-    const fetchMembers = () => {
-      axios.get(`${apiUrl}/api/member/all/names-and-ids`).then(response => {
-        setMembers(response.data.members)
-      })
-       .catch(error => {
-          console.log("Error fetching members:", error)
+    const fetchMembers = (searchQuery: string) => {
+      axios
+        .get(`${apiUrl}/api/member/all/names-and-ids`, { params: { search: searchQuery } })
+        .then((response) => {
+          setMembers(response.data.members);
         })
-    }
+        .catch((error) => {
+          console.log('Error fetching members:', error);
+        });
+    };
+    useEffect(() => {
+      if (searchQuery.length > 0) {
+        fetchMembers(searchQuery);
+      } else {
+        setMembers([]); // Clear members list if search is empty
+      }
+    }, [searchQuery]);
   
+    const RecieptRecieptNumber = () => {
+      axios
+        .get(`${apiUrl}/api/reciept/get-reciept/number`)
+        .then((response) => {
+          if(response.data.success){
+            setrecieptRecieptNo(response.data.Number);
+          }
+        })
+        .catch((error) => {
+          console.log('Error fetching reciept number:', error);
+        });
+      }
+
     useEffect(() => {
       fetchAccounts()
       fetchRecCategories()
-      fetchMembers() // Fetch members when the component mounts
+      RecieptRecieptNumber()
     }, [])
 
     const validate = () => {
@@ -169,7 +193,8 @@ const Page = () => {
       categoryId:RecieptCategories.find(c => c._id === targetCategory), 
       recieptType:'Cash', 
       memberId:selectedMember, 
-      otherRecipient:recipient
+      otherRecipient:recipient,
+      receiptNumber:recieptRecieptNo
     }
     const response = await axios.post(`${apiUrl}/api/reciept/create-reciept`, data)
     if(response.data.success){
@@ -182,6 +207,7 @@ const Page = () => {
       setRecieptTo(null)
       setSearchQuery('')
       setSelectedMember(null)
+      RecieptRecieptNumber()
       toast({
         title: 'Reciept created successfully',
         description: 'You have created a new reciept.',
@@ -207,9 +233,15 @@ const Page = () => {
     <div className="w-full md:w-5/6 p-4 bg-white">
       <div className="flex justify-between items-center mb-4 gap-2">
         <CreateRecCategory fetchCategories={fetchRecCategories}/>
+        <Link href={'/reciept/recent-reciepts'} className='bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium'>
+            Recent Payments
+          </Link>
       </div>
     <div className="p-4 bg-white rounded-md border my-8 max-w-2xl mx-auto">
+    <div className='flex justify-between'>
     <h2 className="text-2xl font-semibold mb-4">New Reciept</h2>
+    <p className='font-bold text-muted-foreground'>{recieptRecieptNo}</p>
+    </div>
     <div className="space-y-4">
       <div className="max-w-full">
         <p className="text-sm font-medium">Date</p>
@@ -219,7 +251,7 @@ const Page = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="w-full">
           <Label>Select account</Label>
-          <Select onValueChange={setTargetAccount}>
+          <Select value={targetAccount || 'Select target account'} onValueChange={setTargetAccount}>
             <SelectTrigger>
               <SelectValue placeholder="Select target account" />
             </SelectTrigger>
@@ -235,7 +267,7 @@ const Page = () => {
   
         <div className="w-full">
           <Label>Select category</Label>
-          <Select onValueChange={setTargetCategory}>
+          <Select value={targetCategory || 'Select category'} onValueChange={setTargetCategory}>
             <SelectTrigger>
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
@@ -253,7 +285,7 @@ const Page = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="w-full">
           <Label>Reciept to</Label>
-          <Select onValueChange={setRecieptTo}>
+          <Select value={recieptTo || 'Select reciept to'} onValueChange={setRecieptTo}>
             <SelectTrigger>
               <SelectValue placeholder="Select reciept to" />
             </SelectTrigger>
@@ -324,7 +356,7 @@ const Page = () => {
             <Label>Amount</Label>
             <Input
               type="text"
-              value={amount}
+              value={amount === 0 ? '': amount}
               onChange={(e) => setAmount(Number(e.target.value))}
               placeholder="Enter amount"
             />

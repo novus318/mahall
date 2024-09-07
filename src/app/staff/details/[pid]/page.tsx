@@ -16,6 +16,7 @@ import EditStaff from '@/components/EditStaff'
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
 import { toast } from '@/components/ui/use-toast'
 import RequestAdvancePay from '@/components/RequestAdvancePay'
+import DownloadPayslip from '@/components/DownloadPayslip'
 
 
 interface PageProps {
@@ -194,8 +195,8 @@ const PageComponent = ({ params }: PageProps) => {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle className='flex justify-between items-center'>
-                  <h2 className="text-base md:text-2xl font-bold">Attendance</h2>
+                <CardTitle className='grid grid-cols-1 md:grid-cols-2 items-center'>
+                  <p className="text-base md:text-2xl font-bold">Attendance</p>
                   <div className="flex items-center gap-4">
             <Select onValueChange={setSelectedStatus}>
               <SelectTrigger className="w-40">
@@ -249,7 +250,7 @@ const PageComponent = ({ params }: PageProps) => {
       <PendingSalaries id={pid} fetchStaffDetails={fetchStaffDetails}/>
           </div>
           <div className="bg-white rounded-lg border p-6">
-            <h2 className="text-2xl font-bold mb-4">Payslips</h2>
+            <p className="text-2xl font-bold mb-4">Payslips</p>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -266,10 +267,7 @@ const PageComponent = ({ params }: PageProps) => {
                       <TableCell>₹{pay?.status === 'Paid' ? pay?.netPay : pay?.basicPay}</TableCell>
                       <TableCell>
                         {pay?.status === 'Paid' ? (
-                          <Button variant="outline" size="sm">
-                            <DownloadIcon className="h-4 w-4 mr-2" />
-                            Download
-                          </Button>
+                          <DownloadPayslip payslip={pay} staff={staff}/>
                         ) : (
                           <Button
                             disabled variant="destructive" size="sm">

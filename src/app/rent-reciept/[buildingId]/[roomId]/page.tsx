@@ -75,7 +75,7 @@ const PageComponent = ({ params }: PageProps) => {
         return <div>No room details found.</div>;
     }
     const handlePayNowClick =async(r:any,c:any)=>{
-       router.push(`/pay/${room.roomNumber}/${r.amount}/${c.tenant.name}`)
+       router.push(`/pay/room:${room.roomNumber}/${r.amount}/${c.tenant.name}`)
      }
     return (
         <>

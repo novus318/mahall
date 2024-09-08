@@ -97,7 +97,6 @@ const TransactionPage = () => {
           }
           const response = await axios.get(`${apiUrl}/api/transactions/recent/transactions/byDate`,{params: data});
           if(response.data.success){
-            console.log(response.data.statement)
             handleReceiptClick(response.data.statement)
             setBtLoading(false);
             setFromDate(null)
@@ -185,15 +184,17 @@ const TransactionPage = () => {
               <View style={styles.transactionsHeader}>
                 <Text style={styles.transactionTextHeader}>Date</Text>
                 <Text style={styles.transactionTextHeader}>Category</Text>
-                <Text style={styles.transactionTextHeader}>Debit</Text>
-                <Text style={styles.transactionTextHeader}>Credit</Text>
-                <Text style={styles.transactionTextHeader}>Amount</Text>
+                <Text style={styles.transactionTextHeader}>Account</Text>
+                <Text style={styles.transactionTextHeaderAmount}>Debit</Text>
+                <Text style={styles.transactionTextHeaderAmount}>Credit</Text>
+                <Text style={styles.transactionTextHeaderAmount}>Amount</Text>
               </View>
       
               {data.transactions.map((transaction: any, index: number) => (
                 <View key={index} style={styles.transactionRow}>
                   <Text style={styles.transactionText}>{formatDate(transaction.date).dayMonthYear}</Text>
                   <Text style={styles.transactionText}>{transaction.category}</Text>
+                  <Text style={styles.transactionText}>{transaction.accountName}</Text>
                   <Text style={styles.transactionAmount}>
                     {transaction.type === 'Debit' ? `₹${transaction.amount.toLocaleString()}` : '-'}
                   </Text>
@@ -311,6 +312,13 @@ const TransactionPage = () => {
           fontWeight: 'bold',
           width: '20%',
           color: '#000',
+        },
+        transactionTextHeaderAmount: {
+          fontSize: 12,
+          fontWeight: 'bold',
+          width: '20%',
+          color: '#000',
+          textAlign: 'right'
         },
         transactionRow: {
           flexDirection: 'row',

@@ -8,7 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import { Button } from './ui/button';
 import axios from 'axios'
@@ -67,11 +67,12 @@ const HouseContribution = ({id,contribution}:any) => {
         const doc = (
           <Document>
           <Page size="A5" style={styles.page}>
-            <View style={styles.header}>
-              <Text style={styles.organization}>Vellap Mahal</Text>
-              <Text style={styles.contact}>Juma masjid, vellap, thrikkaripur</Text>
-              <Text style={styles.contact}>Phone: +91 9876543210</Text>
-            </View>
+          <View style={styles.header}>
+                <Image src='/VKJ.jpeg' style={styles.logo} />
+                <Text style={styles.masjidName}>Juma Masjid, Vellap, Thrikkaripur</Text>
+                <Text style={styles.contact}>Phone: +91 9876543210</Text>
+                <View style={styles.separator} />
+              </View>
     
             <View style={styles.dateSection}>
               <View>
@@ -104,7 +105,7 @@ const HouseContribution = ({id,contribution}:any) => {
     
             <View style={styles.regards}>
               <Text>Regards,</Text>
-              <Text>VKIJ</Text>
+              <Text>VKJ</Text>
             </View>
           </Page>
         </Document>
@@ -119,17 +120,29 @@ const HouseContribution = ({id,contribution}:any) => {
           fontFamily: 'Helvetica',
         },
         header: {
-          marginBottom: 20,
           textAlign: 'center',
+          marginBottom: 10,
         },
-        organization: {
-          fontSize: 20,
-          fontWeight: 'extrabold',
+        logo: {
+          width: 80,
+          height: 80,
+          alignSelf: 'center',
+        },
+        masjidName: {
+          fontSize: 14,
+          fontWeight: 'bold',
+          color: '#000',
+          marginTop: 10,
         },
         contact: {
-          color: '#333',
-          fontSize: 10,
-          marginBottom: 4,
+          fontSize: 12,
+          color: '#555',
+          marginTop: 5,
+        },
+        separator: {
+          borderBottomWidth: 2,
+          borderBottomColor: '#E5E7EB',
+          marginVertical: 10,
         },
         dateSection: {
           marginBottom: 20,

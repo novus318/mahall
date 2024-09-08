@@ -181,8 +181,8 @@ const PageComponent = ({ params }: PageProps) => {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription className='text-lg'>Total Contributions from house</CardDescription>
-            <CardTitle className="text-4xl font-extrabold tracking-wider text-gray-800">₹ {totalContribution}</CardTitle>
+            <CardDescription className='text-lg font-semibold'>Total Contributions from house</CardDescription>
+            <CardTitle className="text-3xl font-bold tracking-wider text-gray-800">₹ {totalContribution}</CardTitle>
           </CardHeader>
         </Card>
       </div>

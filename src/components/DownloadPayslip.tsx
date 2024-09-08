@@ -26,7 +26,7 @@ const DownloadPayslip = ({payslip,staff}: any) => {
   
           {/* Header Section with Logo */}
           <View style={styles.header}>
-            <Image src='/google-pay.png' style={styles.logo} />
+            <Image src='/VKJ.jpeg' style={styles.logo} />
             <Text style={styles.companyInfo}>Vellap, Thrikkaripur</Text>
             <Text style={styles.companyInfo}>Phone: +91 9876543210</Text>
           </View>

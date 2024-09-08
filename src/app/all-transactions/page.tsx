@@ -136,7 +136,7 @@ const TransactionPage = () => {
             <Page size="A4" style={styles.page}>
               {/* Header Section */}
               <View style={styles.header}>
-                <Image src='/google-pay.png' style={styles.logo} />
+                <Image src='/VKJ.jpeg' style={styles.logo} />
                 <Text style={styles.masjidName}>Juma Masjid, Vellap, Thrikkaripur</Text>
                 <Text style={styles.contact}>Phone: +91 9876543210</Text>
                 <View style={styles.separator} />
@@ -194,13 +194,13 @@ const TransactionPage = () => {
                 <View key={index} style={styles.transactionRow}>
                   <Text style={styles.transactionText}>{formatDate(transaction.date).dayMonthYear}</Text>
                   <Text style={styles.transactionText}>{transaction.category}</Text>
-                  <Text style={styles.transactionText}>
+                  <Text style={styles.transactionAmount}>
                     {transaction.type === 'Debit' ? `₹${transaction.amount.toLocaleString()}` : '-'}
                   </Text>
-                  <Text style={styles.transactionText}>
+                  <Text style={styles.transactionAmount}>
                     {transaction.type === 'Credit' ? `₹${transaction.amount.toLocaleString()}` : '-'}
                   </Text>
-                  <Text style={styles.transactionText}>₹{transaction.amount.toLocaleString()}</Text>
+                  <Text style={styles.transactionAmount}>₹{transaction.amount.toLocaleString()}</Text>
                 </View>
               ))}
             </Page>
@@ -221,15 +221,15 @@ const TransactionPage = () => {
         },
         header: {
           textAlign: 'center',
-          marginBottom: 20,
+          marginBottom: 10,
         },
         logo: {
-          width: 50,
-          height: 50,
+          width: 80,
+          height: 80,
           alignSelf: 'center',
         },
         masjidName: {
-          fontSize: 18,
+          fontSize: 14,
           fontWeight: 'bold',
           color: '#000',
           marginTop: 10,
@@ -321,6 +321,13 @@ const TransactionPage = () => {
           fontSize: 11,
           width: '20%',
           color: '#333',
+        },
+        transactionAmount: {
+
+          fontSize: 11,
+          width: '20%',
+          color: '#333',
+          textAlign: 'right'
         },
       });
       

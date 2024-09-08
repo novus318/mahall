@@ -30,7 +30,7 @@ const DownloadrentReciept = ({collection, contractDetails, room}: any) => {
           
           {/* Header Section with Logo */}
           <View style={styles.header}>
-            <Image src='/google-pay.png' style={styles.logo} />
+            <Image src='/VKJ.jpeg' style={styles.logo} />
             <Text style={styles.contact}>Juma Masjid, Vellap, Thrikkaripur</Text>
             <Text style={styles.contact}>Phone: +91 9876543210</Text>
           </View>

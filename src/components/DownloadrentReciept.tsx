@@ -136,7 +136,7 @@ const DownloadrentReciept = ({collection, contractDetails, room}: any) => {
       marginVertical: 10,
     },
     dateSection: {
-      textAlign: 'right',
+      textAlign: 'left',
       marginBottom: 15,
     },
     dateText: {

@@ -66,6 +66,7 @@ const TransactionPage = () => {
 
       const fetchTransactions = async () => {
         const currentDate = new Date();
+        currentDate.setHours(23, 59, 0, 0);
         if (!fromDate || !toDate) {
           toast({
             title: 'Please select a date range.',

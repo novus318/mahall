@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { format } from 'date-fns';
+import { addMinutes, format } from 'date-fns';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,12 @@ const DatePicker = ({ date, setDate }: any) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSelectDate = (selectedDate: Date | undefined) => {
-    setDate(selectedDate);
+    if (selectedDate) {
+      // Set the time to 11:50 PM IST (Indian Standard Time)
+      const exactISTDate = addMinutes(selectedDate, (11 * 60 + 50) - selectedDate.getTimezoneOffset());
+
+      setDate(exactISTDate);
+    }
     setIsOpen(false); // Close the popover after selecting a date
   };
 

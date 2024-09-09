@@ -187,21 +187,21 @@ const TransactionPage = () => {
                 <Text style={styles.transactionTextHeader}>Account</Text>
                 <Text style={styles.transactionTextHeaderAmount}>Debit</Text>
                 <Text style={styles.transactionTextHeaderAmount}>Credit</Text>
-                <Text style={styles.transactionTextHeaderAmount}>Amount</Text>
+                <Text style={styles.transactionTextHeaderAmount}>Balance</Text>
               </View>
       
               {data.transactions.map((transaction: any, index: number) => (
                 <View key={index} style={styles.transactionRow}>
-                  <Text style={styles.transactionText}>{formatDate(transaction.date).dayMonthYear}</Text>
-                  <Text style={styles.transactionText}>{transaction.category}</Text>
-                  <Text style={styles.transactionText}>{transaction.accountName}</Text>
+                  <Text style={styles.transactionText}>{formatDate(transaction?.date).dayMonthYear}</Text>
+                  <Text style={styles.transactionText}>{transaction?.category}</Text>
+                  <Text style={styles.transactionText}>{transaction?.accountName}</Text>
                   <Text style={styles.transactionAmount}>
-                    {transaction.type === 'Debit' ? `₹${transaction.amount.toLocaleString()}` : '-'}
+                    {transaction?.type === 'Debit' ? `₹${transaction?.amount.toFixed(2)}` : '-'}
                   </Text>
                   <Text style={styles.transactionAmount}>
-                    {transaction.type === 'Credit' ? `₹${transaction.amount.toLocaleString()}` : '-'}
+                    {transaction?.type === 'Credit' ? `₹${transaction?.amount.toFixed(2)}` : '-'}
                   </Text>
-                  <Text style={styles.transactionAmount}>₹{transaction.amount.toLocaleString()}</Text>
+                  <Text style={styles.transactionAmount}>₹{(transaction?.Balance || 0)?.toFixed(2)}</Text>
                 </View>
               ))}
             </Page>

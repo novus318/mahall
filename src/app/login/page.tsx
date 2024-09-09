@@ -53,9 +53,9 @@ const Login = () => {
   {Spin ?
   (<Spinner/>):( <>
     <div className="flex items-center justify-center h-screen text-white">
-     <div className="bg-white p-8 rounded shadow-md max-w-4xl mx-3">
-       <div className="flex justify-center mb-10 border p-6 rounded-md bg-stone-200">
-        <img src='/logow.png' alt="Logo" className='h-9' />
+     <div className="bg-gray-100 p-8 rounded shadow-md max-w-4xl mx-3">
+       <div className="flex justify-center mb-10 border p-6 rounded-md bg-white">
+        <img src='/logo.svg' alt="Logo" className='h-24' />
        </div>
        <h2 className="text-3xl text-zinc-800 font-bold mb-6">Welcome to Mahal</h2>
        <form onSubmit={handleSubmit}>

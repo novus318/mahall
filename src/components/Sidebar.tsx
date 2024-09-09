@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Button } from './ui/button';
 import { Banknote, BookIcon, Building, Home, HousePlusIcon, LayoutDashboard, LogOut,  MenuIcon, MessageCircle, ReceiptIndianRupeeIcon, SendIcon, Settings, User2Icon, X } from 'lucide-react';
 import { useRouter,usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 const Sidebar: React.FC = () => {
   const router = useRouter();
@@ -23,7 +24,7 @@ const Sidebar: React.FC = () => {
       {/* Mobile header */}
       <div className="md:hidden flex justify-between items-center bg-gray-100 text-gray-950 p-1 w-full">
         <Link href="/">
-         <span className='font-extrabold tracking-wide text-xl mx-2'>Mahal</span>
+        <Image src='/logo1.svg' height={100} width={100} alt='' className='w-26'/>
         </Link>
         <Button onClick={() => setIsOpen(!isOpen)}
             size='icon'>
@@ -40,7 +41,7 @@ const Sidebar: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
           <Link href="/">
             <div className="flex items-center justify-center px-4">
-            <span className='font-extrabold tracking-wide text-xl mx-2'>Mahal</span>
+              <Image src='/logo1.png' height={100} width={100} alt='' className='w-26'/>
             </div>
           </Link>
           <Button

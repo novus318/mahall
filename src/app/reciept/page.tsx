@@ -234,7 +234,7 @@ const Page = () => {
       <div className="flex justify-between items-center mb-4 gap-2">
         <CreateRecCategory fetchCategories={fetchRecCategories}/>
         <Link href={'/reciept/recent-reciepts'} className='bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium'>
-            Recent Payments
+            Recent Reciepts
           </Link>
       </div>
     <div className="p-4 bg-white rounded-md border my-8 max-w-2xl mx-auto">

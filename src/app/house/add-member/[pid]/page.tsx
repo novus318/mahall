@@ -156,14 +156,7 @@ const PageComponent = ({ params }: PageProps) => {
         variant: "destructive",
       });
     }
-    if (selectedRelation.memberId === '') {
-      toast({
-        title: "Please select a member to relate",
-        variant: "destructive",
-      });
-      return false;
-    }
-    if (selectedRelation.relation === '') {
+    if (selectedRelation.memberId && selectedRelation.relation === '') {
       toast({
         title: "Please select a relation type",
         variant: "destructive",

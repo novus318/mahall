@@ -8,7 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import { Dialog, DialogContent, DialogTitle, DialogFooter, DialogDescription } from './ui/dialog';
 import { Button } from './ui/button';
@@ -119,6 +119,7 @@ const PendingTransactions = ({ id }: any) => {
             setPaymentType('');
             setIsDialogOpen(false);
             setLoading(false);
+            window.location.reload()
           } 
         } catch (error: any) {
           setLoading(false)
@@ -136,10 +137,12 @@ const PendingTransactions = ({ id }: any) => {
           <Document>
           <Page size="A5" style={styles.page}>
             <View style={styles.header}>
-              <Text style={styles.organization}>Vellap Mahal</Text>
-              <Text style={styles.contact}>Juma masjid, vellap, thrikkaripur</Text>
+              <Image src='/VKJ.jpeg' style={styles.logo} />
+              <Text style={styles.masjidName}>Juma Masjid, Vellap, Thrikkaripur</Text>
               <Text style={styles.contact}>Phone: +91 9876543210</Text>
+              <View style={styles.separator} />
             </View>
+    
     
             <View style={styles.dateSection}>
               <View>
@@ -148,12 +151,13 @@ const PendingTransactions = ({ id }: any) => {
               </View>
               <Text style={styles.receiptNumber}>Receipt No: {collection?.receiptNumber}</Text>
             </View>
-    
+            <View style={styles.fromSection}>
+              <Text style={styles.fromText}>From: {collection?.memberId?.name}</Text>
+            </View>
             <View style={styles.details}>
-              <Text>Details:</Text>
+              <Text style={styles.detailsHeading}>Details:</Text>
             </View>
     
-            <View>
             <View style={styles.table}>
               <View style={styles.tableRow}>
                 <Text style={[styles.tableCell, styles.descriptionCell]}>Description</Text>
@@ -165,14 +169,13 @@ const PendingTransactions = ({ id }: any) => {
               </View>
               <View style={styles.tableRow}>
                 <Text style={[styles.tableCell, styles.descriptionCell]}>Total</Text>
-                <Text style={[styles.tableCell, styles.amountCell, styles.total]}>Rs.{collection?.amount.toFixed(2)}</Text>
+                <Text style={[styles.tableCell, styles.amountCell, styles.total]}>₹{collection?.amount.toFixed(2)}</Text>
               </View>
             </View>
-          </View>
     
             <View style={styles.regards}>
               <Text>Regards,</Text>
-              <Text>Top Organization</Text>
+              <Text>VKJ</Text>
             </View>
           </Page>
         </Document>
@@ -183,67 +186,91 @@ const PendingTransactions = ({ id }: any) => {
       };
       const styles = StyleSheet.create({
         page: {
-          padding: 30,
-          fontFamily: 'Helvetica',
+          padding: 20,
+          fontFamily: 'Roboto',
+          fontSize: 10, // Ensure smaller size for A5
         },
         header: {
-          marginBottom: 20,
           textAlign: 'center',
+          marginBottom: 10,
         },
-        organization: {
-          fontSize: 20,
-          fontWeight: 'extrabold',
+        logo: {
+          width: 60,
+          height: 60,
+          alignSelf: 'center',
+        },
+        masjidName: {
+          fontSize: 12,
+          fontWeight: 'bold',
+          color: '#000',
+          marginTop: 8,
         },
         contact: {
-          color: '#333',
           fontSize: 10,
-          marginBottom: 4,
+          color: '#555',
+          marginTop: 3,
+        },
+        separator: {
+          borderBottomWidth: 1,
+          borderBottomColor: '#E5E7EB',
+          marginVertical: 8,
+        },
+        fromSection: {
+          marginBottom: 10,
+          textAlign: 'left',
+        },
+        fromText: {
+          fontSize: 12,
+          color: '#333',
         },
         dateSection: {
-          marginBottom: 20,
+          marginBottom: 12,
           flexDirection: 'row',
           justifyContent: 'space-between',
         },
         dateText: {
-          fontSize: 12,
+          fontSize: 10,
         },
         receiptNumber: {
-          fontSize: 9,
+          fontSize: 10,
           textAlign: 'right',
         },
         details: {
-          fontSize:15,
-          marginBottom: 15,
+          fontSize: 12,
+          marginBottom: 8,
+        },
+        detailsHeading: {
+          fontSize: 10,
+          fontWeight: 'bold',
+          marginBottom: 6,
         },
         table: {
           width: '100%',
           borderRadius: 5,
           border: '1px solid #ccc',
+          marginBottom: 15,
         },
         tableRow: {
           flexDirection: 'row',
           borderBottom: '1px solid #ccc',
-          overflow: 'hidden',
         },
         tableCell: {
-          padding: 10,
+          padding: 6,
           fontSize: 9,
         },
         descriptionCell: {
-          width: '80%',
+          width: '75%',
         },
         amountCell: {
-          width: '20%',
+          width: '25%',
           textAlign: 'right',
         },
         total: {
           fontSize: 10,
           fontWeight: 'bold',
-          textAlign: 'right',
         },
         regards: {
-          marginTop: 20,
-          textAlign: 'left',
+          marginTop: 15,
           fontSize: 10,
         },
       });

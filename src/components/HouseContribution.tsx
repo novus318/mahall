@@ -8,12 +8,17 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, pdf, Image, Font } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import { Button } from './ui/button';
 import axios from 'axios'
 import { toast } from './ui/use-toast'
 import { format } from 'date-fns'
+
+Font.register({
+  family: 'Roboto',
+  src: 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf'
+});
 
 
 const HouseContribution = ({id,contribution}:any) => {
@@ -62,142 +67,158 @@ const HouseContribution = ({id,contribution}:any) => {
           day: format(dateString, 'EEEE'),
         };
       };
-    const handleReceiptClick = async (collection: any) => {
+      const handleReceiptClick = async (collection: any) => {
         const { dayMonthYear, day } = formatDaterec(collection?.updatedAt);
         const doc = (
           <Document>
-          <Page size="A5" style={styles.page}>
-          <View style={styles.header}>
+            <Page size="A5" style={styles.page}>
+              <View style={styles.header}>
                 <Image src='/VKJ.jpeg' style={styles.logo} />
                 <Text style={styles.masjidName}>Juma Masjid, Vellap, Thrikkaripur</Text>
                 <Text style={styles.contact}>Phone: +91 9876543210</Text>
                 <View style={styles.separator} />
               </View>
-    
-            <View style={styles.dateSection}>
-              <View>
-                <Text style={styles.dateText}>Date: {dayMonthYear}</Text>
-                <Text style={styles.dateText}>Day: {day}</Text>
+      
+      
+              <View style={styles.dateSection}>
+                <View>
+                  <Text style={styles.dateText}>Date: {dayMonthYear}</Text>
+                  <Text style={styles.dateText}>Day: {day}</Text>
+                </View>
+                <Text style={styles.receiptNumber}>Receipt No: {collection?.receiptNumber}</Text>
               </View>
-              <Text style={styles.receiptNumber}>Receipt No: {collection?.receiptNumber}</Text>
-            </View>
-    
-            <View style={styles.details}>
-              <Text>Details:</Text>
-            </View>
-    
-            <View>
-            <View style={styles.table}>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableCell, styles.descriptionCell]}>Description</Text>
-                <Text style={[styles.tableCell, styles.amountCell]}>Amount</Text>
+              <View style={styles.fromSection}>
+                <Text style={styles.fromText}>From: {collection?.memberId?.name}</Text>
               </View>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableCell, styles.descriptionCell]}>{collection?.description}</Text>
-                <Text style={[styles.tableCell, styles.amountCell]}>{collection?.amount.toFixed(2)}</Text>
+              <View style={styles.details}>
+                <Text style={styles.detailsHeading}>Details:</Text>
               </View>
-              <View style={styles.tableRow}>
-                <Text style={[styles.tableCell, styles.descriptionCell]}>Total</Text>
-                <Text style={[styles.tableCell, styles.amountCell, styles.total]}>Rs.{collection?.amount.toFixed(2)}</Text>
+      
+              <View style={styles.table}>
+                <View style={styles.tableRow}>
+                  <Text style={[styles.tableCell, styles.descriptionCell]}>Description</Text>
+                  <Text style={[styles.tableCell, styles.amountCell]}>Amount</Text>
+                </View>
+                <View style={styles.tableRow}>
+                  <Text style={[styles.tableCell, styles.descriptionCell]}>{collection?.description}</Text>
+                  <Text style={[styles.tableCell, styles.amountCell]}>{collection?.amount.toFixed(2)}</Text>
+                </View>
+                <View style={styles.tableRow}>
+                  <Text style={[styles.tableCell, styles.descriptionCell]}>Total</Text>
+                  <Text style={[styles.tableCell, styles.amountCell, styles.total]}>₹{collection?.amount.toFixed(2)}</Text>
+                </View>
               </View>
-            </View>
-          </View>
-    
-            <View style={styles.regards}>
-              <Text>Regards,</Text>
-              <Text>VKJ</Text>
-            </View>
-          </Page>
-        </Document>
+      
+              <View style={styles.regards}>
+                <Text>Regards,</Text>
+                <Text>VKJ</Text>
+              </View>
+            </Page>
+          </Document>
         );
-    
+      
         const blob = await pdf(doc).toBlob();
         saveAs(blob, 'receipt.pdf');
       };
+      
       const styles = StyleSheet.create({
         page: {
-          padding: 30,
-          fontFamily: 'Helvetica',
+          padding: 20,
+          fontFamily: 'Roboto',
+          fontSize: 10, // Ensure smaller size for A5
         },
         header: {
           textAlign: 'center',
           marginBottom: 10,
         },
         logo: {
-          width: 80,
-          height: 80,
+          width: 60,
+          height: 60,
           alignSelf: 'center',
         },
         masjidName: {
-          fontSize: 14,
+          fontSize: 12,
           fontWeight: 'bold',
           color: '#000',
-          marginTop: 10,
+          marginTop: 8,
         },
         contact: {
-          fontSize: 12,
+          fontSize: 10,
           color: '#555',
-          marginTop: 5,
+          marginTop: 3,
         },
         separator: {
-          borderBottomWidth: 2,
+          borderBottomWidth: 1,
           borderBottomColor: '#E5E7EB',
-          marginVertical: 10,
+          marginVertical: 8,
+        },
+        fromSection: {
+          marginBottom: 10,
+          textAlign: 'left',
+        },
+        fromText: {
+          fontSize: 12,
+          color: '#333',
         },
         dateSection: {
-          marginBottom: 20,
+          marginBottom: 12,
           flexDirection: 'row',
           justifyContent: 'space-between',
         },
         dateText: {
-          fontSize: 12,
+          fontSize: 10,
         },
         receiptNumber: {
-          fontSize: 9,
+          fontSize: 10,
           textAlign: 'right',
         },
         details: {
-          fontSize:15,
-          marginBottom: 15,
+          fontSize: 12,
+          marginBottom: 8,
+        },
+        detailsHeading: {
+          fontSize: 10,
+          fontWeight: 'bold',
+          marginBottom: 6,
         },
         table: {
           width: '100%',
           borderRadius: 5,
           border: '1px solid #ccc',
+          marginBottom: 15,
         },
         tableRow: {
           flexDirection: 'row',
           borderBottom: '1px solid #ccc',
-          overflow: 'hidden',
         },
         tableCell: {
-          padding: 10,
+          padding: 6,
           fontSize: 9,
         },
         descriptionCell: {
-          width: '80%',
+          width: '75%',
         },
         amountCell: {
-          width: '20%',
+          width: '25%',
           textAlign: 'right',
         },
         total: {
           fontSize: 10,
           fontWeight: 'bold',
-          textAlign: 'right',
         },
         regards: {
-          marginTop: 20,
-          textAlign: 'left',
+          marginTop: 15,
           fontSize: 10,
         },
       });
+      
     return (
         <div className='rounded-t-md bg-gray-100 p-1'>
         <Table className="bg-white">
        <TableHeader className='bg-gray-100'>
          <TableRow>
            <TableHead className="font-medium">Date</TableHead>
+           <TableHead className="font-medium">Member</TableHead>
            <TableHead className="font-medium">Description</TableHead>
            <TableHead className="font-medium">Amount</TableHead>
            <TableHead className="font-medium">Reciept</TableHead>
@@ -211,6 +232,9 @@ const HouseContribution = ({id,contribution}:any) => {
                <TableCell>
                   <div className='text-sm'>{dayMonthYear}</div>
                   <div className="text-xs text-gray-500">{time}</div>
+               </TableCell>
+               <TableCell>
+               {collection?.memberId?.name}
                </TableCell>
                <TableCell>
                {collection?.description}

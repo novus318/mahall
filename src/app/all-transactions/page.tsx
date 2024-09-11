@@ -352,7 +352,7 @@ const TransactionPage = () => {
         <div>
             <h2 className="text-2xl font-semibold mb-4">Recent Transactions</h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-5 mb-2 items-center">
+        <div className="grid grid-cols-2 md:grid-cols-10 gap-3 md:gap-5 mb-2 items-center">
        <div className='md:col-span-2'>
        <p className="text-sm font-medium">From Date</p>
        <DatePicker date={fromDate} setDate={setFromDate} />

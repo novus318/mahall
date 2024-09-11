@@ -125,7 +125,7 @@ const Page = () => {
         <div className="mb-4 flex justify-between items-center">
           <h2 className="text-sm md:text-xl lg:text-2xl font-semibold">Bank Accounts</h2>
           <div className='flex gap-2'>
-            <Link href='/account/transactions'
+            <Link href='/all-transactions'
             className='flex items-center gap-1 bg-gray-900 text-white py-1 px-3 rounded-md text-sm'>
               <History className='h-4 w-4'/>
             Transactions

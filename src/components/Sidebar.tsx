@@ -54,10 +54,10 @@ const Sidebar: React.FC = () => {
         </div>
         <ul>
           <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/">
+            <Link href="/dashboard">
               <div
                 className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/') ? 'bg-gray-900 text-gray-50': 'bg-gray-950 text-gray-400'
+                  CurrentPage('/dashboard') ? 'bg-gray-900 text-gray-50': 'bg-gray-950 text-gray-400'
                 }`}
               >
                 <LayoutDashboard className="mr-3" />

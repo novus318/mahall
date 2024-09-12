@@ -346,7 +346,7 @@ const TransactionPage = () => {
       if (loading) return <TransactionsSkeleton />;
   return (
   <div className='w-full py-5 px-2'>
-    <Link href='/' className='bg-gray-900 text-white text-base font-medium py-2 px-3 rounded-md'>
+    <Link href='/dashboard' className='bg-gray-900 text-white text-base font-medium py-2 px-3 rounded-md'>
     Back</Link>
       <div className='max-w-6xl m-auto my-5'>
         <div>

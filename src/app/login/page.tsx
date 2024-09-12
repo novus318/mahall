@@ -23,7 +23,7 @@ const Login = () => {
           
       if (response.data.success) {
         localStorage.setItem('token',response.data.token);
-        router.push('/');
+        router.push('/dashboard');
         setSpin(false)
       } else {
         console.error('Verification failed');
@@ -39,7 +39,7 @@ const Login = () => {
     if (storedToken) {
       const response = await axios.post(`${apiUrl}/api/auth/verify`, { storedToken });
       if (response.data.success) {
-        router.push('/');
+        router.push('/dashboard');
       } else {
         localStorage.removeItem('token');
       }

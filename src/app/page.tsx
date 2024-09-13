@@ -3,6 +3,8 @@ import React from 'react';
 import PrayerTimes from '@/components/PrayerTimes';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import Safari from '@/components/magicui/safari';
+import Link from 'next/link';
 
 function Home() {
   const sectionVariants = {
@@ -14,12 +16,24 @@ function Home() {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1, transition: { duration: 1, ease: 'easeOut' } },
   };
+
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } },
+  };
+
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <header className="bg-gray-950 text-white p-4 md:p-6">
+      <header className="bg-gray-950 text-white">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-          <h1 className="text-2xl md:text-3xl font-bold">Masjid Al-Noor</h1>
+            <Image
+              src="/VKJLOGO.png"
+              alt="Vellap Khadimul Jamaath Mosque"
+              width={100}
+              height={100}
+            />
         </div>
       </header>
 
@@ -40,10 +54,11 @@ function Home() {
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0, transition: { duration: 0.8, ease: 'easeOut' } }}
             >
-              Vellap Khadimul Jamaath
+              Vellap Khadimul Islam Jamaath
             </motion.h1>
             <p className="mt-3 max-w-md mx-auto text-lg md:mt-5 md:text-xl md:max-w-3xl font-medium">
-              Purity Comes From Faith, Belief in the Unity of Allah & Prophet Muhammad <span className='text-4xl mx-2'>ﷺ</span> as Allah’s messenger.
+            لجنة جماعة خادم الإسلام
+              </p><p className="mt-3 max-w-md mx-auto text-lg md:mt-5 md:text-xl md:max-w-3xl font-medium">Purity Comes From Faith, Belief in the Unity of Allah & Prophet Muhammad <span className='text-4xl mx-2'>ﷺ</span> as Allah’s messenger.
             </p>
           </div>
           {/* Mosque Image */}
@@ -54,7 +69,7 @@ function Home() {
             className="mt-8 lg:mt-0 lg:w-1/2 flex justify-center lg:justify-end"
           >
             <Image
-              src="https://upload.wikimedia.org/wikipedia/commons/8/88/Kaduvayil_juma_masjid.jpg"
+              src=""
               alt="VKJ"
               width={600}
               height={400}
@@ -90,7 +105,63 @@ function Home() {
 
        <PrayerTimes/>
 
+       <section className="relative py-16 bg-white overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col lg:flex-row items-center lg:justify-between">
+          
+          {/* List Section */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeInUp}
+            className="lg:w-1/2 text-left mb-8 lg:mb-0 lg:pr-12"
+          >
+            <h2 className="text-4xl font-semibold text-gray-900 leading-tight">
+            Introducing Our New Jamath Management System
+            </h2>
+            <p className="text-base text-gray-700 mt-4">
+              Our newly launched Jamaath management system streamlines Jamaath operations with an elegant interface, 
+              designed to help you manage your accounts, members, and staff with ease.
+            </p>
 
+            <ul className="list-none space-y-2 text-sm text-gray-600 mt-3">
+              <li>• Manage Jamaath accounts for both bank and cash.</li>
+              <li>• Add house, and create member profiles with detailed information.</li>
+              <li>• Generate monthly collections, and notify members via WhatsApp.</li>
+              <li>• Manage staff, create payslips, and track payroll.</li>
+              <li>• Create building and room contracts, with rent notifications to tenants.</li>
+              <li>• Generate receipts for payments and donations.</li>
+              <li>• Download including financial accounts,member details,collections and tenant records.</li>
+              <li>• Respond to inquiries and WhatsApp messages directly through the platform.</li>
+            </ul>
+      
+            <motion.p
+              initial="hidden"
+              animate="visible"
+              variants={fadeInUp}
+              className="mt-3"
+            >
+              <Link
+                href="/dashboard"
+                className="inline-block text-base font-medium text-white bg-gray-900 px-4 py-2 rounded-full hover:bg-gray-800 transition-all duration-300 ease-in-out"
+              >
+                Explore the Dashboard
+              </Link>
+            </motion.p>
+          </motion.div>
+
+          {/* Image Section */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={imageVariants}
+            className="lg:w-1/2 flex justify-center relative"
+          >
+      <Safari url="vellapmahal.com" className="size-full" src="/dashboard.svg" />
+          </motion.div>
+        </div>
+      </div>
+    </section>
         {/* Contact Section */}
         <section id="contact" className="py-8 md:py-12 bg-white">
           <div className="max-w-7xl mx-auto text-center">
@@ -98,8 +169,13 @@ function Home() {
             <p className="text-gray-600 mt-2 md:mt-4">
               Feel free to reach out to us for any inquiries or support.
             </p>
-            <p className="text-gray-600 mt-2">
-              Phone: (123) 456-7890 | Email: contact@masjidalnoor.com
+            <p className='text-gray-600 mt-2 text-sm'>
+            KHADIMUL ISLAM JAMA-ATH COMMITTEE <br />
+            Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA<br/>
+            VELLAP, P.O. TRIKARIPUR-671310, KASARGOD DIST
+            </p>
+            <p className="text-gray-600 mt-2 font-semibold">
+              Phone: +91 2345678901
             </p>
           </div>
         </section>

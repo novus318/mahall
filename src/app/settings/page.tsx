@@ -1,15 +1,15 @@
 'use client'
 import Sidebar from '@/components/Sidebar'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { withAuth } from '@/components/withAuth'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import React, { useEffect, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 import axios from 'axios'
 import { toast } from '@/components/ui/use-toast'
+import BookNumbers from '@/components/settings/BookNumbers'
 
 const Page = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -73,19 +73,9 @@ if(response.data.success)
          Settings
         </h1>
       </div>
-     <div className='grid grid-cols-1 md:grid-cols-3'>
-     <Card>
-              <CardHeader>
-                <CardTitle>Reset Book Numbers</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Button
-                onClick={() => setShowResetDialog(true)}
-                size='sm'>
-                    Reset
-                </Button>
-              </CardContent>
-            </Card>
+     <div className='max-w-xl'>
+      <BookNumbers/>
+      
      </div>
       </div>
       <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>

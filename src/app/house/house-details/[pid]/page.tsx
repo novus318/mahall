@@ -188,7 +188,7 @@ const PageComponent = ({ params }: PageProps) => {
       </div>
      <div className='my-6'>
        <h2 className='text-lg font-extrabold text-muted-foreground mb-2'>House Collections</h2>
-     <PendingTransactions id={house?.familyHead._id} />
+     <PendingTransactions id={house?.familyHead?._id} />
      </div>
       <ListMembers members={members} familyHead={house?.familyHead}/>
       <div className='my-6'>

@@ -346,13 +346,13 @@ const TransactionPage = () => {
       if (loading) return <TransactionsSkeleton />;
   return (
   <div className='w-full py-5 px-2'>
-    <Link href='/' className='bg-gray-900 text-white text-base font-medium py-2 px-3 rounded-md'>
+    <Link href='/dashboard' className='bg-gray-900 text-white text-base font-medium py-2 px-3 rounded-md'>
     Back</Link>
       <div className='max-w-6xl m-auto my-5'>
         <div>
             <h2 className="text-2xl font-semibold mb-4">Recent Transactions</h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-5 mb-2 items-center">
+        <div className="grid grid-cols-2 md:grid-cols-10 gap-3 md:gap-5 mb-2 items-center">
        <div className='md:col-span-2'>
        <p className="text-sm font-medium">From Date</p>
        <DatePicker date={fromDate} setDate={setFromDate} />

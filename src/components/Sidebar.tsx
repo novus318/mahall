@@ -22,11 +22,11 @@ const Sidebar: React.FC = () => {
   return (
     <div className="flex">
       {/* Mobile header */}
-      <div className="md:hidden flex justify-between items-center bg-gray-100 text-gray-950 p-1 w-full">
+      <div className="md:hidden flex justify-between items-center bg-gray-950 text-gray-950 p-1 w-full">
         <Link href="/">
-        <Image src='/logo1.svg' height={100} width={100} alt='' className='w-26'/>
+        <Image src='/VKJ.png' height={100} width={100} alt='' className='w-11'/>
         </Link>
-        <Button onClick={() => setIsOpen(!isOpen)}
+        <Button variant='secondary' onClick={() => setIsOpen(!isOpen)}
             size='icon'>
          {isOpen ?  <X /> :  <MenuIcon />}
         </Button>
@@ -41,7 +41,7 @@ const Sidebar: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
           <Link href="/">
             <div className="flex items-center justify-center px-4">
-              <Image src='/logo1.png' height={100} width={100} alt='' className='w-26'/>
+              <Image src='/VKJ.png' height={100} width={100} alt='' className='w-11'/>
             </div>
           </Link>
           <Button
@@ -54,10 +54,10 @@ const Sidebar: React.FC = () => {
         </div>
         <ul>
           <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/">
+            <Link href="/dashboard">
               <div
                 className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/') ? 'bg-gray-900 text-gray-50': 'bg-gray-950 text-gray-400'
+                  CurrentPage('/dashboard') ? 'bg-gray-900 text-gray-50': 'bg-gray-950 text-gray-400'
                 }`}
               >
                 <LayoutDashboard className="mr-3" />

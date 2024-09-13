@@ -6,6 +6,7 @@ import Logo from '@/images/logo.svg';
 import Spinner from '@/components/Spinner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/use-toast';
 
 
 const Login = () => {
@@ -19,17 +20,29 @@ const Login = () => {
 
     try {
      setSpin(true)
-      const response = await axios.post(`${apiUrl}/api/auth/login`, { pin });
+     const data ={
+       pin: pin,
+       user: 'admin'
+     }
+      const response = await axios.post(`${apiUrl}/api/auth/login`, data);
           
       if (response.data.success) {
         localStorage.setItem('token',response.data.token);
-        router.push('/');
+        router.push('/dashboard');
         setSpin(false)
       } else {
-        console.error('Verification failed');
+        toast({
+          title: response.data.message,
+          variant: 'destructive',
+        })
       }
-    } catch (error) {
-      console.error('Error:', error);
+    } catch (error:any) {
+      toast({
+        title: "Failed to login",
+        description: error.response?.data?.message || error.message || 'Something went wrong',
+        variant: 'destructive',
+      })
+      setSpin(false)
     }
     
   };
@@ -39,7 +52,7 @@ const Login = () => {
     if (storedToken) {
       const response = await axios.post(`${apiUrl}/api/auth/verify`, { storedToken });
       if (response.data.success) {
-        router.push('/');
+        router.push('/dashboard');
       } else {
         localStorage.removeItem('token');
       }

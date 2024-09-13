@@ -156,14 +156,7 @@ const PageComponent = ({ params }: PageProps) => {
         variant: "destructive",
       });
     }
-    if (selectedRelation.memberId === '') {
-      toast({
-        title: "Please select a member to relate",
-        variant: "destructive",
-      });
-      return false;
-    }
-    if (selectedRelation.relation === '') {
+    if (selectedRelation.memberId && selectedRelation.relation === '') {
       toast({
         title: "Please select a relation type",
         variant: "destructive",
@@ -263,6 +256,8 @@ const PageComponent = ({ params }: PageProps) => {
       idCards: { ...prev.idCards, [card]: value },
     }));
   };
+  
+  const places = ['Kerala', 'UAE', 'Malaysia', 'Singapore', 'Kuwait', 'Saudi', 'Oman', 'Qatar', 'Outside Kerala'];
 
 
   return (
@@ -574,38 +569,25 @@ const PageComponent = ({ params }: PageProps) => {
               />
             </div>
             <div>
-              <Label>
-                Select place
-              </Label>
-              <Select
-                name='place'
-                onValueChange={(value) => setNewMember((prev) => ({ ...prev, place: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Place" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='Kerala'>
-                    Kerala
-                  </SelectItem>
-                  <SelectItem value='UAE'>
-                    UAE
-                  </SelectItem>
-                  <SelectItem value='Malaysia'>
-                    Malaysia
-                  </SelectItem>
-                  <SelectItem value='Singapore'>
-                    Singapore
-                  </SelectItem>
-                  <SelectItem value='Kuwait'>
-                    Kuwait
-                  </SelectItem>
-                  <SelectItem value='Outside kerala'>
-                    Outside kerala
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+  <Label>
+    Select place
+  </Label>
+  <Select
+    name='place'
+    onValueChange={(value) => setNewMember((prev) => ({ ...prev, place: value }))}
+  >
+    <SelectTrigger>
+      <SelectValue placeholder="Place" />
+    </SelectTrigger>
+    <SelectContent>
+      {places.map((place) => (
+        <SelectItem key={place} value={place}>
+          {place}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+</div>
           </div>
         </div>
 

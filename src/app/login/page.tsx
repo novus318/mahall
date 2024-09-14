@@ -67,10 +67,10 @@ const Login = () => {
   (<Spinner/>):( <>
     <div className="flex items-center justify-center h-screen text-white">
      <div className="bg-gray-100 p-8 rounded shadow-md max-w-4xl mx-3">
-       <div className="flex justify-center mb-10 border p-6 rounded-md bg-white">
-        <img src='/logo.svg' alt="Logo" className='h-24' />
+       <div className="flex justify-center mb-10 border p-2 rounded-md bg-gray-950">
+        <img src='/VKJLOGO.png' alt="Logo" className='h-40' />
        </div>
-       <h2 className="text-3xl text-zinc-800 font-bold mb-6">Welcome to Mahal</h2>
+       <h2 className="text-3xl text-zinc-800 font-bold mb-6">لجنة جماعة خادم الإسلام</h2>
        <form onSubmit={handleSubmit}>
          <div className="mb-4">
            <Input

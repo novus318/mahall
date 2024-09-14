@@ -106,7 +106,7 @@ function Home() {
        <PrayerTimes/>
 
        <section className="relative py-16 bg-white overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="flex flex-col lg:flex-row items-center lg:justify-between">
           
           {/* List Section */}
@@ -166,7 +166,7 @@ function Home() {
         <section id="contact" className="py-8 md:py-12 bg-white">
           <div className="max-w-7xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl font-bold">Contact Us</h2>
-            <p className="text-gray-600 mt-2 md:mt-4">
+            <p className="text-gray-600 md:mt-1">
               Feel free to reach out to us for any inquiries or support.
             </p>
             <p className='text-gray-600 mt-2 text-sm'>

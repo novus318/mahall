@@ -24,7 +24,7 @@ const Sidebar: React.FC = () => {
       {/* Mobile header */}
       <div className="md:hidden flex justify-between items-center bg-gray-950 text-gray-950 p-1 w-full">
         <Link href="/">
-        <Image src='/VKJ.png' height={100} width={100} alt='' className='w-11'/>
+        <img src='/VKJ.png' height={100} width={100} alt='' className='w-11'/>
         </Link>
         <Button variant='secondary' onClick={() => setIsOpen(!isOpen)}
             size='icon'>
@@ -41,7 +41,7 @@ const Sidebar: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
           <Link href="/">
             <div className="flex items-center justify-center px-4">
-              <Image src='/VKJ.png' height={100} width={100} alt='' className='w-11'/>
+              <img src='/VKJ.png' height={100} width={100} alt='' className='w-11'/>
             </div>
           </Link>
           <Button

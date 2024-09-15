@@ -28,11 +28,12 @@ function Home() {
       {/* Header */}
       <header className="bg-gray-950 text-white">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-            <Image
+            <img
               src="/VKJLOGO.png"
               alt="Vellap Khadimul Jamaath Mosque"
               width={100}
               height={100}
+              className='h-24'
             />
         </div>
       </header>
@@ -70,7 +71,7 @@ function Home() {
         variants={imageVariants}
         className="mt-8 lg:mt-0 lg:w-1/2 flex justify-center lg:justify-end relative z-0"
       >
-        <Image
+        <img
           src="/mosque.JPG"
           alt="VKJ"
           width={600}

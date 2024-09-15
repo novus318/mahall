@@ -151,10 +151,11 @@ const TransactionPage = () => {
             <Page size="A4" style={styles.page}>
               {/* Header Section */}
               <View style={styles.header}>
-                <Image src='/VKJ.jpeg' style={styles.logo} />
-                <Text style={styles.masjidName}>Juma Masjid, Vellap, Thrikkaripur</Text>
-                <Text style={styles.contact}>Phone: +91 9876543210</Text>
-                <View style={styles.separator} />
+              <Image src="/VKJLOGO.png" style={styles.logo} />
+            <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA</Text>
+            <Text style={styles.headerText}>VELLAP, P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
+            <Text style={styles.headerText}>Phone: +91 9876543210</Text>
+            <View style={styles.separator} />
               </View>
       
               {/* Accounts Table Section */}
@@ -239,6 +240,10 @@ const TransactionPage = () => {
         header: {
           textAlign: 'center',
           marginBottom: 10,
+        },
+        headerText: {
+          fontSize: 10,
+          marginBottom: 4,
         },
         logo: {
           width: 80,

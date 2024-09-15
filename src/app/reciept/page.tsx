@@ -313,9 +313,9 @@ const Page = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                {filteredMembers?.map((member) => (
+                {filteredMembers?.map((member:any) => (
                   <SelectItem key={member._id} value={member._id}>
-                    {member.name}
+                    {member.name} - <span className='text-muted-foreground'>{member?.house.number}</span>
                   </SelectItem>
                 ))}
               </SelectContent>

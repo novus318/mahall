@@ -1,142 +1,166 @@
-'use client'
-import Sidebar from '@/components/Sidebar'
-import { Button } from '@/components/ui/button'
-import { withAuth } from '@/components/withAuth'
-import { Dialog, DialogContent, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import React, { useEffect, useState } from 'react'
-import { Input } from '@/components/ui/input'
-import { Loader2 } from 'lucide-react'
-import { Label } from '@/components/ui/label'
-import axios from 'axios'
-import { toast } from '@/components/ui/use-toast'
-import BookNumbers from '@/components/settings/BookNumbers'
+'use client';
+import Sidebar from '@/components/Sidebar';
+import { withAuth } from '@/components/withAuth';
+import React, { useEffect, useRef, useState } from 'react';
+import BookNumbers from '@/components/settings/BookNumbers';
+import ChangeAdminPass from '@/components/settings/ChangeAdminPass';
+import axios from 'axios';
+import { toast } from '@/components/ui/use-toast';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+
 
 const Page = () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const [showResetDialog, setShowResetDialog] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    collectionReceiptNumber: '',
-    paymentReceiptNumber:'',
-    receiptReceiptNumber:''
-  });
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [enteredOtp, setEnteredOtp] = useState('');
+  const otpSentRef = useRef(false);
 
-  const getinitialNumbers =async()=>{
-    axios.get(`${apiUrl}/api/setting/receiptNumbers`).then(response => {
-      if (response.data.success) {
-      setFormData({
-        collectionReceiptNumber: response.data.receiptNumbers[0].collectionReceiptNumber.initialNumber,
-        paymentReceiptNumber: response.data.receiptNumbers[0].paymentReceiptNumber.initialNumber,
-        receiptReceiptNumber: response.data.receiptNumbers[0].receiptReceiptNumber.initialNumber,
-      })}
-    })
-      .catch(error => {
-        console.log("Error fetching accounts:", error)
-      })
-  }
+  const WHATSAPP_API_URL:any = process.env.NEXT_PUBLIC_WHATSAPP_API_URL;
+  const ACCESS_TOKEN = process.env.NEXT_PUBLIC_WHATSAPP_TOKEN;
+  const member = { senderNumber: '917560845014' }; 
 
-  useEffect(() => {
-    getinitialNumbers()
-  }, [])
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({...formData, [e.target.name]: e.target.value });
-  };
-  const handleReset = async () => {
-    setLoading(true);
+  // Function to send OTP
+  const sendOtp = async () => {
+    if (otpSentRef.current) return; 
+    otpSentRef.current = true;
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString(); 
+    setOtp(generatedOtp);
+    
     try {
-      const response = await axios.put(`${apiUrl}/api/setting/update-receipt-numbers`, formData);
-if(response.data.success)
-    {  
-      setShowResetDialog(false);
-      setLoading(false);
+      const response = await axios.post(
+        WHATSAPP_API_URL,
+        {
+          messaging_product: 'whatsapp',
+          to: member.senderNumber,
+          type: 'template',
+          template: {
+            name: 'setting_login', 
+            language: {
+              code: 'en_US',
+            },
+            components: [
+              {
+                type: 'body',
+                parameters: [
+                  {
+                    type: 'text',
+                    text: generatedOtp
+                  },
+                ],
+              }, {
+                "type": "button",
+                "sub_type": "url",
+                "index": "0",
+                "parameters": [
+                  {
+                    "type": "text",
+                    "text": generatedOtp
+                  }
+            ],
+          },
+          ],
+        },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      if (response.status === 200) {
+      setOtpSent(true);
+      toast({
+        title: 'OTP sent',
+        variant:'default',
+      })
     }
     } catch (error:any) {
-      console.error('Error resetting book numbers:', error);
-      setLoading(false);
       toast({
-        title: "Error resetting book numbers",
-        description: error?.response?.data?.message || error.message || 'something went wrong',
-        variant: "destructive",
+        title: 'Failed to send OTP',
+        description: error.response?.data?.message || error.message || 'Something went wrong',
+        variant: 'destructive',
       });
-      setLoading(false);
     }
+  };
+
+  // Function to verify OTP
+  const verifyOtp = () => {
+    if (enteredOtp === otp) {
+      setOtpVerified(true);
+      toast({
+        title: 'OTP verified',
+        variant:'default',
+      })
+    } else {
+      toast({
+        title: 'Invalid OTP',
+        variant: 'destructive',
+      })
+    }
+  };
+
+  useEffect(() => {
+    if (!otpSent) {
+      sendOtp();
+    }
+  }, [otpSent]);
+  
+
+  if (!otpVerified) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="p-6 bg-white shadow-md rounded-md">
+          <h1 className="text-2xl font-bold mb-4">Verify Your OTP</h1>
+          {otpSent ? (
+           <>
+           <Input
+             type="text"
+             className="border p-2 w-full mb-4"
+             placeholder="Enter OTP"
+             value={enteredOtp}
+             onChange={(e) => setEnteredOtp(e.target.value)}
+             onKeyPress={(e) => {
+               if (e.key === 'Enter') {
+                 verifyOtp();
+               }
+             }}
+           />
+           <Button
+             size="sm"
+             onClick={verifyOtp}
+           >
+             Verify OTP
+           </Button>
+         </>         
+          ) : (
+            <p>Sending OTP...</p>
+          )}
+        </div>
+      </div>
+    );
   }
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
-    <div className="w-full md:w-1/6 bg-gray-100">
-      <Sidebar />
-    </div>
-    <div className="w-full md:w-5/6 p-4 bg-white">
-      <div className="flex justify-between items-center mb-4 gap-2">
-        <h1 className='text-3xl text-muted-foreground font-extrabold'>
-         Settings
-        </h1>
+      <div className="w-full md:w-1/6 bg-gray-100">
+        <Sidebar />
       </div>
-     <div className='max-w-xl'>
-      <BookNumbers/>
-      
-     </div>
+      <div className="w-full md:w-5/6 p-4 bg-white">
+        <div className="flex justify-between items-center mb-4 gap-2">
+          <h1 className="text-3xl text-muted-foreground font-extrabold">
+            Settings
+          </h1>
+        </div>
+        <div className="max-w-xl">
+          <BookNumbers />
+          <ChangeAdminPass />
+        </div>
       </div>
-      <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
-        <DialogContent>
-          <DialogTitle>Edit Account</DialogTitle>
-          <div>
-            <Label>
-                House collection Reciept Number
-            </Label>
-            <Input
-              type="text"
-              name="collectionReceiptNumber"
-              className='mb-2'
-              placeholder="House collection Reciept Number"
-              disabled={loading}
-              value={formData.collectionReceiptNumber}
-              onChange={handleInputChange}
-            />
-              <Label>
-                Payment Reciept Number
-            </Label>
-             <Input
-              type="text"
-              name="paymentReceiptNumber"
-               className='mb-2'
-              placeholder="Payment Reciept Number"
-              disabled={loading}
-              value={formData.paymentReceiptNumber}
-              onChange={handleInputChange}
-            />
-              <Label>
-                Reciept Number
-            </Label>
-             <Input
-              type="text"
-              name="receiptReceiptNumber"
-               className='mb-2'
-              placeholder="Reciept Number"
-              disabled={loading}
-              value={formData.receiptReceiptNumber}
-              onChange={handleInputChange}
-            />
-           
-          </div>
-          <DialogFooter>
-            <Button size='sm' variant="outline" onClick={() => setShowResetDialog(false)}>Cancel</Button>
-            {loading ? (
-              <Button size='sm' disabled>
-                <Loader2 className='animate-spin' />
-              </Button>
-            ) : (
-              <Button
-              disabled={loading} 
-              onClick={handleReset}
-              size='sm'>Reset</Button>
-            )}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
-  )
-}
+  );
+};
 
-export default withAuth(Page)
+export default withAuth(Page);

@@ -1,7 +1,7 @@
 'use client';
 import Sidebar from '@/components/Sidebar';
 import { withAuth } from '@/components/withAuth';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import BookNumbers from '@/components/settings/BookNumbers';
 import ChangeAdminPass from '@/components/settings/ChangeAdminPass';
 import axios from 'axios';
@@ -9,11 +9,13 @@ import { toast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
+
 const Page = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [otp, setOtp] = useState('');
   const [enteredOtp, setEnteredOtp] = useState('');
+  const otpSentRef = useRef(false);
 
   const WHATSAPP_API_URL:any = process.env.NEXT_PUBLIC_WHATSAPP_API_URL;
   const ACCESS_TOKEN = process.env.NEXT_PUBLIC_WHATSAPP_TOKEN;
@@ -21,7 +23,8 @@ const Page = () => {
 
   // Function to send OTP
   const sendOtp = async () => {
-    console.log('start')
+    if (otpSentRef.current) return; 
+    otpSentRef.current = true;
     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString(); 
     setOtp(generatedOtp);
     
@@ -46,9 +49,19 @@ const Page = () => {
                     text: generatedOtp
                   },
                 ],
-              },
+              }, {
+                "type": "button",
+                "sub_type": "url",
+                "index": "0",
+                "parameters": [
+                  {
+                    "type": "text",
+                    "text": generatedOtp
+                  }
             ],
           },
+          ],
+        },
         },
         {
           headers: {
@@ -64,8 +77,12 @@ const Page = () => {
         variant:'default',
       })
     }
-    } catch (error) {
-      console.error('Error sending OTP:', error);
+    } catch (error:any) {
+      toast({
+        title: 'Failed to send OTP',
+        description: error.response?.data?.message || error.message || 'Something went wrong',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -73,15 +90,24 @@ const Page = () => {
   const verifyOtp = () => {
     if (enteredOtp === otp) {
       setOtpVerified(true);
-      console.log('OTP verified');
+      toast({
+        title: 'OTP verified',
+        variant:'default',
+      })
     } else {
-      alert('Invalid OTP, please try again.');
+      toast({
+        title: 'Invalid OTP',
+        variant: 'destructive',
+      })
     }
   };
 
   useEffect(() => {
-    sendOtp(); // Send OTP when the page loads
-  }, []);
+    if (!otpSent) {
+      sendOtp();
+    }
+  }, [otpSent]);
+  
 
   if (!otpVerified) {
     return (
@@ -89,21 +115,26 @@ const Page = () => {
         <div className="p-6 bg-white shadow-md rounded-md">
           <h1 className="text-2xl font-bold mb-4">Verify Your OTP</h1>
           {otpSent ? (
-            <>
-              <Input
-                type="text"
-                className="border p-2 w-full mb-4"
-                placeholder="Enter OTP"
-                value={enteredOtp}
-                onChange={(e) => setEnteredOtp(e.target.value)}
-              />
-              <Button
-              size='sm'
-                onClick={verifyOtp}
-              >
-                Verify OTP
-              </Button>
-            </>
+           <>
+           <Input
+             type="text"
+             className="border p-2 w-full mb-4"
+             placeholder="Enter OTP"
+             value={enteredOtp}
+             onChange={(e) => setEnteredOtp(e.target.value)}
+             onKeyPress={(e) => {
+               if (e.key === 'Enter') {
+                 verifyOtp();
+               }
+             }}
+           />
+           <Button
+             size="sm"
+             onClick={verifyOtp}
+           >
+             Verify OTP
+           </Button>
+         </>         
           ) : (
             <p>Sending OTP...</p>
           )}

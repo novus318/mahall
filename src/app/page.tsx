@@ -69,7 +69,7 @@ function Home() {
             className="mt-8 lg:mt-0 lg:w-1/2 flex justify-center lg:justify-end"
           >
             <Image
-              src=""
+              src="/mosque.JPG"
               alt="VKJ"
               width={600}
               height={400}

@@ -75,7 +75,7 @@ const Login = () => {
          <div className="mb-4">
            <Input
              type="password"
-             placeholder="Enter your pin"
+             placeholder="Password : 123456"
              className="w-full text-black"
              value={pin}
              onChange={(e) => setPin(e.target.value)}

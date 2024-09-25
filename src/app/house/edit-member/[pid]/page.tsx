@@ -15,12 +15,6 @@ import { RadioGroup,RadioGroupItem } from '@/components/ui/radio-group'
 import { Loader2 } from 'lucide-react'
 
 
-interface PageProps {
-  params: {
-    pid: string
-  }
-}
-
 interface Member {
   _id:string,
   name: string,
@@ -51,7 +45,7 @@ interface Member {
   },
 }
 
-const PageComponent = ({ params }: PageProps) => {
+const PageComponent = ({ params }: any) => {
   const { pid } = params
   const router = useRouter();
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -621,4 +615,4 @@ const PageComponent = ({ params }: PageProps) => {
   )
 }
 
-export default PageComponent
+export default withAuth(PageComponent)

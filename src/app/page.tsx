@@ -225,7 +225,12 @@ function Home() {
 
       {/* Footer */}
       <footer className="bg-gray-950 text-white py-6">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto text-center justify-between">
+          <p>
+            <Link href="/privacy&policy" target='_blank' className="text-sm">
+              Privacy Policy
+            </Link>
+          </p>
           <p>&copy; 2024 Vellap Khadimul Jamaath. All rights reserved.</p>
         </div>
       </footer>

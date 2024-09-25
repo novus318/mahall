@@ -208,6 +208,7 @@ const Page = () => {
       setSearchQuery('')
       setSelectedMember(null)
       RecieptRecieptNumber()
+      setdate(new Date())
       toast({
         title: 'Reciept created successfully',
         description: 'You have created a new reciept.',

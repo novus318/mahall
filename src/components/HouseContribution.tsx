@@ -51,13 +51,13 @@ const HouseContribution = ({id,contribution}:any) => {
       const formatDate = (collection:any) => {
         if(collection?.status === 'Completed'){
         return {
-          dayMonthYear: format(collection?.updatedAt, 'dd MMM yyyy'),
-          time: format(collection?.updatedAt, 'hh:mm a'),
+          dayMonthYear: format(collection?.date, 'dd MMM yyyy'),
+          time: format(collection?.date, 'hh:mm a'),
         };
       }else{
         return {
-          dayMonthYear: 'payment',
-          time: 'pending',
+          dayMonthYear: 'status',
+          time: collection?.status,
         };
       }
       };
@@ -228,7 +228,7 @@ const HouseContribution = ({id,contribution}:any) => {
        {collections?.map((collection:any) => {
            const { dayMonthYear, time } = formatDate(collection);
            return (
-             <TableRow key={collection._id}>
+             <TableRow key={collection._id} className={collection?.status === 'Rejected' ? 'bg-red-200 hover:bg-red-300': ''}>
                <TableCell>
                   <div className='text-sm'>{dayMonthYear}</div>
                   <div className="text-xs text-gray-500">{time}</div>
@@ -255,6 +255,7 @@ const HouseContribution = ({id,contribution}:any) => {
        >
          {collection?.status === 'Completed' && 'Receipt'}
          {collection?.status === 'Pending' && 'Pending'}
+         {collection?.status === 'Rejected' && 'Rejected'}
        </Button>
      </TableCell>
      

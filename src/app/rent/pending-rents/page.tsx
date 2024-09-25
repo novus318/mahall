@@ -207,7 +207,7 @@ const Page = () => {
             <br />
             Name: {selectedCollection?.tenantName}
           </DialogDescription>
-          {bank.length > 1 ? (
+          {bank.length > 0 ? (
             <>
             <Label>
               Select bank

@@ -9,6 +9,7 @@ import axios from 'axios';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
+import { toast } from '@/components/ui/use-toast';
 
 
 const RecentrecieptSkeleton: React.FC = () => {
@@ -182,79 +183,125 @@ const handleReceiptClick = async (collection: any) => {
   });
 
 
+ const isCurrentMonth = (date:any) => {
+    const receiptDate = new Date(date);
+    const today = new Date();
+    return receiptDate.getMonth() === today.getMonth() && receiptDate.getFullYear() === today.getFullYear();
+  };
+  
 
+  const handleReject = async (Id: string) => {
+    const isConfirmed = window.confirm('Are you sure you want to reject this reciept?');
+
+    if (!isConfirmed) return; 
+    try {
+      setLoading(true)
+      const response = await axios.put(`${apiUrl}/api/reciept/reject-reciept/${Id}`);
+    if(response.data.success){
+      fetchReciepts()
+      setLoading(false)
+    }
+    } catch (error:any) {
+      setLoading(false)
+      toast({
+        title: 'Error',
+        description: error?.response?.data?.error || error.response?.data?.message || error.message  || 'An error occurred while trying to update the payment. Please try again later.',
+        variant:'destructive'
+      })
+    }
+  };
   if (loading) return <RecentrecieptSkeleton />;
   return (
     <div className='w-full py-5 px-2'>
-            <Link href='/reciept' className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
-          Back
-        </Link>
-    <div className='max-w-6xl m-auto my-3'>
-      <div>
+      <Link href='/reciept' className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
+        Back
+      </Link>
+      <div className='max-w-6xl m-auto my-3'>
+        <div>
           <h2 className="text-2xl font-semibold mb-4">Recent payments</h2>
+        </div>
+        <div className='rounded-t-md bg-gray-100 p-1'>
+          <Table className="bg-white">
+            <TableHeader className='bg-gray-100'>
+              <TableRow>
+                <TableHead className="font-medium">Date</TableHead>
+                <TableHead className="font-medium">Receipt No.</TableHead>
+                <TableHead className="font-medium">Category</TableHead>
+                <TableHead className="font-medium">From</TableHead>
+                <TableHead className="font-medium">Amount</TableHead>
+                <TableHead className="font-medium">Receipt</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {reciepts.map((reciept) => {
+                const { dayMonthYear, time } = formatDate(reciept?.date);
+                const isCurrent = isCurrentMonth(reciept?.date); // Check if receipt date is in the current month
+                return (
+                  <TableRow
+                    key={reciept?._id}
+                    className={`${reciept?.status === 'Rejected' ? 'bg-red-100' : ''}`} // Highlight rejected receipts in red
+                  >
+                    <TableCell>
+                      <div className='text-sm'>{dayMonthYear}</div>
+                      <div className="text-xs text-gray-500">{time}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className='text-sm'>{reciept?.receiptNumber}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className='text-sm'>{reciept?.categoryId.name}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className='text-sm'>{reciept?.memberId ? reciept?.memberId?.name : reciept?.otherRecipient?.name}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className='text-sm'>₹{(reciept?.amount).toFixed(2)}</div>
+                    </TableCell>
+                    <TableCell>
+                      {reciept?.status === 'Rejected' ? (
+                        <Button size="sm" disabled className="bg-red-200">Rejected</Button>
+                      ) : (
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            className={` ${reciept?.status === 'Pending' ? 'bg-gray-200': ''}`}
+                            size="sm"
+                            disabled={reciept?.status === 'Pending'}
+                            onClick={() => {
+                              if (reciept?.status === 'Completed') {
+                                handleReceiptClick(reciept);
+                              }
+                            }}
+                          >
+                            {reciept?.status === 'Completed' && 'Receipt'}
+                            {reciept?.status === 'Pending' && 'Pending'}
+                          </Button>
+                          {isCurrent && reciept?.status === 'Completed' && (
+                            <>
+                              <Link href={`/reciept/edit/${reciept?._id}`} className='text-white bg-gray-950 py-2 px-3 rounded-md hover:underline'>
+                          Edit
+                        </Link>
+                              <Button className="bg-red-500 text-white" size="sm" onClick={() => handleReject(reciept?._id)}>Reject</Button>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+              {reciepts.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-gray-600 text-sm">
+                    <h4 className="text-lg font-bold">No receipts...</h4>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-      <div className='rounded-t-md bg-gray-100 p-1'>
- <Table className="bg-white">
-<TableHeader className='bg-gray-100'>
-  <TableRow>
-    <TableHead className="font-medium">Date</TableHead>
-    <TableHead className="font-medium">Reciept No.</TableHead>
-    <TableHead className="font-medium">Category</TableHead>
-    <TableHead className="font-medium">From</TableHead>
-    <TableHead className="font-medium">Amount</TableHead>
-    <TableHead className="font-medium">Reciept</TableHead>
-  </TableRow>
-</TableHeader>
-<TableBody>
-  {reciepts.map((reciept) => {
-    const { dayMonthYear, time } = formatDate(reciept?.date);
-    return(
-      <TableRow key={reciept?._id}>
-        <TableCell>
-        <div className='text-sm'>{dayMonthYear}</div>
-        <div className="text-xs text-gray-500">{time}</div>
-        </TableCell>
-        <TableCell>
-          <div className='text-sm'>{reciept?.receiptNumber}</div>
-        </TableCell>
-        <TableCell>
-          <div className='text-sm'>{reciept?.categoryId.name}</div>
-        </TableCell>
-        <TableCell>
-          <div className='text-sm'>{reciept?.memberId ? reciept?.memberId?.name : reciept?.otherRecipient?.name}</div>
-        </TableCell>
-        <TableCell>
-          <div className='text-sm'>₹{(reciept?.amount).toFixed(2)}</div>
-        </TableCell>
-        <TableCell>
-        <Button
-       className={` ${reciept?.status === 'Pending' ? 'bg-gray-200': ''}`}
-         size="sm"
-         disabled={reciept?.status === 'Pending'}
-         onClick={() => {
-           if (reciept?.status === 'Completed') {
-             handleReceiptClick(reciept);
-           }
-         }}
-       >
-         {reciept?.status === 'Completed' && 'Receipt'}
-         {reciept?.status === 'Pending' && 'Pending'}
-       </Button>
-        </TableCell>
-      </TableRow>
-      )
-  })}
-  {reciepts.length === 0 && (
-      <TableCell colSpan={3} className="text-center text-gray-600 text-sm">
-        <h4 className="text-lg font-bold">No reciepts...</h4>
-      </TableCell>
-      )}
-</TableBody>
-</Table>
- </div>
-  </div>
-</div>
-  )
+    </div>
+  );
 }
 
 export default withAuth(RecieptPage)

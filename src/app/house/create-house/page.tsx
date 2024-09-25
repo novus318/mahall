@@ -14,6 +14,7 @@ import Spinner from '@/components/Spinner'
 import { useRouter } from 'next/navigation'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { withAuth } from '@/components/withAuth'
 
 
 interface Member {
@@ -721,4 +722,4 @@ const dobYear = new Date(newMember.DOB).getFullYear();
     )
 }
 
-export default Page
+export default withAuth(Page)

@@ -87,7 +87,7 @@ const Page = () => {
     if (searchQuery.length > 0) {
       fetchMembers(searchQuery);
     } else {
-      setMembers([]); // Clear members list if search is empty
+      setMembers([]); 
     }
   }, [searchQuery]);
 
@@ -234,6 +234,7 @@ const Page = () => {
         setSearchQuery('')
         setSelectedMember(null)
         PaymentRecieptNumber()
+        setdate(new Date())
         toast({
           title: 'Payment created successfully',
           description: 'You have created a new payment.',

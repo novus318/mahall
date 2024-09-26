@@ -286,7 +286,7 @@ const RentPage = () => {
       <div className="max-w-6xl m-auto my-3">
         <div>
           <h2 className="text-2xl font-semibold mb-4">
-            Receipts From {formatDate(fromDate).dayMonthYear || 'Invalid date'} - To{' '}
+            Collections From {formatDate(fromDate).dayMonthYear || 'Invalid date'} - To{' '}
             {formatDate(toDate).dayMonthYear || 'Invalid date'}
           </h2>
         </div>

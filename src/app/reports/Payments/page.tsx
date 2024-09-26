@@ -260,7 +260,7 @@ const fetchInitialPayments = async () => {
         </Link>
     <div className='max-w-6xl m-auto my-3'>
     <div>
-            <h2 className="text-2xl font-semibold mb-4">Reciepts From {formatDate(fromDate).dayMonthYear ? formatDate(fromDate).dayMonthYear : 'Invalid date'} - To {formatDate(toDate).dayMonthYear ? formatDate(toDate).dayMonthYear : 'Invalid date'}</h2>
+            <h2 className="text-2xl font-semibold mb-4">Payments From {formatDate(fromDate).dayMonthYear ? formatDate(fromDate).dayMonthYear : 'Invalid date'} - To {formatDate(toDate).dayMonthYear ? formatDate(toDate).dayMonthYear : 'Invalid date'}</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-8 gap-3 md:gap-5 mb-2 items-center">
        <div className='md:col-span-2'>

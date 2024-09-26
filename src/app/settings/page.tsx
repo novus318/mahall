@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 
 const Page = () => {
   const [otpSent, setOtpSent] = useState(false);
-  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(true);
   const [otp, setOtp] = useState('');
   const [enteredOtp, setEnteredOtp] = useState('');
   const otpSentRef = useRef(false);

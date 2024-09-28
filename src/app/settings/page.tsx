@@ -8,11 +8,12 @@ import axios from 'axios';
 import { toast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import AddPlaces from '@/components/settings/AddPlaces';
 
 
 const Page = () => {
   const [otpSent, setOtpSent] = useState(false);
-  const [otpVerified, setOtpVerified] = useState(true);
+  const [otpVerified, setOtpVerified] = useState(false);
   const [otp, setOtp] = useState('');
   const [enteredOtp, setEnteredOtp] = useState('');
   const otpSentRef = useRef(false);
@@ -38,7 +39,7 @@ const Page = () => {
           template: {
             name: 'setting_login', 
             language: {
-              code: 'en_US',
+              code: 'en',
             },
             components: [
               {
@@ -157,6 +158,7 @@ const Page = () => {
         <div className="max-w-xl">
           <BookNumbers />
           <ChangeAdminPass />
+          <AddPlaces/>
         </div>
       </div>
     </div>

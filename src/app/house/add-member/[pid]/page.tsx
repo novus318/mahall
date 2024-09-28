@@ -10,8 +10,9 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/use-toast'
-import { RadioGroup,RadioGroupItem } from '@/components/ui/radio-group'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Loader2 } from 'lucide-react'
+import { places } from '@/data/data'
 
 interface PageProps {
   params: {
@@ -30,20 +31,19 @@ interface Member {
   },
   bloodGroup: string,
   madrassa: {
-    studying: boolean,
-    currentClass: string,
-    lastClassStudied: string,
+    level: string,
+    description: string
   },
   gender: string,
   mobile: string,
-  whatsappNumber:'',
+  whatsappNumber: '',
   place: string,
   idCards: {
     aadhaar: boolean,
     drivingLicense: boolean,
     voterID: boolean,
     panCard: boolean,
-    HealthCard:boolean,
+    HealthCard: boolean,
   },
 }
 
@@ -66,19 +66,18 @@ const PageComponent = ({ params }: PageProps) => {
     },
     bloodGroup: '',
     madrassa: {
-      studying: false,
-      currentClass: '',
-      lastClassStudied: '',
+         level: '',
+         description: ''
     },
     mobile: '',
-    whatsappNumber:'',
+    whatsappNumber: '',
     place: '',
     idCards: {
       aadhaar: false,
       drivingLicense: false,
       voterID: false,
       panCard: false,
-      HealthCard:false,
+      HealthCard: false,
     },
   })
   const [selectedRelation, setSelectedRelation] = useState({ memberId: '', relation: '' })
@@ -156,7 +155,7 @@ const PageComponent = ({ params }: PageProps) => {
         variant: "destructive",
       });
     }
-    if (selectedRelation.memberId && selectedRelation.relation === '') {
+    if (selectedRelation.memberId != 'No Relation' && selectedRelation.relation === '') {
       toast({
         title: "Please select a relation type",
         variant: "destructive",
@@ -197,19 +196,18 @@ const PageComponent = ({ params }: PageProps) => {
           },
           bloodGroup: '',
           madrassa: {
-            studying: false,
-            currentClass: '',
-            lastClassStudied: '',
+            level: '',
+            description: ''
           },
           mobile: '',
-          whatsappNumber:'',
+          whatsappNumber: '',
           place: '',
           idCards: {
             aadhaar: false,
             drivingLicense: false,
             voterID: false,
             panCard: false,
-            HealthCard:false,
+            HealthCard: false,
           },
         })
         setSelectedRelation({ memberId: '', relation: '' })
@@ -244,20 +242,12 @@ const PageComponent = ({ params }: PageProps) => {
   const handleDateChange = (date: any) => {
     setNewMember((prev) => ({ ...prev, DOB: date }));
   };
-  const handleMadrassaChange = (field:any, value:any) => {
-    setNewMember((prev) => ({
-      ...prev,
-      madrassa: { ...prev.madrassa, [field]: value },
-    }));
-  };
-  const handleIdCardChange = (card:any, value:any) => {
+  const handleIdCardChange = (card: any, value: any) => {
     setNewMember((prev) => ({
       ...prev,
       idCards: { ...prev.idCards, [card]: value },
     }));
   };
-  
-  const places = ['Kerala', 'UAE', 'Malaysia', 'Singapore', 'Kuwait', 'Saudi', 'Oman', 'Qatar', 'Outside Kerala'];
 
 
   return (
@@ -273,6 +263,9 @@ const PageComponent = ({ params }: PageProps) => {
           <h2 className='text-2xl font-semibold mb-4'>Add New Member</h2>
           <div className='space-y-4'>
             <div>
+              <Label>
+                Name
+              </Label>
               <Input
                 type='text'
                 name='name'
@@ -285,6 +278,9 @@ const PageComponent = ({ params }: PageProps) => {
 
 
             <div className='grid grid-cols-2 gap-2'>
+          <div>  <Label>
+            Current occupation
+              </Label>
               <Input
                 type='text'
                 name='status'
@@ -292,8 +288,11 @@ const PageComponent = ({ params }: PageProps) => {
                 value={newMember.status}
                 onChange={handleChange}
                 className=' block w-full border px-2 py-4 rounded-md shadow-sm  sm:text-sm'
-              />
-              <Select
+              /></div>
+            <div> 
+              <Label>
+                Gender</Label>
+                 <Select
                 name='gender'
                 onValueChange={(value) => setNewMember((prev) => ({ ...prev, gender: value }))}
               >
@@ -309,6 +308,7 @@ const PageComponent = ({ params }: PageProps) => {
                   </SelectItem>
                 </SelectContent>
               </Select>
+              </div>
             </div>
 
             <div className='grid grid-cols-2 gap-1'>
@@ -345,86 +345,86 @@ const PageComponent = ({ params }: PageProps) => {
             </div>
             <p className='text-base font-bold'>ID cards</p>
             <div className='space-y-2 grid grid-cols-2'>
-            <div>
-              <p className='text-sm'>Aadhaar</p>
-              <RadioGroup
-              className='flex'
-                value={newMember.idCards.aadhaar ? 'yes' : 'no'}
-                onValueChange={(value) => handleIdCardChange('aadhaar', value === 'yes')}
-              >
-                <Label>
-                  Yes
-                </Label>
-                <RadioGroupItem value="yes">Yes</RadioGroupItem>
-                <Label>No</Label>
-                <RadioGroupItem value="no">No</RadioGroupItem>
-              </RadioGroup>
-            </div>
+              <div>
+                <p className='text-sm'>Aadhaar</p>
+                <RadioGroup
+                  className='flex'
+                  value={newMember.idCards.aadhaar ? 'yes' : 'no'}
+                  onValueChange={(value) => handleIdCardChange('aadhaar', value === 'yes')}
+                >
+                  <Label>
+                    Yes
+                  </Label>
+                  <RadioGroupItem value="yes">Yes</RadioGroupItem>
+                  <Label>No</Label>
+                  <RadioGroupItem value="no">No</RadioGroupItem>
+                </RadioGroup>
+              </div>
 
-            <div>
-              <p className='text-sm'>Driving License</p>
-              <RadioGroup
-              className='flex'
-                value={newMember.idCards.drivingLicense ? 'yes' : 'no'}
-                onValueChange={(value) => handleIdCardChange('drivingLicense', value === 'yes')}
-              >
-                <Label>
-                  Yes
-                </Label>
-                <RadioGroupItem value="yes">Yes</RadioGroupItem>
-                <Label>No</Label>
-                <RadioGroupItem value="no">No</RadioGroupItem>
-              </RadioGroup>
-            </div>
+              <div>
+                <p className='text-sm'>Driving License</p>
+                <RadioGroup
+                  className='flex'
+                  value={newMember.idCards.drivingLicense ? 'yes' : 'no'}
+                  onValueChange={(value) => handleIdCardChange('drivingLicense', value === 'yes')}
+                >
+                  <Label>
+                    Yes
+                  </Label>
+                  <RadioGroupItem value="yes">Yes</RadioGroupItem>
+                  <Label>No</Label>
+                  <RadioGroupItem value="no">No</RadioGroupItem>
+                </RadioGroup>
+              </div>
 
-            <div>
-              <p className='text-sm'>Voter ID</p>
-              <RadioGroup
-              className='flex'
-                value={newMember.idCards.voterID ? 'yes' : 'no'}
-                onValueChange={(value) => handleIdCardChange('voterID', value === 'yes')}
-              >
-                <Label>
-                  Yes
-                </Label>
-                <RadioGroupItem value="yes">Yes</RadioGroupItem>
-                <Label>No</Label>
-                <RadioGroupItem value="no">No</RadioGroupItem>
-              </RadioGroup>
-            </div>
+              <div>
+                <p className='text-sm'>Voter ID</p>
+                <RadioGroup
+                  className='flex'
+                  value={newMember.idCards.voterID ? 'yes' : 'no'}
+                  onValueChange={(value) => handleIdCardChange('voterID', value === 'yes')}
+                >
+                  <Label>
+                    Yes
+                  </Label>
+                  <RadioGroupItem value="yes">Yes</RadioGroupItem>
+                  <Label>No</Label>
+                  <RadioGroupItem value="no">No</RadioGroupItem>
+                </RadioGroup>
+              </div>
 
-            <div>
-              <p className='text-sm'>PAN Card</p>
-              <RadioGroup
-              className='flex'
-                value={newMember.idCards.panCard ? 'yes' : 'no'}
-                onValueChange={(value) => handleIdCardChange('panCard', value === 'yes')}
-              >
-                 <Label>
-                  Yes
-                </Label>
-                <RadioGroupItem value="yes">Yes</RadioGroupItem>
-                <Label>No</Label>
-                <RadioGroupItem value="no">No</RadioGroupItem>
-              </RadioGroup>
-            </div>
-            <div>
-              <p className='text-sm'>Health Card</p>
-              <RadioGroup
-              className='flex'
-                value={newMember.idCards.HealthCard ? 'yes' : 'no'}
-                onValueChange={(value) => handleIdCardChange('HealthCard', value === 'yes')}
-              >
-                 <Label>
-                  Yes
-                </Label>
-                <RadioGroupItem value="yes">Yes</RadioGroupItem>
-                <Label>No</Label>
-                <RadioGroupItem value="no">No</RadioGroupItem>
-              </RadioGroup>
-            </div>
+              <div>
+                <p className='text-sm'>PAN Card</p>
+                <RadioGroup
+                  className='flex'
+                  value={newMember.idCards.panCard ? 'yes' : 'no'}
+                  onValueChange={(value) => handleIdCardChange('panCard', value === 'yes')}
+                >
+                  <Label>
+                    Yes
+                  </Label>
+                  <RadioGroupItem value="yes">Yes</RadioGroupItem>
+                  <Label>No</Label>
+                  <RadioGroupItem value="no">No</RadioGroupItem>
+                </RadioGroup>
+              </div>
+              <div>
+                <p className='text-sm'>Health Card</p>
+                <RadioGroup
+                  className='flex'
+                  value={newMember.idCards.HealthCard ? 'yes' : 'no'}
+                  onValueChange={(value) => handleIdCardChange('HealthCard', value === 'yes')}
+                >
+                  <Label>
+                    Yes
+                  </Label>
+                  <RadioGroupItem value="yes">Yes</RadioGroupItem>
+                  <Label>No</Label>
+                  <RadioGroupItem value="no">No</RadioGroupItem>
+                </RadioGroup>
+              </div>
 
-          </div>
+            </div>
 
             <div>
               <p className='text-sm font-medium'>Blood Group</p>
@@ -451,43 +451,53 @@ const PageComponent = ({ params }: PageProps) => {
             <div>
               <p className='text-sm font-medium'>Madrassa</p>
               <Select
-                name='madrassaStudying'
-                onValueChange={(value) => handleMadrassaChange('studying', value === 'yes')}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Studying Madrassa Y/N" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='yes'>Yes</SelectItem>
-                  <SelectItem value='no'>No</SelectItem>
-                </SelectContent>
-              </Select>
-              </div>
-              {newMember.madrassa.studying ? (
-               <div>
-               <p className='text-sm font-medium'>Class</p>
-                <Input
-                  type='text'
-                  name='currentClass'
-                  placeholder='Current Class'
-                  value={newMember.madrassa.currentClass}
-                  onChange={(e) => handleMadrassaChange('currentClass', e.target.value)}
-                  className='block w-full border p-2 rounded-md shadow-sm sm:text-sm'
-                />
+                  name='madrassa'
+                  onValueChange={(value) => {
+                    setNewMember((prev) => (
+                      {
+                        ...prev, madrassa: {
+                          level: value,
+                          description: ''
+                        }
+                      }
+                    ));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Madrassa" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Not studied">Not studied</SelectItem>
+                    <SelectItem value="Below 5th">Below 5th</SelectItem>
+                    <SelectItem value="Above 5th">Above 5th</SelectItem>
+                    <SelectItem value="Above 10th">Above 10th</SelectItem>
+                  </SelectContent>
+                </Select>
                 </div>
-              ) : (
-                <div>
-                <p className='text-sm font-medium'>Class</p>
-                <Input
-                  type='text'
-                  name='lastClassStudied'
-                  placeholder='Last Class Studied'
-                  value={newMember.madrassa.lastClassStudied}
-                  onChange={(e) => handleMadrassaChange('lastClassStudied', e.target.value)}
-                  className='block w-full border p-2 rounded-md shadow-sm sm:text-sm'
-                />
-                </div>
-              )}
+                {(newMember.madrassa.level === 'Below 5th' ||
+                newMember.madrassa.level === 'Above 5th' ||
+                newMember.madrassa.level === 'Above 10th') && (
+                  <div>
+                    <Label>
+                      Madrassa description
+                    </Label>
+                    <Input
+                      name='madrassaDescription'
+                      placeholder='Enter description'
+                      value={newMember.madrassa.description}
+                      onChange={(e) =>
+                        setNewMember((prev) => ({
+                          ...prev,
+                          madrassa: {
+                            ...prev.madrassa,
+                            description: e.target.value
+                          }
+                        }))
+                      }
+                    />
+                  </div>
+                )}
+            
             </div>
 
             <div className='grid grid-cols-2 gap-2'>
@@ -549,6 +559,9 @@ const PageComponent = ({ params }: PageProps) => {
 
 
             <div>
+              <Label>
+                Mobile number
+              </Label>
               <Input
                 type='tel'
                 name='mobile'
@@ -559,6 +572,9 @@ const PageComponent = ({ params }: PageProps) => {
               />
             </div>
             <div>
+            <Label>
+                Whatsapp number
+              </Label>
               <Input
                 type='tel'
                 name='whatsappNumber'
@@ -569,25 +585,25 @@ const PageComponent = ({ params }: PageProps) => {
               />
             </div>
             <div>
-  <Label>
-    Select place
-  </Label>
-  <Select
-    name='place'
-    onValueChange={(value) => setNewMember((prev) => ({ ...prev, place: value }))}
-  >
-    <SelectTrigger>
-      <SelectValue placeholder="Place" />
-    </SelectTrigger>
-    <SelectContent>
-      {places.map((place) => (
-        <SelectItem key={place} value={place}>
-          {place}
-        </SelectItem>
-      ))}
-    </SelectContent>
-  </Select>
-</div>
+              <Label>
+                Select place
+              </Label>
+              <Select
+                name='place'
+                onValueChange={(value) => setNewMember((prev) => ({ ...prev, place: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Place" />
+                </SelectTrigger>
+                <SelectContent>
+                  {places.map((place) => (
+                    <SelectItem key={place} value={place}>
+                      {place}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
@@ -602,6 +618,9 @@ const PageComponent = ({ params }: PageProps) => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
+                    <SelectItem key="no-relation" value="No Relation">
+                No Relation
+              </SelectItem>
                       {members.map((member: any) => (
                         <SelectItem key={member._id} value={member._id}>
                           {member.name}
@@ -611,22 +630,24 @@ const PageComponent = ({ params }: PageProps) => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className='mb-2'>
-                <Select onValueChange={(value) => handleRelationChange('relation', value)}>
-                  <SelectTrigger className='w-full'>
-                    <SelectValue placeholder='Select Relation' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {relations.map((relation, index) => (
-                        <SelectItem key={index} value={relation}>
-                          {relation}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
+             {selectedRelation.memberId != 'No Relation' && (
+               <div className='mb-2'>
+               <Select onValueChange={(value) => handleRelationChange('relation', value)}>
+                 <SelectTrigger className='w-full'>
+                   <SelectValue placeholder='Select Relation' />
+                 </SelectTrigger>
+                 <SelectContent>
+                   <SelectGroup>
+                     {relations.map((relation, index) => (
+                       <SelectItem key={index} value={relation}>
+                         {relation}
+                       </SelectItem>
+                     ))}
+                   </SelectGroup>
+                 </SelectContent>
+               </Select>
+             </div>
+             )}
             </div>
           </div>
         ) : null}
@@ -634,7 +655,7 @@ const PageComponent = ({ params }: PageProps) => {
           disabled={loading}
           onClick={handleCreateMember}
         >
-          {loading ? <Loader2 className='animate-spin'/> :'Add Member'}
+          {loading ? <Loader2 className='animate-spin' /> : 'Add Member'}
         </Button>
       </div>
     </div>

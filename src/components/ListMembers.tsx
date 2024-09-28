@@ -32,7 +32,6 @@ const ListMembers = ({ members, familyHead }: any) => {
         <ArrowDownIcon className="w-10 h-10 text-muted-foreground animate-bounce" />
       </div>
 
-      {/* Members with Relations */}
       <div className="flex flex-col space-y-6 md:space-y-8 w-full">
         {membersWithRelations.map((member: any, index: any) => (
           <div key={member._id} className="flex flex-row items-center justify-between space-y-1 md:space-y-0 md:space-x-8 w-full">
@@ -43,7 +42,7 @@ const ListMembers = ({ members, familyHead }: any) => {
                 setSelectedMember(member.relation.member)
               }} className="flex items-center cursor-pointer justify-center w-full px-1 md:w-52 py-2 bg-gray-200 text-card-foreground rounded-md font-semibold text-lg shadow-lg">
               <div className="text-center">
-                <div className="text-sm">{member.relation.member.name}</div>
+                <div className="text-sm">{member.relation.member?.name}</div>
                 <div className="text-xs mt-1">{member.relation.member?.status || 'Occupation not specified'}</div>
               </div>
             </div>

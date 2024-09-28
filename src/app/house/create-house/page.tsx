@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { withAuth } from '@/components/withAuth'
+import { places } from '@/data/data'
 
 
 interface Member {
@@ -28,9 +29,8 @@ interface Member {
     },
     bloodGroup: string,
     madrassa: {
-      studying: boolean,
-      currentClass: string,
-      lastClassStudied: string,
+      level: string,
+      description: string
     },
     gender: string,
     mobile: string,
@@ -70,9 +70,8 @@ const Page = () => {
         },
         bloodGroup: '',
         madrassa: {
-          studying: false,
-          currentClass: '',
-          lastClassStudied: '',
+           level: '',
+          description: ''
         },
         mobile: '',
         whatsappNumber:'',
@@ -94,12 +93,6 @@ const Page = () => {
     const handleDateChange = (date: any) => {
         setNewMember((prev) => ({ ...prev, DOB: date }));
     };
-    const handleMadrassaChange = (field:any, value:any) => {
-        setNewMember((prev) => ({
-          ...prev,
-          madrassa: { ...prev.madrassa, [field]: value },
-        }));
-      };
       const handleIdCardChange = (card:any, value:any) => {
         setNewMember((prev) => ({
           ...prev,
@@ -265,9 +258,8 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                     },
                     bloodGroup: '',
                     madrassa: {
-                      studying: false,
-                      currentClass: '',
-                      lastClassStudied: '',
+                     level: '',
+                      description: ''
                     },
                     mobile: '',
                     whatsappNumber:'',
@@ -310,6 +302,9 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                 <h2 className='text-2xl font-semibold mb-4'>Add New House</h2>
                 <div className='space-y-4 mb-2'>
                     <div>
+                      <Label>
+                        House Number
+                      </Label>
                         <Input
                             type="text"
                             placeholder="House Number"
@@ -319,6 +314,9 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                         />
                     </div>
                     <div>
+                      <Label>
+                        Panchayath Number
+                      </Label>
                         <Input
                             type="text"
                             placeholder="Panchayath Number"
@@ -328,6 +326,9 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                         />
                     </div>
                     <div>
+                      <Label>
+                        Ward Number
+                      </Label>
                         <Input
                             type="text"
                             placeholder="Ward Number"
@@ -337,6 +338,9 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                         />
                     </div>
                     <div>
+                      <Label>
+                        House Name
+                      </Label>
                         <Input
                             type="text"
                             placeholder="House Name"
@@ -346,6 +350,9 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                         />
                     </div>
                     <div>
+                      <Label>
+                        House Address
+                      </Label>
                         <Textarea
                             placeholder="Address"
                             value={houseAddress}
@@ -354,6 +361,10 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                         />
                     </div>
                     <div className='grid grid-cols-2 gap-2'>
+                    <div>
+                    <Label>
+                        House status
+                      </Label>
                     <Select
                 name='status'
                 onValueChange={(value) => 
@@ -372,7 +383,12 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <Select
+                    </div>
+             <div>
+              <Label>
+                Ration status
+              </Label>
+             <Select
                 name='Rationstatus'
                 onValueChange={(value) => 
                     setRationStatus(value)
@@ -390,8 +406,12 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                   </SelectItem>
                 </SelectContent>
               </Select>
+             </div>
                     </div>
                     <div>
+                      <Label>
+                        Collection amount
+                      </Label>
                         <Input
                             type="text"
                             placeholder="Collection amount"
@@ -404,6 +424,9 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                 <h2 className='text-xl font-semibold mb-4'>Add Family Head</h2>
                 <div className='space-y-4'>
                     <div>
+                      <Label>
+                        Name
+                      </Label>
                         <Input
                             type='text'
                             name='name'
@@ -414,7 +437,11 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                         />
                     </div>
                     <div className='grid grid-cols-2 gap-2'>
-                        <Input
+                      <div>
+                        <Label>
+                        Current occupation
+                        </Label>
+                      <Input
                             type='text'
                             name='status'
                             placeholder='Current occupation'
@@ -422,7 +449,12 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                             onChange={handleChange}
                             className='block w-full border px-2 py-4 rounded-md shadow-sm  sm:text-sm'
                         />
-                        <Select
+                      </div>
+                       <div>
+                        <Label>
+                          Gender
+                        </Label>
+                       <Select
                             name='gender'
                             onValueChange={(value) => setNewMember((prev) => ({ ...prev, gender: value }))}
                         >
@@ -434,6 +466,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                                 <SelectItem value='female'>Female</SelectItem>
                             </SelectContent>
                         </Select>
+                       </div>
                     </div>
                     <div className='grid grid-cols-2 gap-1'>
                         <div>
@@ -564,43 +597,53 @@ const dobYear = new Date(newMember.DOB).getFullYear();
             <div>
               <p className='text-sm font-medium'>Madrassa</p>
               <Select
-                name='madrassaStudying'
-                onValueChange={(value) => handleMadrassaChange('studying', value === 'yes')}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Studying Madrassa Y/N" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='yes'>Yes</SelectItem>
-                  <SelectItem value='no'>No</SelectItem>
-                </SelectContent>
-              </Select>
-              </div>
-              {newMember.madrassa.studying ? (
-               <div>
-               <p className='text-sm font-medium'>Class</p>
-                <Input
-                  type='text'
-                  name='currentClass'
-                  placeholder='Current Class'
-                  value={newMember.madrassa.currentClass}
-                  onChange={(e) => handleMadrassaChange('currentClass', e.target.value)}
-                  className='block w-full border p-2 rounded-md shadow-sm sm:text-sm'
-                />
+                  name='madrassa'
+                  onValueChange={(value) => {
+                    setNewMember((prev) => (
+                      {
+                        ...prev, madrassa: {
+                          level: value,
+                          description: ''
+                        }
+                      }
+                    ));
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Madrassa" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Not studied">Not studied</SelectItem>
+                    <SelectItem value="Below 5th">Below 5th</SelectItem>
+                    <SelectItem value="Above 5th">Above 5th</SelectItem>
+                    <SelectItem value="Above 10th">Above 10th</SelectItem>
+                  </SelectContent>
+                </Select>
                 </div>
-              ) : (
-                <div>
-                <p className='text-sm font-medium'>Class</p>
-                <Input
-                  type='text'
-                  name='lastClassStudied'
-                  placeholder='Last Class Studied'
-                  value={newMember.madrassa.lastClassStudied}
-                  onChange={(e) => handleMadrassaChange('lastClassStudied', e.target.value)}
-                  className='block w-full border p-2 rounded-md shadow-sm sm:text-sm'
-                />
-                </div>
-              )}
+                {(newMember.madrassa.level === 'Below 5th' ||
+                newMember.madrassa.level === 'Above 5th' ||
+                newMember.madrassa.level === 'Above 10th') && (
+                  <div>
+                    <Label>
+                      Madrassa description
+                    </Label>
+                    <Input
+                      name='madrassaDescription'
+                      placeholder='Enter description'
+                      value={newMember.madrassa.description}
+                      onChange={(e) =>
+                        setNewMember((prev) => ({
+                          ...prev,
+                          madrassa: {
+                            ...prev.madrassa,
+                            description: e.target.value
+                          }
+                        }))
+                      }
+                    />
+                  </div>
+                )}
+            
             </div>
             <div className='grid grid-cols-2 gap-2'>
               <div>
@@ -659,6 +702,9 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                 )}
             </div>
                     <div>
+                    <Label>
+                Mobile number
+              </Label>
                         <Input
                             type='tel'
                             name='mobile'
@@ -669,6 +715,9 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                         />
                     </div>
                     <div>
+                    <Label>
+                Whatsapp number
+              </Label>
               <Input
                 type='tel'
                 name='whatsappNumber'
@@ -678,11 +727,11 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                 className=' block w-full border p-2 rounded-md shadow-sm  sm:text-sm'
               />
             </div>
-                    <div>
-                        <Label>
-                            Select place
-                        </Label>
-                    <Select
+            <div>
+              <Label>
+                Select place
+              </Label>
+              <Select
                 name='place'
                 onValueChange={(value) => setNewMember((prev) => ({ ...prev, place: value }))}
               >
@@ -690,27 +739,14 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                   <SelectValue placeholder="Place" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value='Kerala'>
-                   Kerala
-                  </SelectItem>
-                  <SelectItem value='UAE'>
-                    UAE
-                  </SelectItem>
-                  <SelectItem value='Malaysia'>
-                  Malaysia
-                  </SelectItem>
-                  <SelectItem value='Singapore'>
-                  Singapore
-                  </SelectItem>
-                  <SelectItem value='Kuwait'>
-                  Kuwait
-                  </SelectItem>
-                  <SelectItem value='Outside kerala'>
-                  Outside kerala
-                  </SelectItem>
+                  {places.map((place) => (
+                    <SelectItem key={place} value={place}>
+                      {place}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-                    </div>
+            </div>
                 </div>
                 <div className='mt-4'>
                         <Button disabled={loading}

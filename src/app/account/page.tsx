@@ -70,6 +70,10 @@ const Page = () => {
   }
 
   const confirmTransfer = async () => {
+    if(loading){
+      return;
+    }
+    setLoading(true);
     if (selectedAccount && targetAccount) {
       if (transferAmount || 0 <= selectedAccount.balance) {
         const response = await axios.post(`${apiUrl}/api/account/inter-account-transfer`, {
@@ -83,6 +87,18 @@ const Page = () => {
           setSelectedAccount(null);
           setTargetAccount(null);
           setTransferAmount(null);
+          toast({
+            title: 'Transfer successful',
+            variant:'default',
+          });
+          setLoading(false);
+        }else{
+          toast({
+            title: 'Failed to transfer',
+            description: response.data.message || 'Something went wrong try again',
+            variant: 'destructive',
+          });
+          setLoading(false);
         }
       } else {
         toast({
@@ -90,6 +106,11 @@ const Page = () => {
           variant: 'destructive',
         });
       }
+    }else{
+      toast({
+        title: 'Please select a bank account and a target account',
+        variant: 'destructive',
+      });
     }
   }
 
@@ -123,7 +144,7 @@ const Page = () => {
       </div>
       <div className="w-full md:w-5/6 p-6 bg-white shadow-md">
         <div className="mb-4 flex justify-between items-center">
-          <h2 className="text-sm md:text-xl lg:text-2xl font-semibold">Bank Accounts</h2>
+          <h2 className="text-sm md:text-xl lg:text-2xl font-semibold">Accounts</h2>
           <div className='flex gap-2'>
             <Link href='/all-transactions'
             className='flex items-center gap-1 bg-gray-900 text-white py-1 px-3 rounded-md text-sm'>
@@ -212,7 +233,7 @@ const Page = () => {
                 <Loader2 className='animate-spin' />
               </Button>
             ) : (
-              <Button size='sm' onClick={confirmTransfer} disabled={!targetAccount || (transferAmount as any) > (selectedAccount?.balance as any) ||  (transferAmount as any) <= 0}>
+              <Button size='sm' onClick={confirmTransfer} disabled={!targetAccount || loading || (transferAmount as any) > (selectedAccount?.balance as any) ||  (transferAmount as any) <= 0}>
                 Transfer
               </Button>
             )}

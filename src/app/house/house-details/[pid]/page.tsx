@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { withAuth } from '@/components/withAuth'
@@ -63,7 +64,7 @@ const PageComponent = ({ params }: PageProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [totalContribution, setTotalContribution] = useState(<Loader2 className='animate-spin'/>);
   const [familyHead, setFamilyHead] = useState({ memberId: '', amount: 0 })
-
+  const [editHouse, setEditHouse] = useState<any>({})
 
   useEffect(() => {
     fetchHouse(pid)
@@ -102,11 +103,15 @@ const PageComponent = ({ params }: PageProps) => {
     setloading(true)
     const data ={
       _id:house._id,
-      name:house.name,
-      number:house.number,
-      address:house.address,
+      name:editHouse.name,
+      number:editHouse.number,
+      address:editHouse.address,
       familyHead:familyHead.memberId,
-      collectionAmount:familyHead.amount
+      collectionAmount:familyHead.amount,
+      status:editHouse.status,
+      rationsStatus:editHouse.rationStatus,
+      panchayathNumber:editHouse.panchayathNumber,
+      wardNumber:editHouse.wardNumber
     }
     try {
       const response = await axios.put(`${apiUrl}/api/house/edit-house`, data);
@@ -165,6 +170,8 @@ const PageComponent = ({ params }: PageProps) => {
             <Button variant="outline" size='sm' onClick={
               () => {
                 setIsOpen(true)
+                setEditHouse(house)
+                handlFamilyHeadChange('memberId', house?.familyHead?._id)
               }
             }>Edit</Button>
 
@@ -207,7 +214,128 @@ const PageComponent = ({ params }: PageProps) => {
           <DialogTitle>
             Family head
           </DialogTitle>
-          <Select onValueChange={(value) => handlFamilyHeadChange('memberId', value)}>
+          <div>
+          <Label>
+          House Number
+              </Label>
+            <Input
+              type="text"
+              placeholder="House Number"
+              value={editHouse?.number}
+              onChange={(e) =>
+                setEditHouse({ ...editHouse, number: e.target.value })
+              }
+              disabled={loading}
+            />
+          </div>
+          <div>
+            <Label>
+            Panchayath Number
+            </Label>
+                        <Input
+                            type="text"
+                            placeholder="Panchayath Number"
+                            value={editHouse?.panchayathNumber}
+                            onChange={(e) => 
+                              setEditHouse({...editHouse, panchayathNumber: e.target.value })
+                            }
+                            disabled={loading}
+                        />
+                    </div>
+                    <div>
+                      <Label>
+                      Ward Number
+                      </Label>
+                        <Input
+                            type="text"
+                            placeholder="Ward Number"
+                            value={editHouse?.wardNumber}
+                            onChange={(e) => 
+                              setEditHouse({...editHouse, wardNumber: e.target.value })
+                            }
+                            disabled={loading}
+                        />
+                    </div>
+          <div>
+            <Label>
+            House Name
+              </Label>
+            <Input
+              disabled={loading}
+              type="text"
+              placeholder="House Name"
+              value={editHouse?.name}
+              onChange={(e) =>
+                setEditHouse({ ...editHouse, name: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <Label>
+            Address
+              </Label>
+            <Textarea
+              disabled={loading}
+              placeholder="Address"
+              value={editHouse?.address}
+              onChange={(e) =>
+                setEditHouse({ ...editHouse, address: e.target.value })
+              }
+            />
+          </div>
+          <div className='grid grid-cols-2 gap-2'>
+            <div>
+              <Label>
+                House Status
+              </Label>
+              <Select
+                name='status'
+                onValueChange={(value) =>
+                  setEditHouse({ ...editHouse, status: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={editHouse?.status} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='rented'>
+                    Rented
+                  </SelectItem>
+                  <SelectItem value='owned'>
+                    Owned
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>
+                Ration Status
+              </Label>
+              <Select
+                name='Rationstatus'
+                onValueChange={(value) =>
+                  setEditHouse({ ...editHouse, rationStatus: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={editHouse?.rationsStatus} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='APL'>
+                    APL
+                  </SelectItem>
+                  <SelectItem value='BPL'>
+                    BPL
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+         <div>
+         <Label>
+            Family head
+          </Label>
+          <Select value={familyHead.memberId} onValueChange={(value) => handlFamilyHeadChange('memberId', value)}>
             <SelectTrigger className='w-full'>
               <SelectValue placeholder='Select Member' />
             </SelectTrigger>
@@ -221,7 +349,11 @@ const PageComponent = ({ params }: PageProps) => {
               </SelectGroup>
             </SelectContent>
           </Select>
+         </div>
           <div>
+            <Label>
+            Collection Amount
+              </Label>
             <Input
               disabled={loading}
               type="number"

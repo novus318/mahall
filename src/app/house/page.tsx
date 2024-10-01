@@ -1,48 +1,18 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useHouseContext } from '@/context/HouseContext';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Loader2 } from 'lucide-react';
-import { Textarea } from '@/components/ui/textarea';
-import axios from 'axios';
 import Link from 'next/link';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { withAuth } from '@/components/withAuth';
 
 
 const Page = () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const { houses, fetchHouses } = useHouseContext();
-  const [editHouse, setEditHouse] = useState<any>({})
-  const [loading, setloading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleSubmitEdit = async () => {
-    setloading(true)
-    try {
-      const response = await axios.put(`${apiUrl}/api/house/edit-house`, editHouse);
-      if (response.data.success) {
-        console.log('House edited successfully:', response.data.house);
-        setloading(false)
-        setEditHouse({})
-        setIsOpen(false);
-        fetchHouses()
-      }
-    } catch (error) {
-      setloading(false)
-      console.error('Error editing house:', error);
-    }
-  }
+
   useEffect(() => {
     fetchHouses()
   }, [])
@@ -91,140 +61,10 @@ const Page = () => {
                   </div>
                 </CardContent>
               </Link>
-              <CardFooter className="flex justify-end">
-                <Button variant="outline" size='sm' onClick={() => {
-                  setEditHouse(house);
-                  setIsOpen(true);
-                }}>
-                  Edit
-                </Button>
-              </CardFooter>
             </Card>
           ))}
         </div>
       </div>
-      <Dialog
-        open={isOpen} onOpenChange={(v) => {
-          if (!v) {
-            setIsOpen(v)
-          }
-        }}>
-        <DialogContent>
-          <DialogTitle>
-            Edit House
-          </DialogTitle>
-          <div>
-            <Input
-              type="text"
-              placeholder="House Number"
-              value={editHouse?.number}
-              onChange={(e) =>
-                setEditHouse({ ...editHouse, number: e.target.value })
-              }
-              disabled={loading}
-            />
-          </div>
-          <div>
-                        <Input
-                            type="text"
-                            placeholder="Panchayath Number"
-                            value={editHouse?.panchayathNumber}
-                            onChange={(e) => 
-                              setEditHouse({...editHouse, panchayathNumber: e.target.value })
-                            }
-                            disabled={loading}
-                        />
-                    </div>
-                    <div>
-                        <Input
-                            type="text"
-                            placeholder="Ward Number"
-                            value={editHouse?.wardNumber}
-                            onChange={(e) => 
-                              setEditHouse({...editHouse, wardNumber: e.target.value })
-                            }
-                            disabled={loading}
-                        />
-                    </div>
-          <div>
-            <Input
-              disabled={loading}
-              type="text"
-              placeholder="House Name"
-              value={editHouse?.name}
-              onChange={(e) =>
-                setEditHouse({ ...editHouse, name: e.target.value })
-              }
-            />
-          </div>
-          <div>
-            <Textarea
-              disabled={loading}
-              placeholder="Address"
-              value={editHouse?.address}
-              onChange={(e) =>
-                setEditHouse({ ...editHouse, address: e.target.value })
-              }
-            />
-          </div>
-          <div className='grid grid-cols-2 gap-2'>
-            <div>
-              <Label>
-                House Status
-              </Label>
-              <Select
-                name='status'
-                onValueChange={(value) =>
-                  setEditHouse({ ...editHouse, status: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={editHouse?.status} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='rented'>
-                    Rented
-                  </SelectItem>
-                  <SelectItem value='owned'>
-                    Owned
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>
-                Ration Status
-              </Label>
-              <Select
-                name='Rationstatus'
-                onValueChange={(value) =>
-                  setEditHouse({ ...editHouse, rationStatus: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={editHouse?.rationsStatus} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='APL'>
-                    APL
-                  </SelectItem>
-                  <SelectItem value='BPL'>
-                    BPL
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          {loading ? (<Button>
-            <Loader2 className='animate-spin' />
-          </Button>) : (
-            <Button
-              disabled={loading} onClick={handleSubmitEdit}>
-              Edit House
-            </Button>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

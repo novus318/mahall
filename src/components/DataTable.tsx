@@ -20,6 +20,7 @@ import { Button } from './ui/button';
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from './ui/select';
 import { Loader2 } from 'lucide-react';
 import { Label } from './ui/label';
+import UpdateCollectionPayment from './UpdateCollectionPayment';
 
 interface BankAccount {
   _id: string;
@@ -160,9 +161,7 @@ const DataTable = () => {
                 <TableCell>₹{(house?.amount).toFixed(2)}</TableCell>
                 <TableCell>{house?.memberId?.name}</TableCell>
                 <TableCell>
-                  <Badge onClick={() => handleOpenDialog(house)} className="cursor-pointer">
-                    {house?.status}
-                  </Badge>
+                 <UpdateCollectionPayment collection={house}/>
                 </TableCell>
               </TableRow>
             );
@@ -174,56 +173,6 @@ const DataTable = () => {
           )}
         </TableBody>
       </Table>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogTitle>
-            Update Payment for {selectedHouse?.houseId?.number}
-          </DialogTitle>
-          <DialogDescription className='text-muted-foreground font-semibold text-sm'>
-            House: {selectedHouse?.houseId?.name}
-            <br/>
-            Collection Amount: ₹{(selectedHouse?.amount ?? 0).toFixed(2)}
-            <br />
-            Family Head: {selectedHouse?.memberId?.name}
-          </DialogDescription>
-          <Label>
-            Select account
-          </Label>
-          <Select onValueChange={setTargetAccount}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select target account" />
-                </SelectTrigger>
-                <SelectContent>
-                  {bank.map((acc) => (
-                    <SelectItem key={acc._id} value={acc._id}>
-                      {acc.name} - {acc.holderName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Label>
-            Select type
-          </Label>
-          <Select onValueChange={(value) => setPaymentType(value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select Payment Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Online">Online</SelectItem>
-              <SelectItem value="Cash">Cash</SelectItem>
-            </SelectContent>
-          </Select>
-          <DialogFooter>
-          <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubmitPayment} disabled={!paymentType ||!targetAccount || loading}>
-              {loading ? <Loader2 className='animate-spin' /> : 'Update Payment'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { Banknote, BookIcon, Building, Home, HousePlusIcon, LayoutDashboard, LogOut,  MenuIcon, MessageCircle, ReceiptIndianRupeeIcon, SendIcon, Settings, User2Icon, X } from 'lucide-react';
+import { Banknote, BookIcon, BookImageIcon, BookOpen, Building, Building2, Home, HousePlusIcon, LayoutDashboard, LogOut,  MenuIcon, MessageCircle, ReceiptIndianRupeeIcon, SendIcon, Settings, User2Icon, X } from 'lucide-react';
 import { useRouter,usePathname } from 'next/navigation';
 
 const Sidebar: React.FC = () => {
@@ -95,8 +95,8 @@ const Sidebar: React.FC = () => {
                   CurrentPage('/collection') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
                 }`}
               >
-                <HousePlusIcon className="mr-3" />
-                <span className="text-lg">Kudi collection</span>
+                <BookOpen className="mr-3" />
+                <span className="text-lg">Tution Fees</span>
               </div>
             </Link>
           </li>
@@ -119,7 +119,7 @@ const Sidebar: React.FC = () => {
                   CurrentPage('/rent') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
                 }`}
               >
-                <Building className="mr-3" />
+                <Building2 className="mr-3" />
                 <span className="text-lg">Rent</span>
               </div>
             </Link>

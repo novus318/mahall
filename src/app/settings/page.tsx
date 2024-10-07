@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import AddPlaces from '@/components/settings/AddPlaces';
 import AdminPhonenumbers from '@/components/settings/AdminPhonenumbers';
-import mobileNumbers from '@/data/number.json'
+import { sendOtp } from '@/utils/sendOtp';
 
 const Page = () => {
   const [otpSent, setOtpSent] = useState(false);
@@ -19,91 +19,16 @@ const Page = () => {
   const [enteredOtp, setEnteredOtp] = useState('');
   const otpSentRef = useRef(false);
 
-  const WHATSAPP_API_URL:any = process.env.NEXT_PUBLIC_WHATSAPP_API_URL;
-  const ACCESS_TOKEN = process.env.NEXT_PUBLIC_WHATSAPP_TOKEN;
-  const admins = mobileNumbers
+  // Function to trigger OTP sending
+  const handleSendOtp = async (): Promise<void> => {
+    if (otpSentRef.current) return;
+    otpSentRef.current = true;
 
-  // Function to send OTP
-  const sendOtp = async () => {
-      if (otpSentRef.current) return; 
-      otpSentRef.current = true;
-      const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString(); 
-      setOtp(generatedOtp);
-  
-      // Loop through each admin number and send OTP
-      const promises = admins.map(async (admin) => {
-          try {
-              const response = await axios.post(
-                  WHATSAPP_API_URL,
-                  {
-                      messaging_product: 'whatsapp',
-                      to: `91${admin.number}`, // Use the 'number' property of each admin object
-                      type: 'template',
-                      template: {
-                          name: 'setting_login', 
-                          language: {
-                              code: 'en',
-                          },
-                          components: [
-                              {
-                                  type: 'body',
-                                  parameters: [
-                                      {
-                                          type: 'text',
-                                          text: generatedOtp
-                                      },
-                                  ],
-                              }, 
-                              {
-                                  type: 'button',
-                                  sub_type: 'url',
-                                  index: '0',
-                                  parameters: [
-                                      {
-                                          type: 'text',
-                                          text: generatedOtp
-                                      }
-                                  ],
-                              },
-                          ],
-                      },
-                  },
-                  {
-                      headers: {
-                          Authorization: `Bearer ${ACCESS_TOKEN}`,
-                          'Content-Type': 'application/json',
-                      },
-                  }
-              );
-  
-              if (response.status === 200) {
-                  // You can handle success for each number if needed
-                  console.log(`OTP sent to ${admin.number}`);
-              }
-          } catch (error:any) {
-              toast({
-                  title: 'Failed to send OTP',
-                  description: error.response?.data?.message || error.message || 'Something went wrong',
-                  variant: 'destructive',
-              });
-          }
-      });
-  
-      // Wait for all OTP sending operations to complete
-      try {
-          await Promise.all(promises);
-          setOtpSent(true); 
-          toast({
-              title: 'All OTPs sent',
-              variant: 'default',
-          });
-      } catch (error) {
-          toast({
-              title: 'Error sending OTPs',
-              description: 'Some OTPs could not be sent.',
-              variant: 'destructive',
-          });
-      }
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    setOtp(generatedOtp);
+
+    const otpSentStatus = await sendOtp(generatedOtp);
+    setOtpSent(otpSentStatus);
   };
   
 
@@ -125,7 +50,7 @@ const Page = () => {
 
   useEffect(() => {
     if (!otpSent) {
-      sendOtp();
+      handleSendOtp();
     }
   }, [otpSent]);
   

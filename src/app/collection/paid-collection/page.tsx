@@ -89,15 +89,16 @@ const CollectionsPage: React.FC = () => {
         <Link href='/collection' className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
           Back
         </Link>
-        <h2 className="text-lg md:text-2xl font-semibold mb-4">Kudi collection Collections</h2>
+        <h2 className="text-lg md:text-2xl font-semibold mb-4">Tution Fees</h2>
       </div>
    <div className='rounded-t-md bg-gray-100 p-1'>
    <Table className="bg-white">
   <TableHeader className='bg-gray-100'>
     <TableRow>
       <TableHead className="font-medium">Date</TableHead>
-      <TableHead className="font-medium">Description</TableHead>
+        <TableHead>House</TableHead>
       <TableHead className="font-medium">Amount</TableHead>
+      <TableHead>Family Head</TableHead>
       <TableHead className="font-medium">Status</TableHead>
       <TableHead className="font-medium">Reciept</TableHead>
     </TableRow>
@@ -111,10 +112,11 @@ const CollectionsPage: React.FC = () => {
             <div className='text-sm'>{dayMonthYear}</div>
             <div className="text-xs text-gray-500">{time}</div>
           </TableCell>
-          <TableCell className='text-xs'>{collection?.description}</TableCell>
+          <TableCell >{collection?.houseId?.number}</TableCell>
           <TableCell>
           ₹{collection?.amount.toFixed(2)}
           </TableCell>
+          <TableCell>{collection?.memberId?.name}</TableCell>
           <TableCell>{collection?.status}</TableCell>
           <TableCell>
             <Link target='_blank' href={`/payment-reciept/${collection.memberId._id}`} className='text-white bg-gray-900 py-1 px-2 rounded-md'>

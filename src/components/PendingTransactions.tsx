@@ -10,57 +10,27 @@ import {
 } from "@/components/ui/table"
 import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
-import { Dialog, DialogContent, DialogTitle, DialogFooter, DialogDescription } from './ui/dialog';
 import { Button } from './ui/button';
-import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from './ui/select';
 import axios from 'axios'
 import { toast } from './ui/use-toast'
 import { format } from 'date-fns'
-import { useRouter } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
-import { Label } from './ui/label';
+import UpdateCollectionPayment from './UpdateCollectionPayment';
 
-interface BankAccount {
-  _id: string;
-  accountNumber: string;
-  accountType: string;
-  balance: number;
-  createdAt: string;
-  holderName: string;
-  ifscCode: string;
-  name: string;
-  primary:boolean;
-}
+
 
 const PendingTransactions = ({ id }: any) => {
-    const router = useRouter()
     const apiUrl = process.env.NEXT_PUBLIC_API_URL
     const [collections,setCollections]=useState<any>([])
-    const [loading, setLoading] = useState(true);
-    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-    const [selectedHouse, setSelectedHouse] = useState<any>(null);
-    const [paymentType, setPaymentType] = useState<string>('');
-    const [bank, setBank] = useState<BankAccount[]>([])
-    const [targetAccount, setTargetAccount] = useState<string | null>(null);
+
     useEffect(() => {
         fetchCollection(id);
-        fetchAccounts()
     }, [id]);
 
-    const fetchAccounts = () => {
-      axios.get(`${apiUrl}/api/account/get`).then(response => {
-        setBank(response.data.accounts)
-      })
-        .catch(error => {
-          console.log("Error fetching accounts:", error)
-        })
-    }
     const fetchCollection=async (pid:any)=>{
         try {
           const response = await axios.get(`${apiUrl}/api/house/kudi-collections/${pid}`)
           if(response.data.success){
             setCollections(response.data.collections)
-            setLoading(false)
           }
         } catch (error:any) {
           toast({
@@ -68,7 +38,6 @@ const PendingTransactions = ({ id }: any) => {
             description: error.response?.data?.message || error.message || 'Something went wrong',
             variant:'destructive'
           })
-          setLoading(false) 
         }
       }
 
@@ -77,6 +46,11 @@ const PendingTransactions = ({ id }: any) => {
         return {
           dayMonthYear: format(collection?.PaymentDate, 'dd MMM yyyy'),
           time: format(collection?.PaymentDate, 'hh:mm a'),
+        };
+      }else if (collection?.status === 'Rejected'){
+        return {
+          dayMonthYear: 'payment',
+          time: 'recjected',
         };
       }else{
         return {
@@ -92,44 +66,7 @@ const PendingTransactions = ({ id }: any) => {
         };
       };
   
-      const handlePayNowClick =async(c:any)=>{
-        setSelectedHouse(c);
-        setIsDialogOpen(true);
-    }
-    const handleSubmitPayment = async () => {
-        if (!paymentType) {
-          toast({
-            title: 'Please select a payment type',
-            description: 'You must select a payment type before submitting',
-            variant: 'destructive',
-          });
-          return;
-        }
-        setLoading(true);
-        try {
-          const response = await axios.put(`${apiUrl}/api/house/update/collection/${selectedHouse?._id}`, {
-            paymentType,
-            targetAccount,
-          });
-          if (response.data.success) {
-            toast({
-              title: 'Payment updated successfully',
-              variant: 'default',
-            });
-            setPaymentType('');
-            setIsDialogOpen(false);
-            setLoading(false);
-            window.location.reload()
-          } 
-        } catch (error: any) {
-          setLoading(false)
-          toast({
-            title: 'Failed to update payment',
-            description: error.response?.data?.message || error.message || 'Something went wrong',
-            variant: 'destructive',
-          });
-        }
-      };
+
     
       const handleReceiptClick = async (collection: any) => {
         const { dayMonthYear, day } = formatDaterec(collection?.PaymentDate);
@@ -303,29 +240,26 @@ const PendingTransactions = ({ id }: any) => {
                   <div className="text-xs text-gray-500">{time}</div>
                </TableCell>
                <TableCell>
-               {collection?.description}
+               {collection?.description} {collection?.status === 'Rejected' && `Was rejected due to ${collection?.rejectionReason}`}
                </TableCell>
                <TableCell>
                ₹{collection?.amount.toFixed(2)}
                </TableCell>
                <TableCell>{collection?.status}</TableCell>
                <TableCell>
-       <Button
-       className={`${collection?.status === 'Unpaid' ? 'bg-gray-200 text-gray-950': ''} ${collection?.status === 'Rejected' ? 'bg-red-500': ''}`}
-         size="sm"
-         disabled={collection?.status === 'Rejected'}
-         onClick={() => {
-           if (collection?.status === 'Paid') {
-             handleReceiptClick(collection);
-           } else if (collection?.status === 'Unpaid') {
-             handlePayNowClick(collection); // Assume this is your function to handle payment
-           }
-         }}
-       >
-         {collection?.status === 'Unpaid' && 'Pay Now'}
-         {collection?.status === 'Paid' && 'Receipt'}
-         {collection?.status === 'Rejected' && 'Rejected'}
-       </Button>
+                {collection?.status === 'Paid' ? (
+                   <Button size='sm'
+                    className="font-bold py-2 px-4 rounded-md" onClick={() => handleReceiptClick(collection)}>
+                    Receipt
+                   </Button>
+                ): collection?.status === 'Unpaid' ? (
+                  <UpdateCollectionPayment collection={collection}/>
+                ):(
+                   <div
+                   className="bg-red-200 text-red-500 px-2 py-1 rounded-md">
+                    Rejected
+                   </div>
+                )}
      </TableCell>
      
              </TableRow>
@@ -339,55 +273,6 @@ const PendingTransactions = ({ id }: any) => {
          }
        </TableBody>
      </Table>
-     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogTitle>
-            Update Payment for {selectedHouse?.houseId?.number}
-          </DialogTitle>
-          <DialogDescription className='text-muted-foreground font-semibold text-sm'>
-            House: {selectedHouse?.houseId?.name}
-            <br/>
-            Collection Amount: ₹{(selectedHouse?.amount ?? 0).toFixed(2)}
-            <br />
-            Family Head: {selectedHouse?.memberId?.name}
-          </DialogDescription>
-          <Label>
-            Select account
-          </Label>
-          <Select onValueChange={setTargetAccount}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select target account" />
-                </SelectTrigger>
-                <SelectContent>
-                  {bank.map((acc) => (
-                    <SelectItem key={acc._id} value={acc._id}>
-                      {acc.name} - {acc.holderName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Label>
-            Select type
-          </Label>
-          <Select onValueChange={(value) => setPaymentType(value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select Payment Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Online">Online</SelectItem>
-              <SelectItem value="Cash">Cash</SelectItem>
-            </SelectContent>
-          </Select>
-          <DialogFooter>
-          <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubmitPayment} disabled={!paymentType ||!targetAccount || loading}>
-              {loading ? <Loader2 className='animate-spin' /> : 'Update Payment'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
         </div>
     )
 }

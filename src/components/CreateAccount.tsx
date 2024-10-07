@@ -19,7 +19,7 @@ const CreateAccount = ({fetchAccounts}:any) => {
         holderName: '',
         accountNumber: '',
         ifscCode: '',
-        balance: 0,
+        balance: '',
         accountType: ''
     });
 
@@ -27,7 +27,7 @@ const CreateAccount = ({fetchAccounts}:any) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: name === 'balance' ? Number(value) : value,
         }));
     };
 
@@ -41,30 +41,62 @@ const CreateAccount = ({fetchAccounts}:any) => {
     };
 
     const handleSubmit = async () => {
+        if(!formData.name){
+            toast({
+                title: "Name is required",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        if (formData.balance === '' || isNaN(Number(formData.balance))) {
+            toast({
+                title: "Balance must be a number and cannot be empty",
+                variant: "destructive",
+            });
+            return;
+        }
+        if (Number(formData.balance) < 0) {
+            toast({
+                title: "Balance cannot be negative",
+                variant: "destructive",
+            });
+            return;
+        }
+        if(!formData.accountType){
+            toast({
+                title: "Account type is required",
+                variant: "destructive",
+            });
+            return;
+        }
+    
         setLoading(true);
-        try{
-            const response = await axios.post(`${apiUrl}/api/account/create`,formData)
-            if(response.data.success){
-                fetchAccounts()
-                setIsOpen(false)
+        try {
+            const response = await axios.post(`${apiUrl}/api/account/create`, formData);
+            if (response.data.success) {
+                fetchAccounts();
+                setIsOpen(false);
                 setFormData({
                     name: '',
                     holderName: '',
                     accountNumber: '',
                     ifscCode: '',
-                    balance: 0,
+                    balance: '',
                     accountType: ''
-                })
-                setLoading(false)
-            }       
-        }catch{
-            setLoading(false)
+                });
+                setLoading(false);
+            }
+        } catch(error:any) {
+            setLoading(false);
             toast({
                 title: "Error creating account",
+                description: error?.response?.data?.message || error.message || 'something went wrong',
                 variant: "destructive",
             });
         }
     };
+    
 
     return (
         <Dialog open={isOpen} onOpenChange={(v) => setIsOpen(v)}>
@@ -108,10 +140,10 @@ const CreateAccount = ({fetchAccounts}:any) => {
                        Account Open balance
                     </Label>
                     <Input
-                        type="text"
+                        type="number"
                         name="balance"
                         placeholder="Balance"
-                        value={formData.balance ===0 ? '': formData.balance}
+                        value={formData.balance}
                         onChange={handleInputChange}
                         disabled={loading}
                     />

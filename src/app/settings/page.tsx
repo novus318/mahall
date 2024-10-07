@@ -9,7 +9,8 @@ import { toast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import AddPlaces from '@/components/settings/AddPlaces';
-
+import AdminPhonenumbers from '@/components/settings/AdminPhonenumbers';
+import mobileNumbers from '@/data/number.json'
 
 const Page = () => {
   const [otpSent, setOtpSent] = useState(false);
@@ -20,72 +21,91 @@ const Page = () => {
 
   const WHATSAPP_API_URL:any = process.env.NEXT_PUBLIC_WHATSAPP_API_URL;
   const ACCESS_TOKEN = process.env.NEXT_PUBLIC_WHATSAPP_TOKEN;
-  const member = { senderNumber: '917560845014' }; 
+  const admins = mobileNumbers
 
   // Function to send OTP
   const sendOtp = async () => {
-    if (otpSentRef.current) return; 
-    otpSentRef.current = true;
-    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString(); 
-    setOtp(generatedOtp);
-    
-    try {
-      const response = await axios.post(
-        WHATSAPP_API_URL,
-        {
-          messaging_product: 'whatsapp',
-          to: member.senderNumber,
-          type: 'template',
-          template: {
-            name: 'setting_login', 
-            language: {
-              code: 'en',
-            },
-            components: [
-              {
-                type: 'body',
-                parameters: [
+      if (otpSentRef.current) return; 
+      otpSentRef.current = true;
+      const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString(); 
+      setOtp(generatedOtp);
+  
+      // Loop through each admin number and send OTP
+      const promises = admins.map(async (admin) => {
+          try {
+              const response = await axios.post(
+                  WHATSAPP_API_URL,
                   {
-                    type: 'text',
-                    text: generatedOtp
+                      messaging_product: 'whatsapp',
+                      to: `91${admin.number}`, // Use the 'number' property of each admin object
+                      type: 'template',
+                      template: {
+                          name: 'setting_login', 
+                          language: {
+                              code: 'en',
+                          },
+                          components: [
+                              {
+                                  type: 'body',
+                                  parameters: [
+                                      {
+                                          type: 'text',
+                                          text: generatedOtp
+                                      },
+                                  ],
+                              }, 
+                              {
+                                  type: 'button',
+                                  sub_type: 'url',
+                                  index: '0',
+                                  parameters: [
+                                      {
+                                          type: 'text',
+                                          text: generatedOtp
+                                      }
+                                  ],
+                              },
+                          ],
+                      },
                   },
-                ],
-              }, {
-                "type": "button",
-                "sub_type": "url",
-                "index": "0",
-                "parameters": [
                   {
-                    "type": "text",
-                    "text": generatedOtp
+                      headers: {
+                          Authorization: `Bearer ${ACCESS_TOKEN}`,
+                          'Content-Type': 'application/json',
+                      },
                   }
-            ],
-          },
-          ],
-        },
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${ACCESS_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      if (response.status === 200) {
-      setOtpSent(true);
-      toast({
-        title: 'OTP sent',
-        variant:'default',
-      })
-    }
-    } catch (error:any) {
-      toast({
-        title: 'Failed to send OTP',
-        description: error.response?.data?.message || error.message || 'Something went wrong',
-        variant: 'destructive',
+              );
+  
+              if (response.status === 200) {
+                  // You can handle success for each number if needed
+                  console.log(`OTP sent to ${admin.number}`);
+              }
+          } catch (error:any) {
+              toast({
+                  title: 'Failed to send OTP',
+                  description: error.response?.data?.message || error.message || 'Something went wrong',
+                  variant: 'destructive',
+              });
+          }
       });
-    }
+  
+      // Wait for all OTP sending operations to complete
+      try {
+          await Promise.all(promises);
+          setOtpSent(true); 
+          toast({
+              title: 'All OTPs sent',
+              variant: 'default',
+          });
+      } catch (error) {
+          toast({
+              title: 'Error sending OTPs',
+              description: 'Some OTPs could not be sent.',
+              variant: 'destructive',
+          });
+      }
   };
+  
 
   // Function to verify OTP
   const verifyOtp = () => {
@@ -159,6 +179,7 @@ const Page = () => {
           <BookNumbers />
           <ChangeAdminPass />
           <AddPlaces/>
+          <AdminPhonenumbers/>
         </div>
       </div>
     </div>

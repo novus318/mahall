@@ -21,11 +21,6 @@ const page = () => {
               Here&apos;s a list of your Unpaid Collectons!
             </p>
           </div>
-          <Link href='/collection/transactions'
-            className='flex items-center gap-1 bg-gray-900 text-white py-1 px-3 rounded-md text-sm'>
-              <History className='h-4 w-4'/>
-            Transactions
-            </Link>
             <Link href='/collection/paid-collection'
             className='flex items-center gap-1 bg-gray-900 text-white py-1 px-3 rounded-md text-sm'>
               <Currency className='h-4 w-4'/>

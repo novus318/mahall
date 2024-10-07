@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { Button } from './ui/button';
 import { Banknote, BookIcon, Building, Home, HousePlusIcon, LayoutDashboard, LogOut,  MenuIcon, MessageCircle, ReceiptIndianRupeeIcon, SendIcon, Settings, User2Icon, X } from 'lucide-react';
 import { useRouter,usePathname } from 'next/navigation';
-import Image from 'next/image';
 
 const Sidebar: React.FC = () => {
   const router = useRouter();

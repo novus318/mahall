@@ -70,49 +70,82 @@ const Page = () => {
   }
 
   const confirmTransfer = async () => {
-    if(loading){
-      return;
+    if (loading) {
+        return;
     }
     setLoading(true);
-    if (selectedAccount && targetAccount) {
-      if (transferAmount || 0 <= selectedAccount.balance) {
-        const response = await axios.post(`${apiUrl}/api/account/inter-account-transfer`, {
-          fromAccount: selectedAccount,
-          toAccount: bank.find(acc => acc._id === targetAccount),
-          amount: transferAmount
-        });
-        if (response.data.success) {
-          fetchAccounts();
-          setShowTransferDialog(false);
-          setSelectedAccount(null);
-          setTargetAccount(null);
-          setTransferAmount(null);
-          toast({
-            title: 'Transfer successful',
-            variant:'default',
-          });
-          setLoading(false);
-        }else{
-          toast({
-            title: 'Failed to transfer',
-            description: response.data.message || 'Something went wrong try again',
-            variant: 'destructive',
-          });
-          setLoading(false);
-        }
-      } else {
+
+    // Validate that both accounts are selected
+    if (!selectedAccount || !targetAccount) {
         toast({
-          title: 'Insufficient balance',
-          variant: 'destructive',
+            title: 'Please select both a source and a target account',
+            variant: 'destructive',
         });
-      }
-    }else{
-      toast({
-        title: 'Please select a bank account and a target account',
-        variant: 'destructive',
-      });
+        setLoading(false);
+        return;
     }
-  }
+
+    // Validate that transferAmount is a positive number
+    const amount = Number(transferAmount);
+    if (isNaN(amount) || amount <= 0) {
+        toast({
+            title: 'Please enter a valid transfer amount greater than 0',
+            variant: 'destructive',
+        });
+        setLoading(false);
+        return;
+    }
+
+    // Validate that the selected account has enough balance
+    if (amount > selectedAccount.balance) {
+        toast({
+            title: 'Insufficient balance',
+            description: `Your account balance is only ${selectedAccount.balance}`,
+            variant: 'destructive',
+        });
+        setLoading(false);
+        return;
+    }
+
+    try {
+        // Make the API call to perform the transfer
+        const response = await axios.post(`${apiUrl}/api/account/inter-account-transfer`, {
+            fromAccount: selectedAccount,
+            toAccount: bank.find(acc => acc._id === targetAccount),
+            amount: amount,
+        });
+
+        // Handle success response
+        if (response.data.success) {
+            fetchAccounts();
+            setShowTransferDialog(false);
+            setSelectedAccount(null);
+            setTargetAccount(null);
+            setTransferAmount(null);
+            toast({
+                title: 'Transfer successful',
+                variant: 'default',
+            });
+        } else {
+            // Handle failure from the server response
+            toast({
+                title: 'Failed to transfer',
+                description: response.data.message || 'Something went wrong, please try again',
+                variant: 'destructive',
+            });
+        }
+    } catch (error: any) {
+        // Handle network or server errors
+        toast({
+            title: 'Transfer failed',
+            description: error?.response?.data?.message || error.message || 'An error occurred during the transfer',
+            variant: 'destructive',
+        });
+    } finally {
+        setLoading(false);
+    }
+};
+
 
 
   const saveEdit = async() => {
@@ -214,7 +247,7 @@ const Page = () => {
                        Amount
                     </Label>
               <Input
-                type="text"
+                type="number"
                 name="transferAmount"
                 placeholder="Transfer Amount"
                 value={transferAmount as any}

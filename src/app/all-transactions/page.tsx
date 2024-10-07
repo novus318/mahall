@@ -135,7 +135,7 @@ const TransactionPage = () => {
             <Page size="A4" style={styles.page}>
               {/* Header Section */}
               <View style={styles.header}>
-              <Image src="/VKJLOGO.png" style={styles.logo} />
+              <Image src="/vkgclean.png" style={styles.logo} />
             <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA</Text>
             <Text style={styles.headerText}>VELLAP, P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
             <Text style={styles.headerText}>Phone: +91 9876543210</Text>

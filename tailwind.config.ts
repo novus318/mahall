@@ -1,4 +1,5 @@
-import type { Config } from "tailwindcss"
+import { Config } from 'tailwindcss';
+import tailwindcssAnimate from 'tailwindcss-animate';
 
 const config = {
   darkMode: ["class"],
@@ -85,7 +86,24 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    tailwindcssAnimate, // Include the tailwindcss-animate plugin
+    function ({ addUtilities }:any) {
+      addUtilities({
+        '.no-spinner': {
+          '-moz-appearance': 'textfield',
+          '&::-webkit-inner-spin-button': {
+            '-webkit-appearance': 'none',
+            margin: '0',
+          },
+          '&::-webkit-outer-spin-button': {
+            '-webkit-appearance': 'none',
+            margin: '0',
+          },
+        },
+      });
+    },
+  ],
 } satisfies Config
 
 export default config

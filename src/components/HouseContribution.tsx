@@ -73,10 +73,11 @@ const HouseContribution = ({id,contribution}:any) => {
           <Document>
             <Page size="A5" style={styles.page}>
               <View style={styles.header}>
-                <Image src='/VKJ.jpeg' style={styles.logo} />
-                <Text style={styles.masjidName}>Juma Masjid, Vellap, Thrikkaripur</Text>
-                <Text style={styles.contact}>Phone: +91 9876543210</Text>
-                <View style={styles.separator} />
+              <Image src='/vkgclean.png' style={styles.logo} />
+              <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA</Text>
+            <Text style={styles.headerText}>VELLAP, P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
+            <Text style={styles.headerText}>Phone: +91 9876543210</Text>
+            <View style={styles.separator} />
               </View>
       
       
@@ -130,6 +131,10 @@ const HouseContribution = ({id,contribution}:any) => {
         header: {
           textAlign: 'center',
           marginBottom: 10,
+        },
+        headerText: {
+          fontSize: 10,
+          marginBottom: 4,
         },
         logo: {
           width: 60,

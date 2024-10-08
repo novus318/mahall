@@ -17,6 +17,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/u
 import { toast } from '@/components/ui/use-toast'
 import RequestAdvancePay from '@/components/RequestAdvancePay'
 import DownloadPayslip from '@/components/DownloadPayslip'
+import RepayAdvancePay from '@/components/RepayAdvancePay'
+import StaffResign from '@/components/StaffResign'
 
 
 interface PageProps {
@@ -33,13 +35,14 @@ interface Staff {
   department: string,
   position: string,
   salary: number,
+  status:string,
+  advancePayment:Number,
   joinDate: Date,
   contactInfo: {
     phone: string,
     email: string,
     address: string
   },
-  statusHistory: any[]
 }
 
 const SkeletonLoader = () => (
@@ -63,48 +66,17 @@ const PageComponent = ({ params }: PageProps) => {
     department: '',
     position: '',
     salary: 0,
+    advancePayment: 0,
     joinDate: new Date(),
     contactInfo: {
       phone: '',
       email: '',
       address: ''
     },
-    statusHistory: []
+    status:''
   })
   const [paySlips, setPaySlips] = useState<any>([])
   const [selectedStatus, setSelectedStatus] = useState('');
-
-  const handleStatusChange = async () => {
-    if (!selectedStatus) return;
-    setLoading(true)
-    try {
-      const res = await axios.put(`${apiUrl}/api/staff/update-status/${pid}`,{
-        newStatus: selectedStatus
-      })
-      if(res.data.success){
-        toast({
-          title: 'Success',
-          description: 'Staff status updated successfully',
-          variant:'default'
-        })
-        fetchStaffDetails()
-        setSelectedStatus('')
-        setLoading(false)
-      }
-  }catch(error:any){
-    toast({
-      title: 'Error',
-      description: error.response?.data?.message || error.message || 'something went wrong',
-      variant:'destructive'
-    })
-    setLoading(false)
-  }
-}
-
-  // Get the latest status to filter it out (assuming the latest status is the last in the array)
-  const latestStatus = staff?.statusHistory?.[staff.statusHistory.length - 1]?.status;
-  const statusOptions = ['Active', 'Inactive', 'On Leave'].filter(status => status !== latestStatus);
-
 
 
   const fetchStaffDetails = async () => {
@@ -133,24 +105,31 @@ const PageComponent = ({ params }: PageProps) => {
           <Link href={`/staff`} className="bg-gray-900 text-white rounded-sm py-2 px-3 text-sm">
             Back
           </Link>
-          <div className="flex space-x-1">
-         {staff?._id && 
-         <EditStaff staff={staff} fetchStaffDetails={fetchStaffDetails} />}
-           <RequestAdvancePay id={pid} salary={staff?.salary}/>
-          </div>
+       {staff?._id &&
+           <div className="flex space-x-1">
+           {staff?.status === 'Active' && 
+           (<>
+           <EditStaff staff={staff} fetchStaffDetails={fetchStaffDetails} />
+             <RequestAdvancePay id={pid} fetchStaffDetails={fetchStaffDetails}/>
+             <RepayAdvancePay id={pid} fetchStaffDetails={fetchStaffDetails} staff={staff}/>
+            <StaffResign id={pid}/>
+            </>)
+       }
+            </div>
+       }
         </div>
 
       </div>
       <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg border p-4 max-h-[430px]">
+          <div className={staff.status === 'Resigned' ? 'bg-red-50 rounded-lg border p-4' : 'bg-white rounded-lg border p-4'}>
             <div className="flex items-center mb-4">
               <Avatar className="h-16 w-16 mr-4">
                 <AvatarFallback>{staff?.name.substring(0, 1)}</AvatarFallback>
               </Avatar>
               <div>
                 <h2 className="text-base md:text-2xl font-bold">{staff?.name}</h2>
-                <p className="text-gray-500 text-sm">{staff?.department}</p>
+                <p className="text-gray-500 text-sm">{staff?.department} - {staff?.status}</p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -176,75 +155,26 @@ const PageComponent = ({ params }: PageProps) => {
               </div>
               <div>
                 <p className="text-gray-500 font-medium text-xs md:text-base">Salary</p>
-                <p className='text-xs md:text-base'>₹{staff?.salary}</p>
+                <p className='text-xs md:text-base'>₹{staff?.salary.toFixed(2)}</p>
               </div>
+              
               <div>
                 <p className="text-gray-500 font-medium text-xs md:text-base">Contact number</p>
                 <p className='text-xs md:text-base'>{staff?.contactInfo?.phone}</p>
               </div>
               <div>
-                <p className="text-gray-500 font-medium text-xs md:text-base">Contact email</p>
-                <p className='text-xs md:text-base'>{staff?.contactInfo?.email}</p>
+                <p className="text-gray-500 font-medium text-xs md:text-base">Advance Payment</p>
+                <p className='text-xs md:text-base'>₹{staff?.advancePayment ? (staff?.advancePayment.toFixed(2)): 0}</p>
               </div>
-            </div>
-            <div className='col-span-2'>
+              <div>
+                <p className="text-gray-500 font-medium text-xs md:text-base">Contact email</p>
+                <p className='text-xs md:text-base'>{staff?.contactInfo?.email || 'NIL'}</p>
+              </div>
+              <div>
               <p className="text-gray-500 font-medium text-xs md:text-base">Address</p>
               <p className='text-xs md:text-base'>{staff?.contactInfo?.address}</p>
             </div>
-          </div>
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle className='grid grid-cols-1 md:grid-cols-2 items-center'>
-                  <p className="text-base md:text-2xl font-bold">Attendance</p>
-                  <div className="flex items-center gap-4">
-            <Select onValueChange={setSelectedStatus}>
-              <SelectTrigger className="w-40">
-                <span>{selectedStatus || 'Select Status'}</span>
-              </SelectTrigger>
-              <SelectContent>
-                {statusOptions.map(status => (
-                  <SelectItem key={status} value={status}>
-                    {status}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button size="sm" onClick={handleStatusChange} disabled={!selectedStatus || loading}>
-              {loading ? <Loader2 className='animate-spin'/> : 'Update Status'}
-            </Button>
-          </div>
-                </CardTitle>
-                <CardDescription>View employee attendance records.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date Range</TableHead>
-                      <TableHead>Attendance</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {staff?.statusHistory?.slice(0)
-      .reverse().map((history) => (
-                      <TableRow key={history?._id}>
-                        <TableCell>
-                          <div>
-                            {format(history?.startDate, 'PP')} - {history?.endDate ? format(history?.endDate, 'PP') : 'Present'}
-                          </div>
-
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{history?.status}</Badge>
-                        </TableCell>
-                      </TableRow>
-
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            </div>
           </div>
           <div>
       <PendingSalaries id={pid} fetchStaffDetails={fetchStaffDetails}/>
@@ -269,10 +199,11 @@ const PageComponent = ({ params }: PageProps) => {
                         {pay?.status === 'Paid' ? (
                           <DownloadPayslip payslip={pay} staff={staff}/>
                         ) : (
-                          <Button
-                            disabled variant="destructive" size="sm">
-                            Rejected
-                          </Button>
+                          <div
+                          className='font-semibold text-red-500'
+                          >
+                            Rejected due to {pay?.rejectionReason}
+                          </div>
                         )}
                       </TableCell>
                     </TableRow>

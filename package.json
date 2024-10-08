@@ -33,8 +33,9 @@
     "file-saver": "^2.0.5",
     "framer-motion": "^11.5.4",
     "html-to-image": "^1.11.11",
+    "html2canvas": "^1.4.1",
     "lucide-react": "^0.427.0",
-    "next": "14.2.5",
+    "next": "^14.2.14",
     "next-i18next": "^15.3.1",
     "qrcode.react": "^4.0.1",
     "react": "^18",
@@ -47,7 +48,7 @@
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "whatsapp-cloud-api": "^0.3.1",
+    "whatsapp-cloud-api": "^0.0.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {

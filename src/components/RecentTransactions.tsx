@@ -5,6 +5,8 @@ import { Skeleton } from './ui/skeleton';
 import { format } from 'date-fns';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Span } from 'next/dist/trace';
 
 
 interface Transaction {
@@ -13,6 +15,7 @@ interface Transaction {
     amount: number;
     type: 'Credit' | 'Debit';
     date: string;
+    reference:string
   }
 
 
@@ -34,6 +37,7 @@ interface Transaction {
     );
   };
 const RecentTransactions = () => {
+  const router = useRouter()
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(true);
@@ -63,6 +67,9 @@ const RecentTransactions = () => {
       return type === 'Credit' ? `+${amount}` : `-${amount}`;
     };
   
+    const handleReferenceClick = (reference: string) => {
+      router.push(reference)
+    };
     if (loading) return <TransactionsSkeleton />;
 
   return (
@@ -87,12 +94,18 @@ const RecentTransactions = () => {
       const { dayMonthYear, time } = formatDate(transaction?.date);
       const formattedAmount = formatAmount(transaction?.amount, transaction?.type);
       return (
-        <TableRow key={transaction._id}>
+        <TableRow key={transaction._id}
+        onClick={
+          transaction?.reference
+            ? (e: any) =>
+                handleReferenceClick(transaction.reference!)
+            : undefined
+        }>
           <TableCell>
             <div className='text-sm'>{dayMonthYear}</div>
             <div className="text-xs text-gray-500">{time}</div>
           </TableCell>
-          <TableCell className='text-xs'>{transaction?.description}</TableCell>
+          <TableCell className='text-xs'>{transaction?.description} {transaction?.reference && (<span className='text-blue-700 underline'>reference</span>)}</TableCell>
           <TableCell className={transaction?.type === 'Credit' ? 'text-green-700 font-bold' : 'text-red-600 font-bold'}>
             {formattedAmount}
           </TableCell>

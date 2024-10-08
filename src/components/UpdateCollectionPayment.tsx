@@ -167,6 +167,7 @@ if(!otpVerified){
     setEnteredOtp('');
     setOtp('');
     otpSentRef.current = false;
+    setRejectionReason('');
   };
 
   return (

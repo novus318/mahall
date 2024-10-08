@@ -9,7 +9,6 @@ import axios from 'axios'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { toast } from './ui/use-toast'
 
-
 interface BankAccount {
     _id: string;
     accountNumber: string;
@@ -22,13 +21,14 @@ interface BankAccount {
     primary:boolean;
   }
 
-const RequestAdvancePay = ({id,fetchStaffDetails}:any) => {
+const RepayAdvancePay = ({id,fetchStaffDetails,staff}:any) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [amount, setAmount] = useState(0);
     const [loading, setLoading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [bank, setBank] = useState<BankAccount[]>([])
     const [targetAccount, setTargetAccount] = useState<any>(null);
+
 
     const fetchAccounts = () => {
         axios.get(`${apiUrl}/api/account/get`).then(response => {
@@ -43,10 +43,8 @@ const RequestAdvancePay = ({id,fetchStaffDetails}:any) => {
       }, [])
 
       const handleSubmit = async () => {
-        setLoading(true);
         const bankBalance:any = bank.find(acc => acc._id === targetAccount)
         if (!targetAccount || amount <= 0) {
-          setLoading(false);
           toast({
             title: 'Error',
             description: 'Please fill in all required fields',
@@ -54,8 +52,15 @@ const RequestAdvancePay = ({id,fetchStaffDetails}:any) => {
           });
           return;
         }
+        if(amount > staff?.advancePayment){
+          toast({
+            title: 'Error',
+            description: 'The amount to be repaid cannot be more than the advance payment amount',
+            variant: 'destructive',
+          });
+          return;
+        }
         if (bankBalance?.balance < amount) {
-            setLoading(false);
           toast({
             title: 'Error',
             description: 'Insufficient balance in the selected account',
@@ -64,12 +69,13 @@ const RequestAdvancePay = ({id,fetchStaffDetails}:any) => {
           return;
           }
         try {
-         const res = await axios.post(`${apiUrl}/api/staff/request-advance-pay/${id}`, { amount, targetAccount });
+            setLoading(true);
+         const res = await axios.post(`${apiUrl}/api/staff/repay-advance-pay/${id}`, { amount, targetAccount });
          if (res.data.success) {
             setLoading(false);
             setIsOpen(false);
             toast({
-              title: 'Advance request sent successfully',
+              title: 'Advance Repayment successfully',
               variant: 'default',
             });
             fetchStaffDetails()
@@ -77,24 +83,26 @@ const RequestAdvancePay = ({id,fetchStaffDetails}:any) => {
         } catch (error:any) {
             setLoading(false);
           toast({
-            title: 'Failed to send advance request',
+            title: 'Failed to repay advance',
             description: error.response?.data?.message || error.message || 'something went wrong',
             variant: 'destructive',
           });
         }
       };
+
+
   return (
-    <Dialog open={isOpen} onOpenChange={(v) => setIsOpen(v)}>
+     <Dialog open={isOpen} onOpenChange={(v) => setIsOpen(v)}>
     <DialogTrigger asChild>
     <Button
               size='sm'>
               <IndianRupee className="h-4 w-4 mr-2" />
-            Advance pay
+            Repay advance
             </Button>
     </DialogTrigger>
     <DialogContent>
         <DialogTitle>
-            Advance salary payment
+            Repay advance payment
         </DialogTitle>
         <div>
                 <Label>
@@ -148,4 +156,4 @@ const RequestAdvancePay = ({id,fetchStaffDetails}:any) => {
   )
 }
 
-export default RequestAdvancePay
+export default RepayAdvancePay

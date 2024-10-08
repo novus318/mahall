@@ -18,7 +18,6 @@ interface Staff {
     department: string,
     position: string,
     salary: number,
-    firstSalary: number, 
     joinDate: Date,
     contactInfo: {
         phone: string,
@@ -39,7 +38,6 @@ const Page = () => {
         department: '',
         position: '',
         salary: 0,
-        firstSalary:0,
         joinDate: new Date(),
         contactInfo: {
             phone: '',
@@ -106,13 +104,6 @@ const Page = () => {
             });
             isValid = false;
         }
-        if (!staff.contactInfo.email) {
-            toast({
-                title: 'Email address is required',
-                variant: 'destructive',
-            });
-            isValid = false;
-        }
         if (!staff.contactInfo.address) {
             toast({
                 title: 'Address is required',
@@ -148,10 +139,10 @@ const Page = () => {
 
 
     const handleSubmit = async (e: React.FormEvent) => {
-        setLoading(true);
         e.preventDefault();
         if (!validate()) return;
         try {
+            setLoading(true);
             const response = await axios.post(`${apiUrl}/api/staff/create`, staff); 
             if (response.data.success) {
                 toast({
@@ -165,7 +156,6 @@ const Page = () => {
                     department: '',
                     position: '',
                     salary: 0,
-                    firstSalary:0,
                     joinDate: new Date(),
                     contactInfo: {
                         phone: '',
@@ -274,19 +264,6 @@ const Page = () => {
                             value={staff.salary ===0 ? '': staff?.salary}
                             onChange={handleChange}
                             placeholder='Salary'
-                            className='w-full'
-                        />
-                    </div>
-                    <div className='mb-4'>
-                        <Label>
-                          First Salary
-                        </Label>
-                        <Input
-                            type='text'
-                            name='firstSalary'
-                            value={staff.firstSalary ===0 ? '' :staff?.firstSalary}
-                            onChange={handleChange}
-                            placeholder='First Salary'
                             className='w-full'
                         />
                     </div>

@@ -95,11 +95,14 @@ const PageComponent = ({ params }: PageProps) => {
       const doc = (
         <Document>
         <Page size="A5" style={styles.page}>
-        <View style={styles.header}>
-            <Image src='/VKJ.jpeg' style={styles.logo} />
-            <Text style={styles.contact}>Juma Masjid, Vellap, Thrikkaripur</Text>
-            <Text style={styles.contact}>Phone: +91 9876543210</Text>
+          <View style={styles.header}>
+            <Image src='/vkgclean.png' style={styles.logo} />
+            <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA</Text>
+          <Text style={styles.headerText}>VELLAP, P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
+          <Text style={styles.headerText}>Phone: +91 9876543210</Text>
+          <View style={styles.separator} />
           </View>
+  
   
           <View style={styles.dateSection}>
             <View>
@@ -108,9 +111,13 @@ const PageComponent = ({ params }: PageProps) => {
             </View>
             <Text style={styles.receiptNumber}>Receipt No: {collection?.receiptNumber}</Text>
           </View>
-          <View style={styles.separator} />
+          <View style={styles.fromSection}>
+            <Text style={styles.fromText}>From: {collection?.memberId?.name}</Text>
+          </View>
+          <View style={styles.details}>
+            <Text style={styles.detailsHeading}>Details:</Text>
+          </View>
   
-          <View>
           <View style={styles.table}>
             <View style={styles.tableRow}>
               <Text style={[styles.tableCell, styles.descriptionCell]}>Description</Text>
@@ -121,15 +128,14 @@ const PageComponent = ({ params }: PageProps) => {
               <Text style={[styles.tableCell, styles.amountCell]}>{collection?.amount.toFixed(2)}</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, styles.descriptionCell, styles.total]}>Total:</Text>
+              <Text style={[styles.tableCell, styles.descriptionCell]}>Total</Text>
               <Text style={[styles.tableCell, styles.amountCell, styles.total]}>₹{collection?.amount.toFixed(2)}</Text>
             </View>
           </View>
-        </View>
   
-        <View style={styles.footer}>
+          <View style={styles.regards}>
             <Text>Regards,</Text>
-            <Text style={styles.signature}>VKJ</Text>
+            <Text>VKJ</Text>
           </View>
         </Page>
       </Document>
@@ -142,76 +148,94 @@ const PageComponent = ({ params }: PageProps) => {
       page: {
         padding: 20,
         fontFamily: 'Roboto',
-        fontSize: 12,
-        lineHeight: 1.6,
+        fontSize: 10, // Ensure smaller size for A5
       },
       header: {
         textAlign: 'center',
-        marginBottom: 5,
+        marginBottom: 10,
+      },
+      headerText: {
+        fontSize: 10,
+        marginBottom: 4,
       },
       logo: {
-        width: 50,
-        height: 50,
+        width: 60,
+        height: 60,
         alignSelf: 'center',
       },
+      masjidName: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: '#000',
+        marginTop: 8,
+      },
       contact: {
-        fontSize: 11,
-        color: '#9CA3AF',
+        fontSize: 10,
+        color: '#555',
+        marginTop: 3,
       },
       separator: {
-        borderBottom: '1px solid #E5E7EB',
-        marginVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E5E7EB',
+        marginVertical: 8,
+      },
+      fromSection: {
+        marginBottom: 10,
+        textAlign: 'left',
+      },
+      fromText: {
+        fontSize: 12,
+        color: '#333',
       },
       dateSection: {
-        textAlign: 'right',
-        marginBottom: 15,
+        marginBottom: 12,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
       },
       dateText: {
-        fontSize: 11,
-        color: '#4B5563',
+        fontSize: 10,
       },
       receiptNumber: {
-        fontSize: 9,
+        fontSize: 10,
         textAlign: 'right',
-        color: '#4B5563',
+      },
+      details: {
+        fontSize: 12,
+        marginBottom: 8,
+      },
+      detailsHeading: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        marginBottom: 6,
       },
       table: {
         width: '100%',
         borderRadius: 5,
         border: '1px solid #ccc',
-        marginBottom: 10,
-        marginTop: 5,
+        marginBottom: 15,
       },
       tableRow: {
         flexDirection: 'row',
         borderBottom: '1px solid #ccc',
-        overflow: 'hidden',
       },
       tableCell: {
-        padding: 10,
+        padding: 6,
         fontSize: 9,
       },
       descriptionCell: {
-        width: '80%',
+        width: '75%',
       },
       amountCell: {
-        width: '20%',
+        width: '25%',
         textAlign: 'right',
       },
       total: {
         fontSize: 10,
         fontWeight: 'bold',
-        textAlign: 'right',
       },
-      footer: {
-        textAlign: 'left',
+      regards: {
+        marginTop: 15,
         fontSize: 10,
-      },
-      signature: {
-        fontWeight: 'bold',
-        fontSize: 12,
-        color: '#4B5563',
-        marginTop: 5,
       },
     });
 
@@ -219,7 +243,7 @@ const PageComponent = ({ params }: PageProps) => {
   return (
     <div className="container mx-auto p-4">
        <div className="mb-4 flex justify-between items-center">
-        <h2 className="text-lg md:text-2xl font-semibold mb-4">Kudi Pirivu of {(collections ? collections[0]?.memberId?.name : '')}</h2>
+        <h2 className="text-lg md:text-2xl font-semibold mb-4">Tution Fees of {(collections ? collections[0]?.memberId?.name : '')}</h2>
       </div>
    <div className='rounded-t-md bg-gray-100 p-1'>
    <Table className="bg-white">

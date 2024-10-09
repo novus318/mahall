@@ -1,17 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { Banknote, BookIcon, BookImageIcon, BookOpen, Building, Building2, Home, HousePlusIcon, LayoutDashboard, LogOut,  MenuIcon, MessageCircle, ReceiptIndianRupeeIcon, SendIcon, Settings, User2Icon, X } from 'lucide-react';
+import { Banknote, BookIcon,  BookOpen,  Building2, Home, LayoutDashboard, LogOut,  MenuIcon, MessageCircle, ReceiptIndianRupeeIcon, SendIcon, Settings, User2Icon, X } from 'lucide-react';
 import { useRouter,usePathname } from 'next/navigation';
 
 const Sidebar: React.FC = () => {
   const router = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL
   const [isOpen, setIsOpen] = useState(false);
-
+  const [messageCount, setMessageCount] = useState<number>(0);
   const CurrentPage = (path: string): boolean => {
     const pathname = usePathname()
     return pathname === path;
   };
+
+  const fetchMessageCount = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/api/message/messages/count`);
+      const data = await response.json();
+      setMessageCount(data.count || 0);
+    } catch (error) {
+      console.error('Failed to fetch message count:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMessageCount();
+    const interval = setInterval(() => {
+      fetchMessageCount();
+    }, 30000);
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -161,14 +180,19 @@ const Sidebar: React.FC = () => {
             </Link>
           </li>
           <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/messages">
+          <Link href="/messages">
               <div
-                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/messages') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
+                className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+                  CurrentPage('/messages') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
                 }`}
               >
                 <MessageCircle className="mr-3" />
                 <span className="text-lg">Message</span>
+                {messageCount > 0 && (
+                  <span className="ml-2 bg-slate-700 text-white rounded-sm text-xs px-2 py-0.5">
+                    {messageCount}
+                  </span>
+                )}
               </div>
             </Link>
           </li>

@@ -44,6 +44,8 @@ interface PageProps {
 const PageComponent = ({ params }: PageProps) => {
   const { pid, roomId } = params;
   const [room, setRoom] = useState<any>(null);
+  const [buildingName, setBuildingName] = useState<any>(null);
+  const [buildingID,setBuildingID] = useState<any>(null)
   const [contractDetails, setContractDetails] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -56,6 +58,8 @@ const PageComponent = ({ params }: PageProps) => {
       const activeContract = room.contractHistory.find((contract: any) => contract.status === 'active');
       if (activeContract) {
         setContractDetails(activeContract);
+        setBuildingID(room.buildingID)
+        setBuildingName(room.buildingName)
       }
       setRoom(room);
     } catch (error) {
@@ -84,9 +88,12 @@ const PageComponent = ({ params }: PageProps) => {
           <Link href={`/rent`} className="bg-gray-900 text-white rounded-sm py-2 px-3 text-sm">
             Back
           </Link>
-          <div className="flex space-x-1">
+          <div className="grid">
             <h4 className='font-bold text-muted-foreground'>
               Room number: {room?.roomNumber}
+            </h4>
+            <h4 className='font-bold text-muted-foreground'>
+              Building: {buildingID} - {buildingName}
             </h4>
           </div>
         </div>
@@ -109,7 +116,7 @@ const PageComponent = ({ params }: PageProps) => {
             <div className="grid gap-8">
               <div className="grid gap-4">
                 <div>
-                  <h1 className="text-2xl font-bold">Rental Contract Details</h1>
+                  <h1 className="text-2xl font-bold">Rental Contract Details - {contractDetails?.shop}</h1>
                   <div className="text-base font-bold space-x-2">
                     {contractDetails?.to && isBefore(new Date(contractDetails.to), new Date()) ? (
                       <>

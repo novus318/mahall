@@ -108,12 +108,12 @@ const PageComponent = ({ params }: PageProps) => {
        {staff?._id &&
            <div className="flex space-x-1">
            {staff?.status === 'Active' && 
-           (<>
+           (<div className='grid grid-cols-2 gap-2 md:grid-cols-4'>
            <EditStaff staff={staff} fetchStaffDetails={fetchStaffDetails} />
              <RequestAdvancePay id={pid} fetchStaffDetails={fetchStaffDetails}/>
              <RepayAdvancePay id={pid} fetchStaffDetails={fetchStaffDetails} staff={staff}/>
             <StaffResign id={pid}/>
-            </>)
+            </div>)
        }
             </div>
        }

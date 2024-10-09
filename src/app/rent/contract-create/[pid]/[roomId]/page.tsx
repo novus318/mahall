@@ -28,9 +28,9 @@ const PageComponent = ({ params }: PageProps) => {
     const [contract, setContract] = useState({
         fromDate: '',
         toDate: '',
-        rent: 0,
-        firstRent:0,
-        deposit: 0,
+        rent: null,
+        shop:'',
+        deposit: null,
         tenant: {
             name: '',
             aadhaar: '',
@@ -141,7 +141,7 @@ const PageComponent = ({ params }: PageProps) => {
                 to: contract.toDate,
                 tenant: contract.tenant,
                 rent: contract.rent,
-                firstRent:contract.firstRent,
+                shop:contract.shop,
                 deposit: contract.deposit,
             }
             const response = await axios.post(`${apiUrl}/api/rent/add-contract/${pid}/${roomId}`, data);
@@ -153,9 +153,9 @@ const PageComponent = ({ params }: PageProps) => {
                 setContract({
                     fromDate: '',
                     toDate: '',
-                    rent: 0,
-                    firstRent: 0,
-                    deposit: 0,
+                    rent: null,
+                   shop:'',
+                    deposit: null,
                     tenant: {
                         name: '',
                         aadhaar: '',
@@ -204,9 +204,9 @@ const PageComponent = ({ params }: PageProps) => {
                                 Rent
                             </Label>
                             <Input
-                                type='text'
+                                type='number'
                                 name='rent'
-                                value={contract.rent ===0 ? '' : contract.rent}
+                                value={contract.rent||''}
                                 placeholder='Rent Amount'
                                 onChange={handleChange}
                                 className='block w-full border px-2 py-4 rounded-md shadow-sm  sm:text-sm'
@@ -217,9 +217,9 @@ const PageComponent = ({ params }: PageProps) => {
                                 Deposit
                             </Label>
                             <Input
-                                type='text'
+                                type='number'
                                 name='deposit'
-                                value={contract.deposit === 0 ? '': contract.deposit}
+                                value={contract.deposit||''}
                                 placeholder='Deposit Amount'
                                 onChange={handleChange}
                                 className='block w-full border px-2 py-4 rounded-md shadow-sm  sm:text-sm'
@@ -228,13 +228,13 @@ const PageComponent = ({ params }: PageProps) => {
                     </div>
                     <div>
                             <Label>
-                                First Rent
+                                Shop name
                             </Label>
                             <Input
                                 type='text'
-                                name='firstRent'
-                                value={contract.firstRent ===0 ? '' : contract.firstRent}
-                                placeholder='Rent Amount'
+                                name='shop'
+                                value={contract.shop}
+                                placeholder='Shop Name'
                                 onChange={handleChange}
                                 className='block w-full border px-2 py-4 rounded-md shadow-sm  sm:text-sm'
                             />

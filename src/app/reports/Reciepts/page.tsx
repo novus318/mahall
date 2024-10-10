@@ -137,7 +137,7 @@ const fetchInitialReciepts = async () => {
         <Page size="A4" style={styles.page}>
           {/* Header Section */}
           <View style={styles.header}>
-            <Image src="/VKJLOGO.png" style={styles.logo} />
+            <Image src="/vkgclean.png" style={styles.logo} />
             <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA</Text>
             <Text style={styles.headerText}>VELLAP, P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
             <Text style={styles.headerText}>Phone: +91 9876543210</Text>
@@ -149,6 +149,7 @@ const fetchInitialReciepts = async () => {
             <Text style={[styles.tableHeaderItem, styles.dateColumn]}>Date</Text>
             <Text style={[styles.tableHeaderItem, styles.receiptColumn]}>Receipt No.</Text>
             <Text style={[styles.tableHeaderItem, styles.categoryColumn]}>Category</Text>
+            <Text style={[styles.tableHeaderItem, styles.categoryColumn]}>Status</Text>
             <Text style={[styles.tableHeaderItem, styles.fromColumn]}>From</Text>
             <Text style={[styles.tableHeaderItem, styles.amountColumn]}>Amount</Text>
           </View>
@@ -161,6 +162,7 @@ const fetchInitialReciepts = async () => {
                 <Text style={[styles.tableItem, styles.dateColumn]}>{dayMonthYear}</Text>
                 <Text style={[styles.tableItem, styles.receiptColumn]}>{receipt?.receiptNumber}</Text>
                 <Text style={[styles.tableItem, styles.categoryColumn]}>{receipt?.categoryId?.name}</Text>
+                <Text style={[styles.tableItem, styles.categoryColumn]}>{receipt?.status}</Text>
                 <Text style={[styles.tableItem, styles.fromColumn]}>
                   {receipt?.memberId ? receipt?.memberId?.name : receipt?.otherRecipient?.name}
                 </Text>
@@ -175,7 +177,7 @@ const fetchInitialReciepts = async () => {
     );
   
     const blob = await pdf(doc).toBlob();
-    saveAs(blob, "Reciepts.pdf");
+    saveAs(blob, `Receipt-Report-from ${formatDate(fromDate).dayMonthYear ? formatDate(fromDate).dayMonthYear : 'Invalid date'} to ${formatDate(toDate).dayMonthYear ? formatDate(toDate).dayMonthYear : 'Invalid date'}.pdf`);
   };
   
   const styles = StyleSheet.create({
@@ -237,7 +239,7 @@ const fetchInitialReciepts = async () => {
       width: "20%",
     },
     categoryColumn: {
-      width: "20%",
+      width: "15%",
     },
     fromColumn: {
       width: "25%",
@@ -328,7 +330,13 @@ const fetchInitialReciepts = async () => {
           <div className='text-sm'>₹{(reciept?.amount).toFixed(2)}</div>
         </TableCell>
         <TableCell>
-       <SingleReciept reciept={reciept}/>
+       {reciept?.status === 'Completed' ? (
+        <SingleReciept reciept={reciept}/>
+       ):(
+        <div>
+          {reciept?.status}
+        </div>
+       )}
         </TableCell>
       </TableRow>
       )

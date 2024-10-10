@@ -199,6 +199,17 @@ const Page = () => {
     <option value='Masters'>Masters</option>
     <option value='PhD'>PhD</option>
   </select>
+  <select
+    value={educationFilter}
+    onChange={(e) => setEducationFilter(e.target.value)}
+    className='p-2 border border-gray-300 bg-white rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+  >
+    <option value=''>Filter by Madrassa</option>
+    <option value='Not studied'>Not studied</option>
+    <option value='Below 5th'>Below 5th</option>
+    <option value='Above 5th'>Above 5th</option>
+    <option value='Above 10th'>Above 10th</option>
+  </select>
 
   {/* Place Filter */}
   <select

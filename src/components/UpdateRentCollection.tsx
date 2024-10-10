@@ -273,6 +273,7 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections }: a
                                 <p className='text-sm'>Leave deduction: ₹{leaveDeduction.toFixed(2)}</p>
                             </div>
 
+                           {selectedCollection?.advancePayment > 0 &&
                             <div>
                                 <Label>Advance Deduction</Label>
                                 <Input
@@ -282,7 +283,7 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections }: a
                                     value={advanceRepayment || ''}
                                     onChange={(e: any) => setAdvanceRepayment(e.target.value)}
                                 />
-                            </div>
+                            </div>}
                         </div>
                         <h4 className='font-semibold text-muted-foreground'>Amount : ₹{amount}</h4>
                     </div>)}

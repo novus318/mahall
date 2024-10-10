@@ -19,6 +19,10 @@ interface BankAccount {
     name: string;
     primary: boolean;
   }
+
+  interface FormDataType {
+    deduction: number | null;
+  }
 const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails}:any) => {
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -27,9 +31,7 @@ const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails}:a
     const [targetAccount, setTargetAccount] = useState<string | null>(null);
     const [RecieptCategories, setRecieptCategories] = useState<any[]>([]);
     const [targetCategory, setTargetCategory] = useState<string | null>(null);
-    const [formData, setFormData] = useState({
-      deduction:null,
-    });
+    const [formData, setFormData] = useState<FormDataType>({ deduction: null });
 
     const fetchAccounts = () => {
         axios.get(`${apiUrl}/api/account/get`).then(response => {

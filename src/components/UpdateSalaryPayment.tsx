@@ -153,6 +153,13 @@ const UpdateSalaryPayment = ({ fetchSalary, salary }: any) => {
       });
       return;
     }
+    if(selectedSalary?.staffId.advancePayment < (advanceRepayment||0)){
+      toast({
+        title: 'Advance repayment amount cannot be more than advance payment',
+        variant: 'destructive',
+      });
+      return;
+    }
     setBtLoading(true);
     try {
       const response = await axios.put(`${apiUrl}/api/staff/update/salary/${selectedSalary?._id}`, {
@@ -259,17 +266,19 @@ const UpdateSalaryPayment = ({ fetchSalary, salary }: any) => {
               <p className='text-sm'>Leave deduction: ₹{leaveDeduction.toFixed(2)}</p>
             </div>
 
-            <div>
-              <Label>Advance Repayment</Label>
-              <Input
-                type="number"
-                max={selectedSalary?.staffId?.advancePayment} // Ensure repayment does not exceed advance payment
-                placeholder="Repayment amount"
-                value={advanceRepayment || ''} // Show empty string for 0
-                onChange={(e: any) => setAdvanceRepayment(e.target.value)}
-              />
-              <p className='text-sm'>Advance Balance: ₹{selectedSalary?.staffId?.advancePayment ? (selectedSalary?.staffId?.advancePayment.toFixed(2)) : 0}</p>
-            </div>
+           {selectedSalary?.staffId?.advancePayment > 0 && 
+             <div>
+             <Label>Advance Repayment</Label>
+             <Input
+               type="number"
+               max={selectedSalary?.staffId?.advancePayment} // Ensure repayment does not exceed advance payment
+               placeholder="Repayment amount"
+               value={advanceRepayment || ''} // Show empty string for 0
+               onChange={(e: any) => setAdvanceRepayment(e.target.value)}
+             />
+             <p className='text-sm'>Advance Balance: ₹{selectedSalary?.staffId?.advancePayment ? (selectedSalary?.staffId?.advancePayment.toFixed(2)) : 0}</p>
+           </div>
+           }
 
             <h4 className='font-semibold text-muted-foreground'>Net Pay: ₹{netPay.toFixed(2)}</h4>
           </div>)}

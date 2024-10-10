@@ -136,7 +136,7 @@ const fetchInitialPayments = async () => {
         <Page size="A4" style={styles.page}>
           {/* Header Section */}
           <View style={styles.header}>
-            <Image src="/VKJLOGO.png" style={styles.logo} />
+            <Image src="/vkgclean.png" style={styles.logo} />
             <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA</Text>
             <Text style={styles.headerText}>VELLAP, P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
             <Text style={styles.headerText}>Phone: +91 9876543210</Text>
@@ -148,6 +148,7 @@ const fetchInitialPayments = async () => {
             <Text style={[styles.tableHeaderItem, styles.dateColumn]}>Date</Text>
             <Text style={[styles.tableHeaderItem, styles.receiptColumn]}>Receipt No.</Text>
             <Text style={[styles.tableHeaderItem, styles.categoryColumn]}>Category</Text>
+            <Text style={[styles.tableHeaderItem, styles.categoryColumn]}>Status</Text>
             <Text style={[styles.tableHeaderItem, styles.fromColumn]}>To</Text>
             <Text style={[styles.tableHeaderItem, styles.amountColumn]}>Amount</Text>
           </View>
@@ -160,8 +161,9 @@ const fetchInitialPayments = async () => {
                 <Text style={[styles.tableItem, styles.dateColumn]}>{dayMonthYear}</Text>
                 <Text style={[styles.tableItem, styles.receiptColumn]}>{receipt?.receiptNumber}</Text>
                 <Text style={[styles.tableItem, styles.categoryColumn]}>{receipt?.categoryId?.name}</Text>
+                <Text style={[styles.tableItem, styles.categoryColumn]}>{receipt?.status}</Text>
                 <Text style={[styles.tableItem, styles.fromColumn]}>
-                  {receipt?.memberId ? receipt?.memberId?.name : receipt?.otherRecipient?.name}
+                  {receipt?.paymentTo}
                 </Text>
                 <Text style={[styles.tableItem, styles.amountColumn]}>
                   ₹{(receipt?.total).toFixed(2)}
@@ -174,7 +176,7 @@ const fetchInitialPayments = async () => {
     );
   
     const blob = await pdf(doc).toBlob();
-    saveAs(blob, "Payments.pdf");
+    saveAs(blob, `Payments From ${formatDate(fromDate).dayMonthYear ? formatDate(fromDate).dayMonthYear : 'Invalid date'} - To ${formatDate(toDate).dayMonthYear ? formatDate(toDate).dayMonthYear : 'Invalid date'}.pdf`);
   };
   
   const styles = StyleSheet.create({
@@ -236,7 +238,7 @@ const fetchInitialPayments = async () => {
       width: "20%",
     },
     categoryColumn: {
-      width: "20%",
+      width: "15%",
     },
     fromColumn: {
       width: "25%",
@@ -300,6 +302,7 @@ const fetchInitialPayments = async () => {
     <TableHead className="font-medium">Date</TableHead>
     <TableHead className="font-medium">Reciept No.</TableHead>
     <TableHead className="font-medium">Category</TableHead>
+    <TableHead className="font-medium">status</TableHead>
     <TableHead className="font-medium">To</TableHead>
     <TableHead className="font-medium">Amount</TableHead>
   </TableRow>
@@ -320,8 +323,11 @@ const fetchInitialPayments = async () => {
           <div className='text-sm'>{payment?.categoryId.name}</div>
         </TableCell>
         <TableCell>
+          <div className='text-sm'>{payment?.status}</div>
+        </TableCell>
+        <TableCell>
           <div className='text-sm'>
-            {payment?.memberId? payment?.memberId?.name : payment?.otherRecipient?.name}
+          {payment?.paymentTo}
           </div>
         </TableCell>
         <TableCell>

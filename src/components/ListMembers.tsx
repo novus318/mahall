@@ -132,7 +132,7 @@ const ListMembers = ({ members, familyHead }: any) => {
           </div>
           <div className="flex gap-2">
             <span className="font-medium">Madrassa:</span>
-            <span>{selectedMember?.madrassa?.studying ? `Studying ${selectedMember?.madrassa?.currentClass} class`: `Studied ${selectedMember?.madrassa?.lastClassStudied} class`}</span>
+            <span>{selectedMember?.madrassa.level} / {selectedMember?.madrassa?.description}</span>
           </div>
           <div className="flex gap-2">
             <span className="font-medium">Marital Status:</span>

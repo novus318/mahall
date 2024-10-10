@@ -2,13 +2,13 @@
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { toast } from '@/components/ui/use-toast';
 import { withAuth } from '@/components/withAuth'
 import axios from 'axios';
-import { format, isSameMonth } from 'date-fns';
+import { format, } from 'date-fns';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect,  useState } from 'react'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import RejectPayment from '@/components/RejectPayment';
 
 
 const RecentPaymentsSkeleton: React.FC = () => {
@@ -61,33 +61,32 @@ const Page = () => {
     };
   };
 
-  // Check if payment date is in the current month
-  const isPaymentInCurrentMonth = (dateString: any) => {
-    const paymentDate = new Date(dateString);
-    return isSameMonth(paymentDate, new Date());
+
+
+
+  const isInCurrentMonthAndWithin30Days = (paymentDate:any) => {
+    const today = new Date();
+    const payment = new Date(paymentDate);
+  
+    // Calculate the start of the current month
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    // Calculate the end of the current month
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  
+    // Calculate the date that is 30 days after the payment date
+    const thirtyDaysAfterPayment = new Date(payment);
+    thirtyDaysAfterPayment.setDate(thirtyDaysAfterPayment.getDate() + 30);
+  
+    // Check if the payment date is in the current month
+    const isPaymentInCurrentMonth = payment >= startOfMonth && payment <= endOfMonth;
+  
+    // Check if today is within 30 days of the payment date
+    const isWithin30Days = today <= thirtyDaysAfterPayment;
+  
+    return isPaymentInCurrentMonth && isWithin30Days;
   };
-
-  const handleReject = async (paymentId: string) => {
-    const isConfirmed = window.confirm('Are you sure you want to reject this payment?');
-
-    if (!isConfirmed) return; 
-    try {
-      setLoading(true)
-      const response = await axios.put(`${apiUrl}/api/pay/reject-payment/${paymentId}`);
-    if(response.data.success){
-      fetchPayments();
-      setLoading(false)
-    }
-    } catch (error:any) {
-      setLoading(false)
-      toast({
-        title: 'Error',
-        description: error?.response?.data?.error || error.response?.data?.message || error.message  || 'An error occurred while trying to update the payment. Please try again later.',
-        variant:'destructive'
-      })
-    }
-  };
-
+  
+  
   if (loading) return <RecentPaymentsSkeleton />;
   return (
     <div className='w-full py-5 px-2'>
@@ -113,7 +112,7 @@ const Page = () => {
             <TableBody>
               {payments.map((payment) => {
                 const { dayMonthYear, time } = formatDate(payment?.date);
-                const inCurrentMonth = isPaymentInCurrentMonth(payment?.date);
+                const inCurrentMonth = isInCurrentMonthAndWithin30Days(payment?.date)
                 return (
                   <TableRow key={payment?._id} className={payment?.status === 'Rejected' ? 'bg-red-200 hover:bg-red-100' :''}>
                     <TableCell>
@@ -152,14 +151,7 @@ const Page = () => {
                         <Link href={`/payment/edit/${payment?._id}`} className='text-white bg-gray-950 py-2 px-3 rounded-md hover:underline'>
                           Edit
                         </Link>
-                        <Button
-                        disabled={loading}
-                        size='sm'
-                          variant='destructive'
-                          onClick={() => handleReject(payment?._id)}
-                        >
-                          Reject
-                        </Button>
+                       <RejectPayment paymentId={payment?._id} fetchPayments={fetchPayments}/>
                         <div className='underline text-slate-600'
                         onClick={()=>{
                           setIsOpen(true)

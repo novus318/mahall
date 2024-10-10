@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import { withAuth } from '@/components/withAuth'
 import axios from 'axios';
@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import { toast } from '@/components/ui/use-toast';
+import RejectReceipt from '@/components/RejectReceipt';
 
 
 const RecentrecieptSkeleton: React.FC = () => {
@@ -69,11 +70,13 @@ const handleReceiptClick = async (collection: any) => {
     const doc = (
       <Document>
       <Page size="A5" style={styles.page}>
-        <View style={styles.header}>
-          <Text style={styles.organization}>Vellap Mahal</Text>
-          <Text style={styles.contact}>Juma masjid, vellap, thrikkaripur</Text>
-          <Text style={styles.contact}>Phone: +91 9876543210</Text>
-        </View>
+      <View style={styles.header}>
+              <Image src='/vkgclean.png' style={styles.logo} />
+              <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA</Text>
+            <Text style={styles.headerText}>VELLAP, P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
+            <Text style={styles.headerText}>Phone: +91 9876543210</Text>
+            <View style={styles.separator} />
+              </View>
 
         <View style={styles.dateSection}>
           <View>
@@ -113,71 +116,99 @@ const handleReceiptClick = async (collection: any) => {
     );
 
     const blob = await pdf(doc).toBlob();
-    saveAs(blob, 'receipt.pdf');
+    saveAs(blob, `Receipt-${collection?.receiptNumber}-${dayMonthYear}`);
   };
   const styles = StyleSheet.create({
     page: {
-      padding: 30,
-      fontFamily: 'Helvetica',
+      padding: 20,
+      fontFamily: 'Roboto',
+      fontSize: 10, // Ensure smaller size for A5
     },
     header: {
-      marginBottom: 20,
       textAlign: 'center',
+      marginBottom: 10,
     },
-    organization: {
-      fontSize: 20,
-      fontWeight: 'extrabold',
-    },
-    contact: {
-      color: '#333',
+    headerText: {
       fontSize: 10,
       marginBottom: 4,
     },
+    logo: {
+      width: 60,
+      height: 60,
+      alignSelf: 'center',
+    },
+    masjidName: {
+      fontSize: 12,
+      fontWeight: 'bold',
+      color: '#000',
+      marginTop: 8,
+    },
+    contact: {
+      fontSize: 10,
+      color: '#555',
+      marginTop: 3,
+    },
+    separator: {
+      borderBottomWidth: 1,
+      borderBottomColor: '#E5E7EB',
+      marginVertical: 8,
+    },
+    fromSection: {
+      marginBottom: 10,
+      textAlign: 'left',
+    },
+    fromText: {
+      fontSize: 12,
+      color: '#333',
+    },
     dateSection: {
-      marginBottom: 20,
+      marginBottom: 12,
       flexDirection: 'row',
       justifyContent: 'space-between',
     },
     dateText: {
-      fontSize: 12,
+      fontSize: 10,
     },
     receiptNumber: {
-      fontSize: 9,
+      fontSize: 10,
       textAlign: 'right',
     },
     details: {
-      fontSize:15,
-      marginBottom: 15,
+      fontSize: 12,
+      marginBottom: 8,
+    },
+    detailsHeading: {
+      fontSize: 10,
+      fontWeight: 'bold',
+      marginBottom: 6,
     },
     table: {
       width: '100%',
       borderRadius: 5,
       border: '1px solid #ccc',
+      marginBottom: 15,
     },
     tableRow: {
       flexDirection: 'row',
       borderBottom: '1px solid #ccc',
-      overflow: 'hidden',
     },
     tableCell: {
-      padding: 10,
+      padding: 6,
       fontSize: 9,
     },
     descriptionCell: {
-      width: '80%',
+      width: '75%',
     },
     amountCell: {
-      width: '20%',
+      width: '25%',
       textAlign: 'right',
     },
     total: {
       fontSize: 10,
       fontWeight: 'bold',
-      textAlign: 'right',
     },
     regards: {
-      marginTop: 20,
-      textAlign: 'left',
+      marginTop: 15,
       fontSize: 10,
     },
   });
@@ -190,26 +221,6 @@ const handleReceiptClick = async (collection: any) => {
   };
   
 
-  const handleReject = async (Id: string) => {
-    const isConfirmed = window.confirm('Are you sure you want to reject this reciept?');
-
-    if (!isConfirmed) return; 
-    try {
-      setLoading(true)
-      const response = await axios.put(`${apiUrl}/api/reciept/reject-reciept/${Id}`);
-    if(response.data.success){
-      fetchReciepts()
-      setLoading(false)
-    }
-    } catch (error:any) {
-      setLoading(false)
-      toast({
-        title: 'Error',
-        description: error?.response?.data?.error || error.response?.data?.message || error.message  || 'An error occurred while trying to update the payment. Please try again later.',
-        variant:'destructive'
-      })
-    }
-  };
   if (loading) return <RecentrecieptSkeleton />;
   return (
     <div className='w-full py-5 px-2'>
@@ -280,7 +291,7 @@ const handleReceiptClick = async (collection: any) => {
                               <Link href={`/reciept/edit/${reciept?._id}`} className='text-white bg-gray-950 py-2 px-3 rounded-md hover:underline'>
                           Edit
                         </Link>
-                              <Button className="bg-red-500 text-white" size="sm" onClick={() => handleReject(reciept?._id)}>Reject</Button>
+                           <RejectReceipt Id={reciept?._id} fetchReciepts={fetchReciepts}/>
                             </>
                           )}
                         </div>

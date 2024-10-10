@@ -145,10 +145,7 @@ const EditPaymentPage = ({ params }: any) => {
 
   const handleSubmit = async () => {
     setLoading(true);
-    try {
-        const recipient = {
-            name: otherName,
-          }
+    try { 
       const updatedPayment = {
         date,
         accountId: targetAccount,
@@ -160,13 +157,13 @@ const EditPaymentPage = ({ params }: any) => {
       };
       await axios.put(`${apiUrl}/api/pay/edit-payment/${pid}`, updatedPayment);
       router.push('/payment/recent-payments');
+      setLoading(false)
     } catch (error:any) {
       toast({
         title: 'Error',
         description: error?.response?.data?.error || error.response?.data?.message || error.message  || 'An error occurred while trying to update the payment. Please try again later.',
         variant:'destructive'
       })
-    } finally {
       setLoading(false);
     }
   };
@@ -195,7 +192,7 @@ const EditPaymentPage = ({ params }: any) => {
           <div className="w-full">
             <Label>Select account</Label>
             <Select value={targetAccount || 'Select target account'} onValueChange={setTargetAccount}>
-              <SelectTrigger>
+              <SelectTrigger disabled>
                 <SelectValue placeholder="Select target account" />
               </SelectTrigger>
               <SelectContent>

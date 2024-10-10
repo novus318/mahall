@@ -113,6 +113,7 @@ const PageComponent = ({ params }: PageProps) => {
           </View>
           <View style={styles.fromSection}>
             <Text style={styles.fromText}>From: {collection?.memberId?.name}</Text>
+            <Text style={styles.fromText}>House: {collection?.houseId?.number}</Text>
           </View>
           <View style={styles.details}>
             <Text style={styles.detailsHeading}>Details:</Text>
@@ -142,7 +143,7 @@ const PageComponent = ({ params }: PageProps) => {
       );
   
       const blob = await pdf(doc).toBlob();
-      saveAs(blob, 'receipt.pdf');
+      saveAs(blob, `Receipt-${collection?.receiptNumber}-${dayMonthYear} for ${collection?.houseId?.number}.pdf`);
     };
     const styles = StyleSheet.create({
       page: {

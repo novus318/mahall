@@ -35,8 +35,8 @@ interface Staff {
   department: string,
   position: string,
   salary: number,
-  status:string,
-  advancePayment:Number,
+  status: string,
+  advancePayment: Number,
   joinDate: Date,
   contactInfo: {
     phone: string,
@@ -73,7 +73,7 @@ const PageComponent = ({ params }: PageProps) => {
       email: '',
       address: ''
     },
-    status:''
+    status: ''
   })
   const [paySlips, setPaySlips] = useState<any>([])
 
@@ -104,18 +104,20 @@ const PageComponent = ({ params }: PageProps) => {
           <Link href={`/staff`} className="bg-gray-900 text-white rounded-sm py-2 px-3 text-sm">
             Back
           </Link>
-       {staff?._id &&
-           <div className="flex space-x-1">
-           {staff?.status === 'Active' && 
-           (<div className='grid grid-cols-2 gap-2 md:grid-cols-4'>
-           <EditStaff staff={staff} fetchStaffDetails={fetchStaffDetails} />
-             <RequestAdvancePay id={pid} fetchStaffDetails={fetchStaffDetails}/>
-             <RepayAdvancePay id={pid} fetchStaffDetails={fetchStaffDetails} staff={staff}/>
-            <StaffResign id={pid}/>
-            </div>)
-       }
+          {staff?._id &&
+            <div className="flex space-x-1">
+              {staff?.status === 'Active' &&
+                (<div className='grid grid-cols-2 gap-2 md:grid-cols-4'>
+                  <EditStaff staff={staff} fetchStaffDetails={fetchStaffDetails} />
+                  <RequestAdvancePay id={pid} fetchStaffDetails={fetchStaffDetails} />
+                  {Number(staff?.advancePayment) > 0 && (
+                    <RepayAdvancePay id={pid} fetchStaffDetails={fetchStaffDetails} staff={staff} />
+                  )}
+                  <StaffResign id={pid} />
+                </div>)
+              }
             </div>
-       }
+          }
         </div>
 
       </div>
@@ -156,27 +158,27 @@ const PageComponent = ({ params }: PageProps) => {
                 <p className="text-gray-500 font-medium text-xs md:text-base">Salary</p>
                 <p className='text-xs md:text-base'>₹{staff?.salary.toFixed(2)}</p>
               </div>
-              
+
               <div>
                 <p className="text-gray-500 font-medium text-xs md:text-base">Contact number</p>
                 <p className='text-xs md:text-base'>{staff?.contactInfo?.phone}</p>
               </div>
               <div>
                 <p className="text-gray-500 font-medium text-xs md:text-base">Advance Payment</p>
-                <p className='text-xs md:text-base'>₹{staff?.advancePayment ? (staff?.advancePayment.toFixed(2)): 0}</p>
+                <p className='text-xs md:text-base'>₹{staff?.advancePayment ? (staff?.advancePayment.toFixed(2)) : 0}</p>
               </div>
               <div>
                 <p className="text-gray-500 font-medium text-xs md:text-base">Contact email</p>
                 <p className='text-xs md:text-base'>{staff?.contactInfo?.email || 'NIL'}</p>
               </div>
               <div>
-              <p className="text-gray-500 font-medium text-xs md:text-base">Address</p>
-              <p className='text-xs md:text-base'>{staff?.contactInfo?.address}</p>
-            </div>
+                <p className="text-gray-500 font-medium text-xs md:text-base">Address</p>
+                <p className='text-xs md:text-base'>{staff?.contactInfo?.address}</p>
+              </div>
             </div>
           </div>
           <div>
-      <PendingSalaries id={pid} fetchStaffDetails={fetchStaffDetails}/>
+            <PendingSalaries id={pid} fetchStaffDetails={fetchStaffDetails} />
           </div>
           <div className="bg-white rounded-lg border p-6">
             <p className="text-2xl font-bold mb-4">Payslips</p>
@@ -196,10 +198,10 @@ const PageComponent = ({ params }: PageProps) => {
                       <TableCell>₹{pay?.status === 'Paid' ? pay?.netPay : pay?.basicPay}</TableCell>
                       <TableCell>
                         {pay?.status === 'Paid' ? (
-                          <DownloadPayslip payslip={pay} staff={staff}/>
+                          <DownloadPayslip payslip={pay} staff={staff} />
                         ) : (
                           <div
-                          className='font-semibold text-red-500'
+                            className='font-semibold text-red-500'
                           >
                             Rejected due to {pay?.rejectionReason}
                           </div>

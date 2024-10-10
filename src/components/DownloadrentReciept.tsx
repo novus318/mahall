@@ -5,9 +5,7 @@ import { Document, Page, Text, View, StyleSheet, pdf, Font, Image } from '@react
 import { saveAs } from 'file-saver';
 import { format } from 'date-fns';
 
-// Import organization logo
-
-const DownloadrentReciept = ({collection, contractDetails, room}: any) => {
+const DownloadrentReciept = ({ collection, contractDetails, room }: any) => {
 
   const formatDaterec = (dateString: any) => {
     return {
@@ -22,7 +20,11 @@ const DownloadrentReciept = ({collection, contractDetails, room}: any) => {
   });
 
   const handleReceiptClick = async () => {
+    const { buildingName, roomNumber } = room;
     const { dayMonthYear, day } = formatDaterec(collection?.date);
+
+    const leaveDays = collection?.onleave?.days || 0;
+    const leaveDeductAmount = collection?.onleave?.deductAmount || 0;
 
     const doc = (
       <Document>
@@ -30,75 +32,75 @@ const DownloadrentReciept = ({collection, contractDetails, room}: any) => {
           
           {/* Header Section with Logo */}
           <View style={styles.header}>
-            <Image src='/VKJ.jpeg' style={styles.logo} />
-            <Text style={styles.contact}>Juma Masjid, Vellap, Thrikkaripur</Text>
-            <Text style={styles.contact}>Phone: +91 9876543210</Text>
+            <Image src='/vkgclean.png' style={styles.logo} />
+            <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA</Text>
+            <Text style={styles.headerText}>VELLAP, P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
+            <Text style={styles.headerText}>Phone: +91 9876543210</Text>
+            <View style={styles.separator} />
           </View>
 
-  
+          {/* Date and Rent Period */}
           <View style={styles.dateSection}>
             <Text style={styles.dateText}>Date: {dayMonthYear}</Text>
             <Text style={styles.dateText}>Day: {day}</Text>
+            <Text style={styles.dateText}>Rent Period: {collection?.period}</Text>
           </View>
+
           <View style={styles.separator} />
+
+          {/* Tenant and Payment Information */}
           <View style={styles.tableContainer}>
             <View style={styles.tableRow}>
               <Text style={styles.tableCellHeader}>Tenant Name:</Text>
-              <Text style={styles.tableCell}>{contractDetails.tenant.name}</Text>
+              <Text style={styles.tableCell}>{contractDetails?.tenant.name}</Text>
             </View>
             <View style={styles.tableRow}>
               <Text style={styles.tableCellHeader}>Phone:</Text>
-              <Text style={styles.tableCell}>{contractDetails.tenant.number}</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCellHeader}>Place:</Text>
-              <Text style={styles.tableCell}>{contractDetails.tenant.place}</Text>
+              <Text style={styles.tableCell}>{contractDetails?.tenant.number}</Text>
             </View>
             <View style={styles.tableRow}>
               <Text style={styles.tableCellHeader}>Room Number:</Text>
-              <Text style={styles.tableCell}>{room.roomNumber}</Text>
+              <Text style={styles.tableCell}>{roomNumber}</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <Text style={styles.tableCellHeader}>Building Name:</Text>
+              <Text style={styles.tableCell}>{buildingName}</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <Text style={styles.tableCellHeader}>Shop Name:</Text>
+              <Text style={styles.tableCell}>{contractDetails?.shop}</Text>
             </View>
             <View style={styles.tableRow}>
               <Text style={styles.tableCellHeader}>Payment Method:</Text>
-              <Text style={styles.tableCell}>{collection.paymentMethod}</Text>
+              <Text style={styles.tableCell}>{collection?.paymentMethod}</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={styles.tableCellHeader}>Rent Period:</Text>
-              <Text style={styles.tableCell}>{collection.period}</Text>
+              <Text style={styles.tableCellHeader}>Advance Deduction:</Text>
+              <Text style={styles.tableCell}>₹{collection?.advanceDeduction || 0}</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={styles.tableCellHeader}>Payment Date:</Text>
-              <Text style={styles.tableCell}>{dayMonthYear}</Text>
+              <Text style={styles.tableCellHeader}>Leave Days:</Text>
+              <Text style={styles.tableCell}>{leaveDays}</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={styles.tableCellHeader}>Status:</Text>
-              <Text style={styles.tableCell}>{collection.status}</Text>
+              <Text style={styles.tableCellHeader}>Leave Deduction:</Text>
+              <Text style={styles.tableCell}>₹{leaveDeductAmount}</Text>
             </View>
-
-            {/* Deductions Section */}
-            {collection.deductions.length > 0 && (
-              <View style={styles.tableRow}>
-                <Text style={styles.tableCellHeader}>Deductions:</Text>
-                <View style={styles.deductionsList}>
-                  {collection.deductions.map((deduction: any, index: number) => (
-                    <Text key={index}>
-                      {deduction.name}: ₹{deduction.amount}
-                    </Text>
-                  ))}
-                </View>
-              </View>
-            )}
+            <View style={styles.tableRow}>
+              <Text style={styles.tableCellHeader}>Payment Status:</Text>
+              <Text style={styles.tableCell}>{collection?.status}</Text>
+            </View>
           </View>
 
-          {/* Total Section */}
+          {/* Payment Calculation */}
           <View style={styles.totalSection}>
-            <Text style={styles.totalText}>Total Amount Paid: ₹{collection.amount}</Text>
+            <Text style={styles.totalText}>Total Rent: ₹{contractDetails?.rent}</Text>
+            <Text style={styles.totalText}>Advance Deduction: ₹{collection?.advanceDeduction || 0}</Text>
+            <Text style={styles.totalText}>Leave Deduction: ₹{leaveDeductAmount}</Text>
+            <Text style={styles.totalText}>Total Paid: ₹{collection?.PaymentAmount}</Text>
           </View>
 
-          {/* Separator */}
-          <View style={styles.separator} />
-
-          {/* Footer Section */}
+          {/* Footer */}
           <View style={styles.footer}>
             <Text>Regards,</Text>
             <Text style={styles.signature}>VKJ</Text>
@@ -108,81 +110,78 @@ const DownloadrentReciept = ({collection, contractDetails, room}: any) => {
     );
 
     const blob = await pdf(doc).toBlob();
-    saveAs(blob, 'receipt.pdf');
+    saveAs(blob, `${contractDetails?.shop}-${collection?.period}.pdf`);
   };
 
   const styles = StyleSheet.create({
     page: {
-      padding: 20,
+      padding: 10, // Reduced padding
       fontFamily: 'Roboto',
-      fontSize: 12,
-      lineHeight: 1.6,
+      fontSize: 10, // Reduced font size
+      lineHeight: 1.4, // Reduced line height
     },
     header: {
       textAlign: 'center',
-      marginBottom: 5,
+      marginBottom: 2, // Reduced margin
     },
     logo: {
-      width: 50,
-      height: 50,
+      width: 40, // Reduced size
+      height: 40,
       alignSelf: 'center',
     },
-    contact: {
-      fontSize: 11,
-      color: '#9CA3AF',
+    headerText: {
+      fontSize: 8, // Reduced font size
+      marginBottom: 2,
     },
     separator: {
       borderBottom: '1px solid #E5E7EB',
-      marginVertical: 10,
+      marginVertical: 5, // Reduced margin
     },
     dateSection: {
       textAlign: 'left',
-      marginBottom: 15,
+      marginBottom: 5, // Reduced margin
     },
     dateText: {
-      fontSize: 11,
+      fontSize: 9, // Reduced font size
       color: '#4B5563',
     },
     tableContainer: {
-      marginBottom: 20,
-      paddingVertical: 10,
+      marginBottom: 10, // Reduced margin
+      paddingVertical: 5, // Reduced padding
     },
     tableRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 8,
+      marginBottom: 4, // Reduced margin
     },
     tableCellHeader: {
       fontWeight: 'bold',
-      fontSize: 10,
+      fontSize: 10, // Reduced font size
       color: '#4B5563',
     },
     tableCell: {
-      fontSize: 10,
+      fontSize: 10, // Reduced font size
       textAlign: 'right',
       color: '#111827',
     },
-    deductionsList: {
-      marginTop: 5,
-    },
     totalSection: {
       textAlign: 'right',
-      marginTop: 10,
+      marginTop: 5, // Reduced margin
     },
     totalText: {
-      fontSize: 12,
+      fontSize: 11, // Reduced font size
       fontWeight: 'bold',
       color: '#111827',
     },
     footer: {
       textAlign: 'left',
-      fontSize: 10,
+      fontSize: 10, // Reduced font size
+      marginTop: 10, // Reduced margin
     },
     signature: {
       fontWeight: 'bold',
-      fontSize: 12,
+      fontSize: 10, // Reduced font size
       color: '#4B5563',
-      marginTop: 5,
     },
   });
 

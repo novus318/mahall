@@ -272,8 +272,8 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                       HealthCard:false
                     },
                   })
-                    setloading(false);
                     router.push('/house');
+                    setloading(false);
             }
         } catch (error:any) {
             toast({
@@ -398,11 +398,17 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                   <SelectValue placeholder="Ration Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='APL'>
-                    APL
+                  <SelectItem value='APL/Blue'>
+                  APL/Blue
                   </SelectItem>
-                  <SelectItem value='BPL'>
-                 BPL
+                  <SelectItem value='BPL/Pink'>
+                 BPL/Pink
+                  </SelectItem>
+                  <SelectItem value='AAY/Yellow'>
+                AAY/Yellow
+                  </SelectItem>
+                  <SelectItem value='White Card'>
+                White Card
                   </SelectItem>
                 </SelectContent>
               </Select>

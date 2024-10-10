@@ -151,14 +151,13 @@ const TransactionPage = () => {
             <Page size="A4" style={styles.page}>
               {/* Header Section */}
               <View style={styles.header}>
-              <Image src="/VKJLOGO.png" style={styles.logo} />
+              <Image src="/vkgclean.png" style={styles.logo} />
             <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA</Text>
             <Text style={styles.headerText}>VELLAP, P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
             <Text style={styles.headerText}>Phone: +91 9876543210</Text>
             <View style={styles.separator} />
               </View>
       
-              {/* Accounts Table Section */}
               <View style={styles.accountsContainer}>
                 {/* Opening Accounts */}
                 <View style={styles.accountSection}>
@@ -226,7 +225,7 @@ const TransactionPage = () => {
         );
       
         const blob = await pdf(doc).toBlob();
-        saveAs(blob, 'statement.pdf');
+        saveAs(blob, `Statement-From ${formatDate(transactions?.from).dayMonthYear ? formatDate(transactions?.from).dayMonthYear : 'Invalid date'} - To ${formatDate(transactions?.to).dayMonthYear ? formatDate(transactions?.to).dayMonthYear : 'Invalid date'}.pdf`);
       };
       
       const styles = StyleSheet.create({
@@ -373,7 +372,7 @@ const TransactionPage = () => {
         <div>
             <h2 className="text-2xl font-semibold mb-4">Transactions From {formatDate(transactions?.from).dayMonthYear ? formatDate(transactions?.from).dayMonthYear : 'Invalid date'} - To {formatDate(transactions?.to).dayMonthYear ? formatDate(transactions?.to).dayMonthYear : 'Invalid date'}</h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-8 gap-3 md:gap-5 mb-2 items-center">
+        <div className="grid grid-cols-2 md:grid-cols-8 gap-1 md:gap-2 mb-2 items-center">
        <div className='md:col-span-2'>
        <p className="text-sm font-medium">From Date</p>
        <DatePicker date={fromDate} setDate={setFromDate} />
@@ -392,7 +391,7 @@ const TransactionPage = () => {
           {btloading ? <Loader2 className='animate-spin h-5'/> : "Get Transactions"}
         </Button>
       </div>
-      <div className='md:pt-4'>
+      <div className='md:pt-4 mx-2'>
         <Button
         size='sm'
           onClick={

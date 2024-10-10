@@ -210,7 +210,7 @@ const TransactionPage = () => {
         );
       
         const blob = await pdf(doc).toBlob();
-        saveAs(blob, 'statement.pdf');
+        saveAs(blob, `Statement-From ${formatDate(fromDate).dayMonthYear ? formatDate(fromDate).dayMonthYear : 'Invalid date'} - To ${formatDate(toDate).dayMonthYear ? formatDate(toDate).dayMonthYear : 'Invalid date'}.pdf`);
       };
       
       const styles = StyleSheet.create({

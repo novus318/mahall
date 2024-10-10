@@ -321,11 +321,17 @@ const PageComponent = ({ params }: PageProps) => {
                   <SelectValue placeholder={editHouse?.rationsStatus} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='APL'>
-                    APL
+                  <SelectItem value='APL/Blue'>
+                  APL/Blue
                   </SelectItem>
-                  <SelectItem value='BPL'>
-                    BPL
+                  <SelectItem value='BPL/Pink'>
+                 BPL/Pink
+                  </SelectItem>
+                  <SelectItem value='AAY/Yellow'>
+                AAY/Yellow
+                  </SelectItem>
+                  <SelectItem value='White Card'>
+                White Card
                   </SelectItem>
                 </SelectContent>
               </Select>

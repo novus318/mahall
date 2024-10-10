@@ -187,7 +187,7 @@ try{
         <div className="w-full">
           <Label>Select account</Label>
           <Select value={targetAccount || 'Select target account'} onValueChange={setTargetAccount}>
-            <SelectTrigger>
+            <SelectTrigger disabled>
               <SelectValue placeholder="Select target account" />
             </SelectTrigger>
             <SelectContent>

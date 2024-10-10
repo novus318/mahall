@@ -103,7 +103,7 @@ const TutionPage = () => {
         startDate: fromDate,
         endDate: toDate,
       };
-      const response = await axios.get(`${apiUrl}/api/reports/get/payment/byDate`, { params: data });
+      const response = await axios.get(`${apiUrl}/api/reports/get/collections/byDate`, { params: data });
       if (response.data.success) {
         setCollections(response.data.collections);
         setFilteredCollections(response.data.collections);
@@ -157,7 +157,7 @@ const TutionPage = () => {
         <Page size="A4" style={styles.page}>
           {/* Header Section */}
           <View style={styles.header}>
-            <Image src="/VKJLOGO.png" style={styles.logo} />
+            <Image src="/vkgclean.png" style={styles.logo} />
             <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA</Text>
             <Text style={styles.headerText}>VELLAP, P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
             <Text style={styles.headerText}>Phone: +91 9876543210</Text>
@@ -203,7 +203,7 @@ const TutionPage = () => {
     );
   
     const blob = await pdf(doc).toBlob();
-    saveAs(blob, 'Collection.pdf');
+    saveAs(blob, `Tution-fee-From ${formatDate(fromDate).dayMonthYear || 'Invalid date'} - To ${formatDate(toDate).dayMonthYear || 'Invalid date'}.pdf`);
   };
   
   const styles = StyleSheet.create({
@@ -282,7 +282,7 @@ const TutionPage = () => {
       <div className="max-w-6xl m-auto my-3">
         <div>
           <h2 className="text-2xl font-semibold mb-4">
-            Collections From {formatDate(fromDate).dayMonthYear || 'Invalid date'} - To{' '}
+           Tution fee From {formatDate(fromDate).dayMonthYear || 'Invalid date'} - To{' '}
             {formatDate(toDate).dayMonthYear || 'Invalid date'}
           </h2>
         </div>

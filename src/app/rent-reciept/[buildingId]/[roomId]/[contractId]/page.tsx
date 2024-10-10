@@ -35,12 +35,13 @@ interface PageProps {
     params: {
         buildingId: string;
         roomId: string;
+        contractId?: string;
     };
 }
 
 const PageComponent = ({ params }: PageProps) => {
     const router = useRouter()
-    const { buildingId, roomId } = params;
+    const { buildingId, roomId,contractId } = params;
     const [room, setRoom] = useState<any>(null);
     const [contractDetails, setContractDetails] = useState<any>({});
     const [loading, setLoading] = useState(true);
@@ -49,9 +50,9 @@ const PageComponent = ({ params }: PageProps) => {
 
     const fetchRoomDetails = async () => {
         try {
-            const response = await axios.get(`${apiUrl}/api/rent/get-ByRoom/${buildingId}/${roomId}`);
+            const response = await axios.get(`${apiUrl}/api/rent/get-ByRoom/${buildingId}/${roomId}/${contractId}`);
             const room = response.data.roomDetails;
-            const activeContract = room.contractHistory.find((contract: any) => contract.status === 'active');
+            const activeContract = room.contract
             if (activeContract) {
                 setContractDetails(activeContract);
             }
@@ -75,10 +76,12 @@ const PageComponent = ({ params }: PageProps) => {
         return <div>No room details found.</div>;
     }
     const handlePayNowClick =async(r:any,c:any)=>{
-       router.push(`/pay/room:${room.roomNumber}/${r.amount}/${c.tenant.name}`)
+       router.push(`/pay/room${room.roomNumber}/${r.amount}/${c.tenant.name}`)
      }
     return (
         <>
+          <h2 className="text-lg font-bold mb-2">Rent details of {contractDetails?.tenant?.name} - {contractDetails?.shop}</h2>
+            
             <div className='max-w-6xl m-auto bg-gray-100 pt-2 px-1 pb-1 rounded-t-md mt-5'>
                 <div className="overflow-auto bg-white rounded-t-md">
                     <Table>

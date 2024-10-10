@@ -25,7 +25,7 @@ const MembersReport = ({data}:any) => {
       <Document>
         <Page size="A4" orientation="landscape" style={styles.page}>
           <View style={styles.header}>
-            <Image src="/VKJLOGO.png" style={styles.logo} />
+            <Image src="/vkgclean.png" style={styles.logo} />
             <Text style={styles.headerText}>
               Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA
             </Text>

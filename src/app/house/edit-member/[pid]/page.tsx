@@ -618,7 +618,7 @@ const PageComponent = ({ params }: any) => {
                     <SelectItem key="no-relation" value="No Relation">
                 No Relation
               </SelectItem>
-                      {members.map((member: any) => (
+                      {members.filter(m => m._id !== pid).map((member: any) => (
                         <SelectItem key={member._id} value={member._id}>
                           {member.name}
                         </SelectItem>

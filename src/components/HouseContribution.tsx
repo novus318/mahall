@@ -119,7 +119,7 @@ const HouseContribution = ({id,contribution}:any) => {
         );
       
         const blob = await pdf(doc).toBlob();
-        saveAs(blob, 'receipt.pdf');
+        saveAs(blob, `Receipt-${collection?.receiptNumber}-${dayMonthYear}`);
       };
       
       const styles = StyleSheet.create({

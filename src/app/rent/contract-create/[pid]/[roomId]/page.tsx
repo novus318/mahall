@@ -163,7 +163,7 @@ const PageComponent = ({ params }: PageProps) => {
                         number: '',
                     },
                 });
-                router.push(`/rent/room-details/${pid}/${roomId}/${response.data.contract._id}`);
+                router.push(`/rent`);
             } 
         } catch (error:any)   {
             toast({

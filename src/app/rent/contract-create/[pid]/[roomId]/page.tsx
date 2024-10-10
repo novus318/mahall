@@ -163,7 +163,7 @@ const PageComponent = ({ params }: PageProps) => {
                         number: '',
                     },
                 });
-                router.push(`/rent/room-details/${pid}/${roomId}`);
+                router.push(`/rent/room-details/${pid}/${roomId}/${response.data.contract._id}`);
             } 
         } catch (error:any)   {
             toast({
@@ -180,7 +180,7 @@ const PageComponent = ({ params }: PageProps) => {
         <>
             <div className="mt-2 bg-white rounded-lg shadow-md p-4">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-2 md:space-y-0">
-                    <Link href={`/rent/room-details/${pid}/${roomId}`} className="bg-gray-900 text-white rounded-sm py-2 px-3 text-sm">
+                    <Link href={`/rent/room-details/${pid}/${roomId}/${roomId}`} className="bg-gray-900 text-white rounded-sm py-2 px-3 text-sm">
                         Back
                     </Link>
                 </div>

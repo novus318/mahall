@@ -76,7 +76,6 @@ const PageComponent = ({ params }: PageProps) => {
     status:''
   })
   const [paySlips, setPaySlips] = useState<any>([])
-  const [selectedStatus, setSelectedStatus] = useState('');
 
 
   const fetchStaffDetails = async () => {

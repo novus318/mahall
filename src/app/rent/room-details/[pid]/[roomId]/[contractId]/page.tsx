@@ -11,6 +11,10 @@ import { format, isBefore } from 'date-fns';
 import UpdateDeposit from '@/components/UpdateDeposit';
 import DownloadrentReciept from '@/components/DownloadrentReciept';
 import ReturnDeposit from '@/components/ReturnDeposit';
+import ContractDeposit from '@/components/ContractDeposit';
+import AdvancePay from '@/components/rent/AdvancePay';
+import EditContract from '@/components/rent/EditContract';
+import EditRoomNumber from '@/components/rent/EditRoomNumber';
 
 const SkeletonLoader = () => (
   <div className="animate-pulse p-2">
@@ -38,14 +42,15 @@ interface PageProps {
   params: {
     pid: string;
     roomId: string;
+    contractId?: string;
   };
 }
 
 const PageComponent = ({ params }: PageProps) => {
-  const { pid, roomId } = params;
+  const { pid, roomId,contractId } = params;
   const [room, setRoom] = useState<any>(null);
   const [buildingName, setBuildingName] = useState<any>(null);
-  const [buildingID,setBuildingID] = useState<any>(null)
+  const [buildingID, setBuildingID] = useState<any>(null)
   const [contractDetails, setContractDetails] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -53,14 +58,14 @@ const PageComponent = ({ params }: PageProps) => {
 
   const fetchRoomDetails = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/api/rent/get-ByRoom/${pid}/${roomId}`);
+      const response = await axios.get(`${apiUrl}/api/rent/get-ByRoom/${pid}/${roomId}/${contractId}`);
       const room = response.data.roomDetails;
-      const activeContract = room.contractHistory.find((contract: any) => contract.status === 'active');
+      const activeContract = room.contract;
       if (activeContract) {
         setContractDetails(activeContract);
-        setBuildingID(room.buildingID)
-        setBuildingName(room.buildingName)
       }
+      setBuildingID(room.buildingID)
+      setBuildingName(room.buildingName)
       setRoom(room);
     } catch (error) {
       console.error('Error fetching room details:', error);
@@ -95,14 +100,15 @@ const PageComponent = ({ params }: PageProps) => {
             <h4 className='font-bold text-muted-foreground'>
               Building: {buildingID} - {buildingName}
             </h4>
+            <EditRoomNumber roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} room={room?.roomNumber} building={buildingName}/>
           </div>
         </div>
       </div>
-      {room?.contractHistory?.length < 1 ? (
+      {!room?.contract ? (
         <div>
           <div className="mt-4 flex flex-col md:flex-row justify-between items-center md:items-center space-y-2 md:space-y-0 p-4">
             <div>
-              <h4 className="text-sm font-medium">No contract are made.</h4>
+              <h4 className="text-sm font-medium">No contract are active.</h4>
               <p className='text-xs text-muted-foreground'>you are requested to create one</p>
             </div>
             <Link href={`/rent/contract-create/${pid}/${roomId}`} className="text-sm font-medium bg-gray-900 text-white px-2 py-1 rounded-sm">
@@ -131,16 +137,26 @@ const PageComponent = ({ params }: PageProps) => {
                       </>
                     ) : (
                       <div className='flex justify-between items-center'>
-                      <span className="text-green-700">Contract Active</span>
-                      {contractDetails?.depositStatus === 'Paid' &&
+                        <span className={contractDetails?.status ==='inactive' ? 'text-yellow-600': 'text-green-700'}>Contract {contractDetails?.status}</span>
+                        {contractDetails?.depositStatus === 'Paid' &&
                           <ReturnDeposit contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} />
-                      }
+                        }
                       </div>
                     )}
                   </div>
+                  {contractDetails?.status === 'active' && 
+                  <div className='grid grid-cols-2 gap-2 md:grid-cols-4'>
+                  <EditContract buildingID={pid} roomId={roomId} fetchRoomDetails={fetchRoomDetails} contractDetails={contractDetails}/>
+                  <AdvancePay buildingID={pid} roomId={roomId} fetchRoomDetails={fetchRoomDetails} contractId={contractDetails._id}/>
+                </div>
+                }
                 </div>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="grid gap-2">
+                  <div className="flex items-center justify-between">
+                      <div className="text-sm font-medium">Advance payment</div>
+                      <div>₹{(contractDetails?.advancePayment||0).toFixed(2)}</div>
+                    </div>
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-medium">From</div>
                       <div>{contractDetails?.from ? format(contractDetails?.from, 'PPP') : 'Null'}</div>
@@ -151,12 +167,12 @@ const PageComponent = ({ params }: PageProps) => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-medium">Rent</div>
-                      <div>₹{contractDetails?.rent}</div>
+                      <div>₹{(contractDetails?.rent || 0).toFixed(2)}</div>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-medium">Deposit</div>
                       <div className='text-right'>
-                        <span>₹{contractDetails?.deposit}</span>
+                        <span>₹{(contractDetails?.deposit || 0).toFixed(2)}</span>
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
@@ -254,6 +270,7 @@ const PageComponent = ({ params }: PageProps) => {
                   </Table>
                 </div>
               </div>
+              <ContractDeposit contractDetails={contractDetails} />
             </div>
           )}
         </div>

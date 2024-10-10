@@ -40,8 +40,6 @@ const Page = () => {
   const [payCategories, setPayCategories] = useState<any[]>([]);
   const [members, setMembers] = useState<Member[]>([])
   const [targetAccount, setTargetAccount] = useState<string | null>(null);
-  const [paymentTo, setPaymentTo] = useState<string | null>(null); // Added state for paymentTo
-  const [selectedMember, setSelectedMember] = useState<string | null>(null); // Added state for selected member
   const [otherName, setOtherName] = useState<string>(''); // Added state for other name// Added state for other number
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [items, setItems] = useState<Item[]>([{ description: '', amount: 0 }]); // Initial item
@@ -50,10 +48,6 @@ const Page = () => {
   const [targetCategory, setTargetCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [paymentRecieptNo, setpaymentRecieptNo] = useState<any>('');
-  // Filter members based on the search query
-  const filteredMembers = members?.filter((member) =>
-    member.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const fetchAccounts = () => {
     axios.get(`${apiUrl}/api/account/get`).then(response => {
@@ -73,23 +67,6 @@ const Page = () => {
       })
   }
 
-  const fetchMembers = (searchQuery: string) => {
-    axios
-      .get(`${apiUrl}/api/member/all/names-and-ids`, { params: { search: searchQuery } })
-      .then((response) => {
-        setMembers(response.data.members);
-      })
-      .catch((error) => {
-        console.log('Error fetching members:', error);
-      });
-  };
-  useEffect(() => {
-    if (searchQuery.length > 0) {
-      fetchMembers(searchQuery);
-    } else {
-      setMembers([]); 
-    }
-  }, [searchQuery]);
 
   const PaymentRecieptNumber = () => {
     axios
@@ -167,27 +144,6 @@ const Page = () => {
       })
       isValid = false;
     }
-    if (!selectedMember && paymentTo === 'Other') {
-      toast({
-        title: 'Please select a member or enter other recipient details',
-        variant: 'destructive',
-      })
-      isValid = false;
-    }
-    if (paymentTo === 'Other' && (!otherName )) {
-      toast({
-        title: 'Please enter other recipient details',
-        variant: 'destructive',
-      })
-      isValid = false;
-    }
-    if (selectedMember && paymentTo === 'Member') {
-      toast({
-        title: 'Please select a member',
-        variant: 'destructive',
-      })
-      isValid = false;
-    }
     if (!items[0].description) {
       toast({
         title: 'Please enter description for at least one item',
@@ -210,17 +166,13 @@ const Page = () => {
     if (!validate()) return;
     setLoading(true);
     try {
-      const recipient = {
-        name: otherName,
-      }
       const data = {
         items,
         date,
         accountId: targetAccount,
         categoryId: payCategories.find(c => c._id === targetCategory),
         paymentType: 'Cash',
-        memberId: selectedMember,
-        otherRecipient: recipient,
+        paymentTo :otherName,
         receiptNumber: paymentRecieptNo
       }
       const response = await axios.post(`${apiUrl}/api/pay/create-payment`, data)
@@ -230,9 +182,7 @@ const Page = () => {
         setOtherName('')
         setTotal(0)
         setTargetCategory(null)
-        setPaymentTo('')
         setSearchQuery('')
-        setSelectedMember(null)
         PaymentRecieptNumber()
         setdate(new Date())
         toast({
@@ -308,57 +258,14 @@ const Page = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="w-full">
-                <Label>Payment to</Label>
-                <Select value={paymentTo || 'Select payment to'} onValueChange={setPaymentTo}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select payment to" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="member">Member</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {paymentTo === 'member' && (
                 <div className="w-full">
-                  <Label>Select Member</Label>
-                  <Select onValueChange={setSelectedMember}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select member" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <div className="px-3 py-2">
-                        <Input
-                          type="text"
-                          className="w-full border border-gray-300 rounded-md"
-                          placeholder="Search member"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                      </div>
-                      {filteredMembers?.map((member:any) => (
-                        <SelectItem key={member._id} value={member._id}>
-                          {member.name} -<span className='text-muted-foreground'>{member?.house.number}</span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-
-              {paymentTo === 'other' && (
-                <div className="w-full">
-                  <Label>Name</Label>
+                  <Label>Payment To</Label>
                   <Input
                     value={otherName}
                     onChange={(e) => setOtherName(e.target.value)}
                     placeholder="Enter name"
                   />
                   </div>
-              )}
             </div>
 
             <div className="mt-8 space-y-2">

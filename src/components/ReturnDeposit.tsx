@@ -19,15 +19,16 @@ interface BankAccount {
     name: string;
     primary: boolean;
   }
-const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails }:any) => {
+const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails}:any) => {
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [bank, setBank] = useState<BankAccount[]>([])
     const [targetAccount, setTargetAccount] = useState<string | null>(null);
+    const [RecieptCategories, setRecieptCategories] = useState<any[]>([]);
+    const [targetCategory, setTargetCategory] = useState<string | null>(null);
     const [formData, setFormData] = useState({
-      deduction:0,
-      deductionReason:''
+      deduction:null,
     });
 
     const fetchAccounts = () => {
@@ -39,8 +40,17 @@ const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails }:
           })
       }
     
+      const fetchRecCategories = () => {
+        axios.get(`${apiUrl}/api/reciept/category/all`).then(response => {
+          setRecieptCategories(response.data.categories)
+        })
+         .catch(error => {
+            console.log("Error fetching pay categories:", error)
+          })
+      }
       useEffect(() => {
         fetchAccounts()
+        fetchRecCategories()
       }, [])
       const handleUpdateReturn = async () => {
         const bankBalance:any = bank.find(acc => acc._id === targetAccount)
@@ -51,9 +61,9 @@ const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails }:
               });
             return;
         }
-        if(formData.deduction > 0 && !formData.deductionReason){
+        if((formData.deduction || 0) > 0 && !targetCategory){
             toast({
-                title: 'Please enter deduction reason',
+                title: 'Please select deduction reason',
                 variant: 'destructive',
               });
             return;
@@ -76,12 +86,12 @@ const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails }:
         try {
             const data ={
                 deduction:formData.deduction,
-                deductionReason:formData.deductionReason,
                 accountId:targetAccount,
                 status:'Returned',
-                amount:returnAmount
+                amount:returnAmount,
+                receiptId:targetCategory
               }
-          const response =await axios.post(`${apiUrl}/api/rent/return-deposit/${buildingId}/${roomId}`,data);
+          const response =await axios.post(`${apiUrl}/api/rent/return-deposit/${buildingId}/${roomId}/${contractDetails._id}`,data);
       if(response.data.success){
         toast({
             title: 'Deposit returned successfully',
@@ -89,8 +99,7 @@ const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails }:
           });
           setIsOpen(false);
           setFormData({
-            deduction:0,
-            deductionReason:''
+            deduction:null,
           });
           fetchRoomDetails();
       }
@@ -105,7 +114,7 @@ const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails }:
         }
       }
 
-      const returnAmount = contractDetails?.deposit - formData.deduction;
+      const returnAmount = contractDetails?.deposit - (formData.deduction || 0);
 
   return (  <Dialog open={isOpen} onOpenChange={(v) => setIsOpen(v)}>
   <DialogTrigger asChild>
@@ -146,20 +155,25 @@ const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails }:
             </Label>
             <Input
               type='text'
-              value={formData.deduction === 0 ? '' : formData.deduction}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d*\.?\d*$/.test(value)) {
-                  setFormData({ ...formData, deduction: value ? Number(value) : 0 });
-                }
-              }}placeholder='Deduction Amount'
+              value={formData.deduction || ''}
+              onChange={(e) => setFormData({...formData, deduction: Number(e.target.value) })}
+              placeholder='Deduction Amount'
               />
-              <Input
-              type='text'
-              value={formData.deductionReason}
-              onChange={(e) => setFormData({...formData, deductionReason: e.target.value })}
-              placeholder='Deduction Reason'
-              />
+            <div className="w-full">
+          <Label>Select category</Label>
+          <Select value={targetCategory || 'Select category'} onValueChange={setTargetCategory}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              {RecieptCategories?.map((c) => (
+                <SelectItem key={c._id} value={c._id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
           </div>
           <p className='font-semibold text-gray-700'>Return Amount: ₹{returnAmount}</p>
           <DialogFooter>

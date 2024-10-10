@@ -47,7 +47,7 @@ const UpdateDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails }:
 const handleUpdateDeposit = async () => {
     setLoading(true);
     try {
-      await axios.post(`${apiUrl}/api/rent/pay-deposit/${buildingId}/${roomId}`, {
+      await axios.post(`${apiUrl}/api/rent/pay-deposit/${buildingId}/${roomId}/${contractDetails._id}`, {
         status:'Paid',
         paymentMethod:paymentMethod,
         accountId:targetAccount

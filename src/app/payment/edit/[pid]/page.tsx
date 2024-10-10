@@ -47,8 +47,6 @@ const EditPaymentPage = ({ params }: any) => {
   const [payCategories, setPayCategories] = useState<any[]>([]);
   const [targetAccount, setTargetAccount] = useState<string | null>(null);
   const [targetCategory, setTargetCategory] = useState<string | null>(null);
-  const [paymentTo, setPaymentTo] = useState<string | null>(null);
-  const [selectedMember, setSelectedMember] = useState<string | null>(null);
   const [otherName, setOtherName] = useState<string>('');
   const [items, setItems] = useState<Item[]>([{ description: '', amount: 0 }]);
   const [date, setDate] = useState<Date | null>(null);
@@ -71,15 +69,7 @@ const EditPaymentPage = ({ params }: any) => {
         setItems(paymentData.items || [{ description: '', amount: 0 }]);
         setDate(new Date(paymentData.date));
         setTotal(paymentData.total);
-        if(paymentData.otherRecipient?.name){
-            setPaymentTo('other');
-           }
-            setOtherName(paymentData.otherRecipient?.name);
-            if(paymentData.memberId?.name){
-              setPaymentTo('member');
-              setSelectedMember(paymentData.memberId._id || null);
-              setSearchQuery(paymentData.memberId?.name)
-            }
+        setOtherName(paymentData.paymentTo)
       }
     } catch (error) {
       console.error('Error fetching payment data', error);
@@ -163,10 +153,8 @@ const EditPaymentPage = ({ params }: any) => {
         date,
         accountId: targetAccount,
         categoryId: payCategories.find(c => c._id === targetCategory),
-        paymentTo,
+        paymentTo:otherName,
         paymentType: 'Cash',
-        memberId: selectedMember,
-        otherRecipient: recipient,
         items,
         total,
       };
@@ -237,57 +225,13 @@ const EditPaymentPage = ({ params }: any) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="w-full">
-            <Label>Payment to</Label>
-            <Select value={paymentTo || 'Select payment to'} onValueChange={setPaymentTo}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select payment to" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="member">Member</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {paymentTo === 'member' && (
-              <div className="w-full">
-              <Label>Select Member</Label>
-              <Select onValueChange={setSelectedMember}>
-                <SelectTrigger>
-                  <SelectValue placeholder={selectedMember ? `${filteredMembers[0]?.name} - ${filteredMembers[0]?.house?.number}`: 'select member' } />
-                </SelectTrigger>
-                <SelectContent>
-                  <div className="px-3 py-2">
-                    <Input
-                      type="text"
-                      className="w-full border border-gray-300 rounded-md"
-                      placeholder="Search member"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </div>
-                  {filteredMembers?.map((member:any) => (
-                    <SelectItem key={member._id} value={member._id}>
-                      {member.name} -<span className='text-muted-foreground'>{member?.house.number}</span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {paymentTo === 'other' && (
+        
             <div className="w-full">
               <Label>Name</Label>
               <Input value={otherName} onChange={(e) => {
                 setOtherName(e.target.value)
-                setSelectedMember(null)
               }} placeholder="Enter name" />
             </div>
-          )}
-        </div>
 
         <div className="mt-8 space-y-2">
           <h3 className="text-lg font-medium mb-2">Items</h3>

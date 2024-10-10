@@ -12,9 +12,22 @@ import { Dialog, DialogContent, DialogFooter, DialogTitle } from '@/components/u
 import { withAuth } from '@/components/withAuth'
 
 
+type Tenant = {
+  aadhaar: string;
+  name: string;
+};
+type Contract = {
+  _id: string;
+  from: Date;
+  to: Date;
+  tenant: Tenant;
+  shop: string;
+  status: 'active' | 'rejected' | 'inactive';
+};
 type Room = {
   _id: string;
   roomNumber: string;
+  contractHistory: Contract[];
 };
 
 type Building = {
@@ -78,7 +91,7 @@ const Page = () => {
     fetchBuildings()
   }, [])
 
-  const handleAdd = (building:any) => {
+  const handleAdd = (building: any) => {
     console.log(building)
     setSelectedBuilding(building);
     setShowRoomDialog(true);
@@ -94,35 +107,35 @@ const Page = () => {
       isValid = false;
     }
     return isValid;
-};
+  };
 
-const handleSubmit = async() => {
-  if (!validate()) return;
-  setLoading(true)
-  const data = {
-    roomNumber,
-    buildingID:selectedBuilding
-  }
-  try {
-    const response = await axios.post(`${apiUrl}/api/rent/add-room`, data)
-    if (response.data.success) {
-      toast({
-        title: 'Building added successfully',
-        variant:'default',
-      })
-      setShowRoomDialog(false);
-      setRoomNumber('')
-      fetchBuildings()
+  const handleSubmit = async () => {
+    if (!validate()) return;
+    setLoading(true)
+    const data = {
+      roomNumber,
+      buildingID: selectedBuilding
     }
-  } catch (error:any) {
-    toast({
-      title: 'Failed to add building',
-      description: error.response?.data?.message || error.message || 'Something went wrong',
-      variant: 'destructive',
-    })
-    setLoading(false)
+    try {
+      const response = await axios.post(`${apiUrl}/api/rent/add-room`, data)
+      if (response.data.success) {
+        toast({
+          title: 'Building added successfully',
+          variant: 'default',
+        })
+        setShowRoomDialog(false);
+        setRoomNumber('')
+        fetchBuildings()
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Failed to add building',
+        description: error.response?.data?.message || error.message || 'Something went wrong',
+        variant: 'destructive',
+      })
+      setLoading(false)
+    }
   }
-}
   // Filter buildings based on search term
   const filteredBuildings = buildings.filter(building =>
     building.buildingName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -143,88 +156,102 @@ const handleSubmit = async() => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-           <Link href='/rent/pending-rents' className='bg-gray-900 col-span-2 md:col-span-1 text-white py-1 px-2 rounded-sm text-xs md:text-base'>
+          <Link href='/rent/pending-rents' className='bg-gray-900 col-span-2 md:col-span-1 text-white py-1 px-2 rounded-sm text-xs md:text-base'>
             Pending rents
           </Link>
           <Link href='/rent/create-building' className='bg-gray-900 col-span-2 md:col-span-1 text-white py-1 px-2 rounded-sm text-xs md:text-base'>
             Create Building
           </Link>
+          <Link href='/rent/previous-contracts' className='bg-gray-900 col-span-4 md:col-span-1 text-white py-1 px-2 rounded-sm text-xs md:text-base text-center'>
+            Previous contracts
+          </Link>
         </div>
 
         <div>
-     {loading ? (
-      <SkeletonLoader/>
-     ):(
-         <div className="grid gap-6">
-         {filteredBuildings.length > 0 ? (
-             filteredBuildings.map(building => (
-         <div key={building._id} className="grid gap-4 border rounded-md p-4 bg-background">
-             <div className="flex items-center justify-between">
-               <div className="grid gap-1">
-                 <h2 className="text-xl font-bold">{building?.buildingName}</h2>
-                 <p className="text-muted-foreground text-xs">ID: {building?.buildingID}</p>
-                 <p className="text-muted-foreground">Place: {building?.place}</p>
-               </div>
-              <Button
-              size='sm'
-              onClick={() => handleAdd(building?._id)}>
-              <PlusIcon className="w-4 h-4" />
-              Add Room
-              </Button>
-             </div>
-             <div className="grid gap-4">
-               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-               {building?.rooms.map(room => (
-               <div key={room._id} className="grid gap-2 border rounded-sm p-4 bg-muted">
-                   <div className="flex items-center justify-between">
-                     <div className="text-sm font-medium">Room number: {room?.roomNumber}</div>
-                     <Link
-                       href={`/rent/room-details/${building._id}/${room._id}`}
-                       className="text-xs font-medium bg-gray-900 text-white px-2 py-1 rounded-md"
-                       prefetch={false}
-                     >
-                       Details
-                     </Link>
-                   </div>
-                 </div>
-   ))}
-                 </div>
-               </div>
-             </div>
-       ))
-     ) : (
-       <div className="text-center text-gray-600 text-sm">
-        <h4
-        className="text-lg font-bold"
-        > No buildings...</h4>
-       </div>
-     )}
-           </div>
-     )}
+          {loading ? (
+            <SkeletonLoader />
+          ) : (
+            <div className="grid gap-6">
+              {filteredBuildings.length > 0 ? (
+                filteredBuildings.map(building => (
+                  <div key={building._id} className="grid gap-4 border rounded-md p-4 bg-background">
+                    <div className="flex items-center justify-between">
+                      <div className="grid gap-1">
+                        <h2 className="text-xl font-bold">{building?.buildingName}</h2>
+                        <p className="text-muted-foreground text-xs">ID: {building?.buildingID}</p>
+                        <p className="text-muted-foreground">Place: {building?.place}</p>
+                      </div>
+                      <Button
+                        size='sm'
+                        onClick={() => handleAdd(building?._id)}>
+                        <PlusIcon className="w-4 h-4" />
+                        Add Room
+                      </Button>
+                    </div>
+                    <div className="grid gap-4">
+                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {building?.rooms.map(room => {
+                          const activeContract = room?.contractHistory?.find(contract => contract.status === 'active');
+                          return (
+                            <div key={room._id} className="grid gap-2 border rounded-sm p-4 bg-muted">
+                              <div className="flex items-center justify-between">
+                                <div className="text-xs font-medium">Room number: {room?.roomNumber}
+                                {activeContract && (
+                                  <div className="text-xs font-medium">
+                                    <p>Shop: {activeContract.shop}</p>
+                                    <p>{activeContract.tenant?.name}</p>
+                                  </div>
+                                )}
+                                </div>
+                                <Link
+                                  href={`/rent/room-details/${building._id}/${room._id}/${activeContract?._id}`}
+                                  className="text-xs font-medium bg-gray-900 text-white px-2 py-1 rounded-md"
+                                  prefetch={false}
+                                >
+                                  Details
+                                </Link>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center text-gray-600 text-sm">
+                  <h4
+                    className="text-lg font-bold"
+                  > No buildings...</h4>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <Dialog open={showRoomDialog} onOpenChange={setShowRoomDialog}>
-        <DialogContent>
-          <DialogTitle>Add Room to </DialogTitle>
-                  <Input
-                    type="text"
-                    placeholder={`Room Number`}
-                    value={roomNumber}
-                    onChange={(e:any) => setRoomNumber(e.target.value)}
-                    className='flex-grow py-2'
-                  />
-          <DialogFooter>
-            <Button size='sm' variant="outline" onClick={() => setShowRoomDialog(false)}>Cancel</Button>
-            {loading ? (
-              <Button size='sm' disabled>
-                <Loader2 className='animate-spin' />
-              </Button>
-            ) : (
-              <Button size='sm'
-              disabled={loading} onClick={handleSubmit}>Update</Button>
-            )}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          <DialogContent>
+            <DialogTitle>Add Room to </DialogTitle>
+            <Input
+              type="text"
+              placeholder={`Room Number`}
+              value={roomNumber}
+              onChange={(e: any) => setRoomNumber(e.target.value)}
+              className='flex-grow py-2'
+            />
+            <DialogFooter>
+              <Button size='sm' variant="outline" onClick={() => setShowRoomDialog(false)}>Cancel</Button>
+              {loading ? (
+                <Button size='sm' disabled>
+                  <Loader2 className='animate-spin' />
+                </Button>
+              ) : (
+                <Button size='sm'
+                  disabled={loading} onClick={handleSubmit}>Update</Button>
+              )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )

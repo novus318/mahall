@@ -42,6 +42,7 @@ const UpdateSalaryPayment = ({ fetchSalary, salary }: any) => {
   const [enteredOtp, setEnteredOtp] = useState('');
   const otpSentRef = useRef(false);
   const [rejectionReason, setRejectionReason] = useState('');
+  
   const fetchAccounts = () => {
     axios.get(`${apiUrl}/api/account/get`).then(response => {
       setBank(response.data.accounts);
@@ -318,12 +319,12 @@ const UpdateSalaryPayment = ({ fetchSalary, salary }: any) => {
             >
               Reject
             </Button>
-            <Button
+          {!otpSent && ( <Button
               onClick={handleSubmitPayment}
               disabled={btLoading || !targetAccount || !payDate}
             >
               Submit
-            </Button>
+            </Button>)}
           </DialogFooter>
         </DialogContent>
       </Dialog>

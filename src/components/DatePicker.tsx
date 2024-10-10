@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
 
-const DatePicker = ({ date, setDate }: any) => {
+const DatePicker = ({ date, setDate,disabled }: any) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSelectDate = (selectedDate: Date | undefined) => {
@@ -28,6 +28,7 @@ const DatePicker = ({ date, setDate }: any) => {
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button
+        disabled={disabled}
           variant={"outline"}
           size='sm'
           className={cn(
@@ -48,7 +49,7 @@ const DatePicker = ({ date, setDate }: any) => {
           onSelect={handleSelectDate}
           initialFocus
           fromYear={1920}
-          toYear={2030}
+          toYear={2050}
         />
       </PopoverContent>
     </Popover>

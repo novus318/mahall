@@ -220,7 +220,7 @@ const Page = () => {
              </div>
             <div>
             <label>To: </label>
-              <span>{selectedPayment?.memberId? selectedPayment?.memberId?.name : selectedPayment?.otherRecipient?.name}</span>
+              <span>{selectedPayment?.paymentTo}</span>
              </div>
               <label>Amount: </label>
               <span>₹{(selectedPayment?.total|| 0).toFixed(2)}</span>

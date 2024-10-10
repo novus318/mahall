@@ -1,7 +1,7 @@
-
 'use client'
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, ReactNode } from 'react';
 import axios from 'axios';
+import useSWR from 'swr';
 
 // Define the shape of the house object
 interface House {
@@ -14,30 +14,30 @@ interface House {
 // Define the shape of the context
 interface HouseContextType {
   houses: House[];
-  fetchHouses: () => void;
+  isLoading: boolean;
+  isError: boolean;
+  fetchHouses: () => void; // Add fetchHouses to the context type
 }
 
 const HouseContext = createContext<HouseContextType | undefined>(undefined);
 
-export const HouseProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [houses, setHouses] = useState<House[]>([]);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+// Fetcher function for SWR
+const fetcher = (url: string) => axios.get(url).then(res => res.data.houses);
 
-  const fetchHouses = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/api/house/get`);
-      setHouses(response.data.houses);
-    } catch (error) {
-      console.error("Error fetching houses:", error);
-    }
+export const HouseProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const { data: houses, error, isLoading, mutate } = useSWR(`${apiUrl}/api/house/get`, fetcher, {
+    revalidateOnFocus: false, // disable automatic revalidation on window focus
+    dedupingInterval: 60000,  // dedupe requests for 60 seconds
+  });
+
+  // Define the fetchHouses method that uses SWR's mutate function
+  const fetchHouses = () => {
+    mutate(); // This triggers a re-fetch of the data
   };
 
-  useEffect(() => {
-    fetchHouses();
-  }, []);
-
   return (
-    <HouseContext.Provider value={{ houses, fetchHouses}}>
+    <HouseContext.Provider value={{ houses: houses || [], isLoading: !houses && !error, isError: !!error, fetchHouses }}>
       {children}
     </HouseContext.Provider>
   );

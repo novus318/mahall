@@ -1,27 +1,41 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PrayerTimes from '@/components/PrayerTimes';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import Safari from '@/components/magicui/safari';
 import Link from 'next/link';
 
 function Home() {
+  const images = ["/mosque.jpg", "/mosque2.jpeg"];
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 2500); // Change image every 2 seconds
+
+    return () => clearInterval(interval); // Clear the interval on component unmount
+  }, [images.length]);
+
+  const imageVariants = {
+    hidden: { opacity: 0, x: -50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
+    exit: { opacity: 0, x: 50, transition: { duration: 0.5 } }
+  };
+
   const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 1, ease: 'easeOut' } },
   };
   
-  const imageVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 1, ease: 'easeOut' } },
-  };
+
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } },
   };
-
+ 
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -64,21 +78,22 @@ function Home() {
         </p>
       </div>
 
-      {/* Mosque Image */}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={imageVariants}
-        className="mt-8 lg:mt-0 lg:w-1/2 flex justify-center lg:justify-end relative z-0"
-      >
-        <img
-          src="/mosque.jpg"
-          alt="VKJ"
-          width={600}
-          height={400}
-          className="rounded-lg shadow-xl"
-        />
-      </motion.div>
+      <div className="mt-8 lg:mt-0 lg:w-1/2 flex justify-center lg:justify-end relative z-0">
+      <div className="relative w-[600px] h-[400px]">
+        <AnimatePresence>
+          <motion.img
+            key={currentImageIndex}
+            src={images[currentImageIndex]}
+            alt="Slider Image"
+            variants={imageVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="absolute top-0 left-0 w-full h-full rounded-lg shadow-xl object-cover"
+          />
+        </AnimatePresence>
+      </div>
+    </div>
     </motion.div>
 
     <div className="absolute bottom-14 md:bottom-0 left-0 w-full z-20"> 

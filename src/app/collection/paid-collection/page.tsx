@@ -44,6 +44,7 @@ houseId:{
 memberId:{
     _id: string;
     name: string;
+    whatsappNumber:string
 }
 }
 
@@ -99,6 +100,7 @@ const CollectionsPage: React.FC = () => {
         <TableHead>House</TableHead>
       <TableHead className="font-medium">Amount</TableHead>
       <TableHead>Family Head</TableHead>
+      <TableHead>Number</TableHead>
       <TableHead className="font-medium">Status</TableHead>
       <TableHead className="font-medium">Reciept</TableHead>
     </TableRow>
@@ -117,6 +119,7 @@ const CollectionsPage: React.FC = () => {
           ₹{collection?.amount.toFixed(2)}
           </TableCell>
           <TableCell>{collection?.memberId?.name}</TableCell>
+          <TableCell>{collection?.memberId?.whatsappNumber}</TableCell>
           <TableCell>{collection?.status}</TableCell>
           <TableCell>
             <Link target='_blank' href={`/payment-reciept/${collection.memberId._id}`} className='text-white bg-gray-900 py-1 px-2 rounded-md'>

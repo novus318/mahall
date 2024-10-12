@@ -145,6 +145,7 @@ const DataTable = () => {
             <TableHead>House</TableHead>
             <TableHead>Collection Amount</TableHead>
             <TableHead>Family Head</TableHead>
+            <TableHead>Number</TableHead>
             <TableHead>Status</TableHead>
           </TableRow>
         </TableHeader>
@@ -160,6 +161,7 @@ const DataTable = () => {
                 <TableCell>{house?.houseId?.number}</TableCell>
                 <TableCell>₹{(house?.amount).toFixed(2)}</TableCell>
                 <TableCell>{house?.memberId?.name}</TableCell>
+                <TableCell>{house?.memberId?.whatsappNumber}</TableCell>
                 <TableCell>
                  <UpdateCollectionPayment collection={house}/>
                 </TableCell>

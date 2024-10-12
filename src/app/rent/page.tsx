@@ -10,6 +10,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from '@/components/ui/dialog'
 import { withAuth } from '@/components/withAuth'
+import { isBefore } from 'date-fns'
 
 
 type Tenant = {
@@ -193,7 +194,8 @@ const Page = () => {
                         {building?.rooms.map(room => {
                           const activeContract = room?.contractHistory?.find(contract => contract.status === 'active');
                           return (
-                            <div key={room._id} className="grid gap-2 border rounded-sm p-4 bg-muted">
+                            <div key={room._id} className={activeContract?.to && isBefore(new Date(activeContract.to), new Date()) ? "bg-red-200 grid gap-2 border rounded-sm p-4" :  "grid gap-2 border rounded-sm p-4 bg-muted"}
+                            >
                               <div className="flex items-center justify-between">
                                 <div className="text-xs font-medium">Room number: {room?.roomNumber}
                                 {activeContract && (

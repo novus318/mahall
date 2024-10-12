@@ -111,12 +111,12 @@ const CreateAccount = ({fetchAccounts}:any) => {
                 </DialogTitle>
                 <div>
                     <Label>
-                       Account Name
+                       Cash or Bank Name
                     </Label>
                     <Input
                         type="text"
                         name="name"
-                        placeholder="Account Name"
+                        placeholder="Cash or Bank Name"
                         value={formData.name}
                         onChange={handleInputChange}
                         disabled={loading}

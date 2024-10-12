@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import axios from 'axios'
 import { useToast } from './ui/use-toast'
 import { Label } from './ui/label'
+import DatePicker from './DatePicker'
 
 const EditStaff = ({staff,fetchStaffDetails}:any) => {
     const { toast } = useToast()
@@ -73,6 +74,9 @@ const EditStaff = ({staff,fetchStaffDetails}:any) => {
         }
     };
 
+    const handleAgeChange = (date: any) => {
+        setFormData((prev) => ({ ...prev, age: date }));
+      };
     return (
         <Dialog open={isOpen} onOpenChange={(v) => setIsOpen(v)}>
             <DialogTrigger asChild>
@@ -99,18 +103,11 @@ const EditStaff = ({staff,fetchStaffDetails}:any) => {
                         />
                     </div>
                     <div>
-                        <Label>
-                            Age
-                        </Label>
-                        <Input
-                            type='text'
-                            name='age'
-                            value={formData.age === 0 ?'' : formData?.age}
-                            onChange={handleChange}
-                            placeholder='Age'
-                            className='w-full'
-                        />
-                    </div>
+                <p className='text-sm font-medium' >
+                  Date of birth
+                </p>
+                <DatePicker date={formData.age} setDate={handleAgeChange} />
+              </div>
                     <div>
                         <Label>
                             Department

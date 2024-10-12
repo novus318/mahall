@@ -560,7 +560,7 @@ const PageComponent = ({ params }: PageProps) => {
 
             <div>
               <Label>
-                Mobile number
+              Mobile Number (include country code)
               </Label>
               <Input
                 type='tel'
@@ -573,7 +573,7 @@ const PageComponent = ({ params }: PageProps) => {
             </div>
             <div>
             <Label>
-                Whatsapp number
+            WhatsApp Number (include country code)
               </Label>
               <Input
                 type='tel'

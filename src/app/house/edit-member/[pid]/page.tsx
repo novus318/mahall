@@ -652,7 +652,7 @@ const PageComponent = ({ params }: any) => {
           disabled={loading}
           onClick={handleEditMember}
         >
-          {loading ? <Loader2 className='animate-spin'/> :'Edit Member'}
+          {loading ? <Loader2 className='animate-spin'/> :'Update Member'}
         </Button>
       </div>
     </div>

@@ -32,7 +32,7 @@ const LinechartChart = ({data}:any) => {
           />
           <Tooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
           <Line 
-            dataKey="donation" 
+            dataKey="income" 
             type="natural" 
             stroke="#82ca9d" 
             strokeWidth={2} 

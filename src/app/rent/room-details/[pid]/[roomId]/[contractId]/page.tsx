@@ -128,12 +128,8 @@ const PageComponent = ({ params }: PageProps) => {
                       <>
                         {contractDetails?.depositStatus === 'Paid' ? (
                           <ReturnDeposit contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} />
-                        ) : (
-                          <Link href={`/rent/contract-create/${pid}/${roomId}`} className="mr-2 text-sm font-medium bg-gray-900 text-white px-2 py-1 rounded-sm">
-                            Create Contract
-                          </Link>
-                        )}
-                        <span className="text-red-600">Your contract has been expired</span>
+                        ) : null}
+                        <span className="text-red-600">Your contract has been expired </span>
                       </>
                     ) : (
                       <div className='flex justify-between items-center'>
@@ -191,18 +187,6 @@ const PageComponent = ({ params }: PageProps) => {
                                 <div className="text-sm font-medium">Returned Amount</div>
                                 <div>₹{returnedDeposit.amount}</div>
                               </div>
-                              {returnedDeposit.deduction > 0 && (
-                                <>
-                                  <div className="flex items-center justify-between">
-                                    <div className="text-sm font-medium">Deduction</div>
-                                    <div>₹{returnedDeposit.deduction}</div>
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <div className="text-sm font-medium">Deduction Reason</div>
-                                    <div>{returnedDeposit.deductionReason}</div>
-                                  </div>
-                                </>
-                              )}
                             </div>
                           ))}
                       </div>

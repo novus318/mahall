@@ -47,17 +47,17 @@ const Page = () => {
                   <CardTitle className="text-lg font-medium">House {house?.number}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <div className="grid grid-cols-3 text-sm">
-                    <p className="font-semibold">Name:</p>
-                    <p className="col-span-2 text-gray-900">{house?.name}</p>
+                <div className="grid grid-cols-3 text-sm">
+                    <p className="font-semibold">Head:</p>
+                    <p className="col-span-2 text-gray-900 truncate">{house?.familyHead?.name || 'NIL'}</p>
                   </div>
                   <div className="grid grid-cols-3 text-sm">
                     <p className="font-semibold">Address:</p>
                     <p className="col-span-2 text-gray-900 truncate">{house?.address}</p>
                   </div>
                   <div className="grid grid-cols-3 text-sm">
-                    <p className="font-semibold">Head:</p>
-                    <p className="col-span-2 text-gray-900 truncate">{house?.familyHead?.name || 'NIL'}</p>
+                    <p className="font-semibold">house:</p>
+                    <p className="col-span-2 text-gray-900">{house?.name}</p>
                   </div>
                 </CardContent>
               </Link>

@@ -13,7 +13,7 @@ import { withAuth } from '@/components/withAuth';
 
 interface Staff {
     name: string,
-    age: number,
+    age: any,
     employeeId: string,
     department: string,
     position: string,
@@ -33,7 +33,7 @@ const Page = () => {
     const [loading, setLoading] = useState(false);
     const [staff, setStaff] = useState<Staff>({
         name: '',
-        age: 0,
+        age: null,
         employeeId: '',
         department: '',
         position: '',
@@ -47,6 +47,8 @@ const Page = () => {
     });
 
     const validate = () => {
+        const currentYear = new Date().getFullYear();
+        const dobYear = new Date(staff.age).getFullYear();
         let isValid = true;
         if (!staff.name) {
             toast({
@@ -55,13 +57,13 @@ const Page = () => {
             });
             isValid = false;
         }
-        if (staff.age < 18 || staff.age > 85) {
+        if (!staff.age || dobYear === currentYear) {
             toast({
-                title: 'Age must be between 18 and 85',
-                variant: 'destructive',
+              title: "Please enter a valid Date of Birth",
+              variant: "destructive",
             });
             isValid = false;
-        }
+          }
         if (!staff.employeeId) {
             toast({
                 title: 'Employee ID is required',
@@ -136,7 +138,9 @@ const Page = () => {
     const handleDateChange = (date: any) => {
         setStaff((prev) => ({ ...prev, joinDate: date }));
       };
-
+      const handleAgeChange = (date: any) => {
+        setStaff((prev) => ({ ...prev, age: date }));
+      };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -199,19 +203,12 @@ const Page = () => {
                             className='w-full'
                         />
                     </div>
-                    <div className='mb-4'>
-                        <Label>
-                            Age
-                        </Label>
-                        <Input
-                            type='text'
-                            name='age'
-                            value={staff.age === 0 ?'' : staff?.age}
-                            onChange={handleChange}
-                            placeholder='Age'
-                            className='w-full'
-                        />
-                    </div>
+                    <div>
+                <p className='text-sm font-medium' >
+                  Date of birth
+                </p>
+                <DatePicker date={staff.age} setDate={handleAgeChange} />
+              </div>
                     <div>
               <p className='text-sm font-medium' >
                 Date of Join

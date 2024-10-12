@@ -12,13 +12,13 @@ const Page = () => {
   const [memberData, setMemberData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [search, setSearch] = useState('');
   const [dobFilter, setDobFilter] = useState('');
   const [genderFilter, setGenderFilter] = useState('');
   const [maritalStatusFilter, setMaritalStatusFilter] = useState('');
   const [bloodGroupFilter, setBloodGroupFilter] = useState('');
   const [educationFilter, setEducationFilter] = useState('');
+  const [madrassaFilter, setMadrassaFilter] = useState('');
   const [placeFilter, setPlaceFilter] = useState('');
   const [relationFilter, setRelationFilter] = useState('');
 
@@ -98,6 +98,7 @@ const Page = () => {
             (!maritalStatusFilter || member.maritalStatus === maritalStatusFilter) &&
             (!bloodGroupFilter || member.bloodGroup === bloodGroupFilter) &&
             (!educationFilter || member.education.level === educationFilter) &&
+            (!madrassaFilter || member.madrassa.level === madrassaFilter) &&
             (!placeFilter || member.place === placeFilter) &&
             (!relationFilter || member.relation?.relationType === relationFilter)
           );
@@ -109,7 +110,7 @@ const Page = () => {
     };
 
     applyFilters();
-  }, [search, dobFilter, genderFilter, maritalStatusFilter, bloodGroupFilter, educationFilter, placeFilter, relationFilter, memberData]);
+  }, [search, dobFilter, genderFilter, maritalStatusFilter, bloodGroupFilter, educationFilter,madrassaFilter, placeFilter, relationFilter, memberData]);
 
   return (
     <div className='w-full py-5 px-2'>
@@ -184,7 +185,7 @@ const Page = () => {
     <option value='O-'>O-</option>
   </select>
 
-  {/* Education Filter */}
+
   <select
     value={educationFilter}
     onChange={(e) => setEducationFilter(e.target.value)}
@@ -199,9 +200,10 @@ const Page = () => {
     <option value='Masters'>Masters</option>
     <option value='PhD'>PhD</option>
   </select>
+
   <select
-    value={educationFilter}
-    onChange={(e) => setEducationFilter(e.target.value)}
+    value={madrassaFilter}
+    onChange={(e) => setMadrassaFilter(e.target.value)}
     className='p-2 border border-gray-300 bg-white rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
   >
     <option value=''>Filter by Madrassa</option>
@@ -211,7 +213,6 @@ const Page = () => {
     <option value='Above 10th'>Above 10th</option>
   </select>
 
-  {/* Place Filter */}
   <select
     value={placeFilter}
     onChange={(e) => setPlaceFilter(e.target.value)}
@@ -229,7 +230,6 @@ const Page = () => {
     <option value='Outside Kerala'>Outside Kerala</option>
   </select>
 
-  {/* Relation Filter */}
   <select
     value={relationFilter}
     onChange={(e) => setRelationFilter(e.target.value)}
@@ -261,6 +261,7 @@ const Page = () => {
               <th className='px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Marital Status</th>
               <th className='px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Blood Group</th>
               <th className='px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Education</th>
+              <th className='px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Madrassa</th>
               <th className='px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Place</th>
             </tr>
           </thead>
@@ -275,6 +276,7 @@ const Page = () => {
                 <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>{member.maritalStatus}</td>
                 <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>{member.bloodGroup}</td>
                 <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>{member.education.level}</td>
+                <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>{member.madrassa.level}</td>
                 <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>{member.place}</td>
               </tr>
             ))}

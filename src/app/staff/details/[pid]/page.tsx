@@ -94,6 +94,17 @@ const PageComponent = ({ params }: PageProps) => {
     fetchStaffDetails()
   }, [pid])
 
+  const calculateAge = (dob:any) => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      return age - 1;
+    }
+    return age;
+  };
+
   if (!staff._id) {
     return <SkeletonLoader />
   }
@@ -140,7 +151,7 @@ const PageComponent = ({ params }: PageProps) => {
               </div>
               <div>
                 <p className="text-gray-500 font-medium text-xs md:text-base">Age</p>
-                <p className='text-xs md:text-base'>{staff?.age}</p>
+                <p className='text-xs md:text-base'>{calculateAge(staff?.age)}</p>
               </div>
               <div>
                 <p className="text-gray-500 font-medium text-xs md:text-base">Department</p>

@@ -26,23 +26,11 @@ interface BankAccount {
 
 const UpdateDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails }: any) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const [bank, setBank] = useState<BankAccount[]>([])
   const [showDialog, setShowDialog] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [targetAccount, setTargetAccount] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState('');
-  const fetchAccounts = () => {
-    axios.get(`${apiUrl}/api/account/get`).then(response => {
-      setBank(response.data.accounts)
-    })
-      .catch(error => {
-        console.log("Error fetching accounts:", error)
-      })
-  }
 
-  useEffect(() => {
-    fetchAccounts()
-  }, [])
+
 
 const handleUpdateDeposit = async () => {
     setLoading(true);
@@ -50,13 +38,11 @@ const handleUpdateDeposit = async () => {
       await axios.post(`${apiUrl}/api/rent/pay-deposit/${buildingId}/${roomId}/${contractDetails._id}`, {
         status:'Paid',
         paymentMethod:paymentMethod,
-        accountId:targetAccount
       });
       toast({
         title: 'Deposit status updated successfully',
         variant: 'default',
       });
-      setTargetAccount(null)
       fetchRoomDetails()
       setShowDialog(false);
       setPaymentMethod('')
@@ -90,27 +76,6 @@ const handleUpdateDeposit = async () => {
           <DialogHeader>
             <DialogTitle>Update deposit status</DialogTitle>
           </DialogHeader>
-          {bank.length > 1 ? (
-            <>
-            <Label>
-              Select bank
-            </Label>
-              <Select onValueChange={setTargetAccount}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select account" />
-                </SelectTrigger>
-                <SelectContent>
-                  {bank.map((acc) => (
-                    <SelectItem key={acc._id} value={acc._id}>
-                      {acc.name} - {acc.holderName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </>
-          ) : (
-            <p>Please close and open again.</p>
-          )}
           <div>
             <Label>
               Select payment type
@@ -136,7 +101,7 @@ const handleUpdateDeposit = async () => {
                 <Loader2 className='animate-spin' />
               </Button>
             ) : (
-              <Button size='sm' disabled={!targetAccount || loading}
+              <Button size='sm' disabled={!paymentMethod || loading}
               onClick={handleUpdateDeposit}>
                 Update
               </Button>

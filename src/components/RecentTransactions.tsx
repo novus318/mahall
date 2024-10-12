@@ -16,6 +16,10 @@ interface Transaction {
     type: 'Credit' | 'Debit';
     date: string;
     reference:string
+    accountId: {
+      _id: string;
+      name:string;
+    }
   }
 
 
@@ -63,9 +67,18 @@ const RecentTransactions = () => {
       };
     };
     
-    const formatAmount = (amount:any, type:any) => {
-      return type === 'Credit' ? `+${amount}` : `-${amount}`;
+    const formatAmount = (amount: any, type: any) => {
+      // Format the amount with commas and two decimal places
+      const formatted = new Intl.NumberFormat('en-IN', {
+        style: 'decimal',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(amount || 0);
+    
+      // Prefix with + or - based on the transaction type
+      return type === 'Credit' ? `+₹${formatted}` : `-₹${formatted}`;
     };
+    
   
     const handleReferenceClick = (reference: string) => {
       router.push(reference)
@@ -85,6 +98,7 @@ const RecentTransactions = () => {
   <TableHeader className='bg-gray-100'>
     <TableRow>
       <TableHead className="font-medium">Date</TableHead>
+      <TableHead className="font-medium">Account</TableHead>
       <TableHead className="font-medium">Description</TableHead>
       <TableHead className="font-medium">Amount</TableHead>
     </TableRow>
@@ -105,6 +119,7 @@ const RecentTransactions = () => {
             <div className='text-sm'>{dayMonthYear}</div>
             <div className="text-xs text-gray-500">{time}</div>
           </TableCell>
+          <TableCell className='text-xs'>{transaction?.accountId?.name}</TableCell>  {/* replace with actual account details */}  {/* Example: "Savings" */}  {/* replace with actual account details */}  {/* Example: "Savings" */}  {/* replace with actual account details */}  {/* Example: "Savings" */}   {/* replace with actual account details */}  {/* Example: "Savings" */}   {/* replace with actual account details */}  {/* Example: "Savings" */}
           <TableCell className='text-xs'>{transaction?.description} {transaction?.reference && (<span className='text-blue-700 underline'>reference</span>)}</TableCell>
           <TableCell className={transaction?.type === 'Credit' ? 'text-green-700 font-bold' : 'text-red-600 font-bold'}>
             {formattedAmount}

@@ -8,17 +8,7 @@ import axios from 'axios'
 import { Loader2 } from 'lucide-react'
 import { toast } from './ui/use-toast'
 
-interface BankAccount {
-    _id: string;
-    accountNumber: string;
-    accountType: string;
-    balance: number;
-    createdAt: string;
-    holderName: string;
-    ifscCode: string;
-    name: string;
-    primary: boolean;
-  }
+
 
   interface FormDataType {
     deduction: number | null;
@@ -27,71 +17,23 @@ const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails}:a
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const [bank, setBank] = useState<BankAccount[]>([])
-    const [targetAccount, setTargetAccount] = useState<string | null>(null);
-    const [RecieptCategories, setRecieptCategories] = useState<any[]>([]);
-    const [targetCategory, setTargetCategory] = useState<string | null>(null);
-    const [formData, setFormData] = useState<FormDataType>({ deduction: null });
-
-    const fetchAccounts = () => {
-        axios.get(`${apiUrl}/api/account/get`).then(response => {
-          setBank(response.data.accounts)
-        })
-          .catch(error => {
-            console.log("Error fetching accounts:", error)
-          })
-      }
+    const [paymentMethod, setPaymentMethod] = useState('');
     
-      const fetchRecCategories = () => {
-        axios.get(`${apiUrl}/api/reciept/category/all`).then(response => {
-          setRecieptCategories(response.data.categories)
-        })
-         .catch(error => {
-            console.log("Error fetching pay categories:", error)
-          })
-      }
-      useEffect(() => {
-        fetchAccounts()
-        fetchRecCategories()
-      }, [])
+    
       const handleUpdateReturn = async () => {
-        const bankBalance:any = bank.find(acc => acc._id === targetAccount)
-        if (!targetAccount) {
+        if (!paymentMethod) {
             toast({
-                title: 'Please select a bank account',
+                title: 'Please select a payment method',
                 variant: 'destructive',
               });
             return;
         }
-        if((formData.deduction || 0) > 0 && !targetCategory){
-            toast({
-                title: 'Please select deduction reason',
-                variant: 'destructive',
-              });
-            return;
-        }
-        if(returnAmount < 0){
-            toast({
-                title: 'Return amount should be greater than 0',
-                variant: 'destructive',
-              });
-            return;
-        }
-        if(bankBalance?.balance < returnAmount){
-            toast({
-                title: 'Insufficient balance in selected bank account',
-                variant: 'destructive',
-              });
-            return;
-        }
+     
         setLoading(true);
         try {
             const data ={
-                deduction:formData.deduction,
-                accountId:targetAccount,
                 status:'Returned',
-                amount:returnAmount,
-                receiptId:targetCategory
+                paymentMethod:paymentMethod,
               }
           const response =await axios.post(`${apiUrl}/api/rent/return-deposit/${buildingId}/${roomId}/${contractDetails._id}`,data);
       if(response.data.success){
@@ -100,9 +42,7 @@ const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails}:a
             variant: 'default',
           });
           setIsOpen(false);
-          setFormData({
-            deduction:null,
-          });
+          setPaymentMethod('')
           fetchRoomDetails();
       }
         } catch (error:any) {
@@ -116,7 +56,6 @@ const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails}:a
         }
       }
 
-      const returnAmount = contractDetails?.deposit - (formData.deduction || 0);
 
   return (  <Dialog open={isOpen} onOpenChange={(v) => setIsOpen(v)}>
   <DialogTrigger asChild>
@@ -130,62 +69,33 @@ const ReturnDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails}:a
           Return deposit
       </DialogTitle>
       <p className='font-semibold text-muted-foreground'>Deposit: ₹{contractDetails?.deposit}</p>
-      {bank.length > 1 ? (
-            <>
+    
+      <div>
             <Label>
-              Select bank
+              Select payment type
             </Label>
-              <Select onValueChange={setTargetAccount}>
+            <Select onValueChange={setPaymentMethod}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select account" />
+                  <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {bank.map((acc) => (
-                    <SelectItem key={acc._id} value={acc._id}>
-                      {acc.name} - {acc.holderName}
+                    <SelectItem  value='Cash'>
+                      Cash
                     </SelectItem>
-                  ))}
+                    <SelectItem  value='Online'>
+                      Online
+                    </SelectItem>
                 </SelectContent>
               </Select>
-            </>
-          ) : (
-            <p>Please close and open again.</p>
-          )}
-          <div className='space-y-2'>
-            <Label>
-              Any deductions
-            </Label>
-            <Input
-              type='text'
-              value={formData.deduction || ''}
-              onChange={(e) => setFormData({...formData, deduction: Number(e.target.value) })}
-              placeholder='Deduction Amount'
-              />
-            <div className="w-full">
-          <Label>Select category</Label>
-          <Select value={targetCategory || 'Select category'} onValueChange={setTargetCategory}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              {RecieptCategories?.map((c) => (
-                <SelectItem key={c._id} value={c._id}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
           </div>
-          <p className='font-semibold text-gray-700'>Return Amount: ₹{returnAmount}</p>
-          <DialogFooter>
+           <DialogFooter>
             <Button size='sm' variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
             {loading ? (
               <Button size='sm' disabled>
                 <Loader2 className='animate-spin' />
               </Button>
             ) : (
-              <Button size='sm' disabled={!targetAccount || loading}
+              <Button size='sm' disabled={!paymentMethod || loading}
               onClick={handleUpdateReturn}>
                 Update
               </Button>

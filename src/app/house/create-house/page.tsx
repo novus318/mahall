@@ -398,14 +398,14 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                   <SelectValue placeholder="Ration Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='APL/Blue'>
-                  APL/Blue
+                <SelectItem value='AAY/Yellow'>
+                AAY/Yellow
                   </SelectItem>
                   <SelectItem value='BPL/Pink'>
                  BPL/Pink
                   </SelectItem>
-                  <SelectItem value='AAY/Yellow'>
-                AAY/Yellow
+                  <SelectItem value='APL/Blue'>
+                  APL/Blue
                   </SelectItem>
                   <SelectItem value='White Card'>
                 White Card
@@ -709,7 +709,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
             </div>
                     <div>
                     <Label>
-                Mobile number
+                Mobile number (include country code)
               </Label>
                         <Input
                             type='tel'
@@ -722,7 +722,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                     </div>
                     <div>
                     <Label>
-                Whatsapp number
+                    WhatsApp Number (include country code)
               </Label>
               <Input
                 type='tel'

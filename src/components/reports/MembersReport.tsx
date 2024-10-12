@@ -191,6 +191,7 @@ const MembersReport = ({data}:any) => {
   return (
     <div>
     <Button
+    size='sm'
     onClick={
       handleReceiptClick
     }>

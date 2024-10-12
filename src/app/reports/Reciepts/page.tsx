@@ -43,7 +43,22 @@ const RecieptPage = () => {
   const [btloading, setBtLoading] = useState(false);
 const [fromDate, setFromDate] = useState<any>(null);
 const [toDate, setToDate] = useState<any>(null);
+const [selectedCategory, setSelectedCategory] = useState('');
+const [categories,setCategories] =useState<any>([])
 
+
+const filteredReceipts = selectedCategory
+  ? reciepts.filter((receipt) => receipt?.categoryId?.name === selectedCategory)
+  : reciepts;
+
+  const fetchRecCategories = () => {
+    axios.get(`${apiUrl}/api/reciept/category/all`).then(response => {
+      setCategories(response.data.categories)
+    })
+     .catch(error => {
+        console.log("Error fetching pay categories:", error)
+      })
+  }
 
 const fetchInitialReciepts = async () => {
   const now = new Date();
@@ -121,6 +136,7 @@ const fetchInitialReciepts = async () => {
   
   useEffect(() => {
     fetchInitialReciepts();
+    fetchRecCategories();
   }, []);
 
   const formatDate = (dateString:any) => {
@@ -274,6 +290,21 @@ const fetchInitialReciepts = async () => {
        <p className="text-sm font-medium">To Date</p>
        <DatePicker date={toDate} setDate={setToDate} />
  </div>
+ <div className='md:col-span-2'>
+            <p className="text-sm font-medium">Category</p>
+            <select
+              className='border border-gray-300 rounded-sm p-1 bg-white'
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value=''>All Categories</option>
+              {categories.map((category:any) => (
+                <option key={category._id} value={category.name}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
  <div className='md:pt-4'>
         <Button
         size='sm'
@@ -288,7 +319,7 @@ const fetchInitialReciepts = async () => {
       <Button
         size='sm'
           onClick={
-            ()=>handleReceiptClick(reciepts)
+            ()=>handleReceiptClick(filteredReceipts)
           }
           className="w-full md:w-auto"
         >
@@ -309,7 +340,7 @@ const fetchInitialReciepts = async () => {
   </TableRow>
 </TableHeader>
 <TableBody>
-  {reciepts.map((reciept) => {
+  {filteredReceipts.map((reciept) => {
     const { dayMonthYear, time } = formatDate(reciept?.date);
     return(
       <TableRow key={reciept?._id}>

@@ -45,9 +45,25 @@ const TransactionPage = () => {
   const [btloading, setBtLoading] = useState(false);
   const [fromDate, setFromDate] = useState<any>(null);
   const [toDate, setToDate] = useState<any>(null);
+  const [selectedAccount, setSelectedAccount] = useState('');
+  const [accounts, setAccounts] = useState<any[]>([]);
+
+  const filteredTransactions = selectedAccount
+  ? transactions?.transactions?.filter((transaction:any) => transaction?.accountName === selectedAccount)
+  : transactions?.transactions;
+
+  const fetchAccounts = () => {
+    axios.get(`${apiUrl}/api/account/get-all`).then(response => {
+      setAccounts(response.data.accounts)
+    })
+      .catch(error => {
+        console.log("Error fetching accounts:", error)
+      })
+  }
 
   useEffect(() => {
     fetchInitialTransactions();
+    fetchAccounts();
   }, []);
 
   const fetchInitialTransactions = async () => {
@@ -110,7 +126,8 @@ const TransactionPage = () => {
     try {
       const data: any = {
         fromDate,
-        toDate
+        toDate,
+        accountName:selectedAccount
       }
       const response = await axios.get(`${apiUrl}/api/transactions/recent/transactions/byDate`, { params: data });
       if (response.data.success) {
@@ -118,6 +135,7 @@ const TransactionPage = () => {
         setBtLoading(false);
         setFromDate(null)
         setToDate(null)
+        setSelectedAccount('')
         setLoading(false)
         toast({
           title: "Transactions fetched successfully.",
@@ -400,6 +418,21 @@ const TransactionPage = () => {
           <div className='md:col-span-2'>
             <p className="text-sm font-medium">To Date</p>
             <DatePicker date={toDate} setDate={setToDate} />
+          </div>
+          <div className='md:col-span-2'>
+            <p className="text-sm font-medium">Account</p>
+            <select
+              className='border border-gray-300 rounded-sm p-1 bg-white'
+              value={selectedAccount}
+              onChange={(e) => setSelectedAccount(e.target.value)}
+            >
+              <option value=''>All Accounts</option>
+              {accounts.map((account) => (
+                <option key={account._id} value={account.name}>
+                  {account.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div className='md:pt-4'>
             <Button

@@ -42,7 +42,23 @@ const PaymentPage = () => {
   const [btloading, setBtLoading] = useState(false);
 const [fromDate, setFromDate] = useState<any>(null);
 const [toDate, setToDate] = useState<any>(null);
+const [selectedCategory, setSelectedCategory] = useState('');
+const [categories,setCategories] =useState<any>([])
 
+const filteredPayments = selectedCategory
+  ? payments.filter((payment) => payment?.categoryId?.name === selectedCategory)
+  : payments;
+
+
+
+  const fetchPayCategories = () => {
+    axios.get(`${apiUrl}/api/pay/category/all`).then(response => {
+      setCategories(response.data.categories)
+    })
+      .catch(error => {
+        console.log("Error fetching pay categories:", error)
+      })
+  }
 
 const fetchInitialPayments = async () => {
   const now = new Date();
@@ -120,6 +136,7 @@ const fetchInitialPayments = async () => {
   
   useEffect(() => {
     fetchInitialPayments();
+    fetchPayCategories();
   }, []);
 
   const formatDate = (dateString:any) => {
@@ -257,95 +274,108 @@ const fetchInitialPayments = async () => {
   if (loading) return <RecentrecieptSkeleton />;
   return (
     <div className='w-full py-5 px-2'>
-            <Link href='/reports' className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
-          Back
-        </Link>
-    <div className='max-w-6xl m-auto my-3'>
-    <div>
-            <h2 className="text-2xl font-semibold mb-4">Payments From {formatDate(fromDate).dayMonthYear ? formatDate(fromDate).dayMonthYear : 'Invalid date'} - To {formatDate(toDate).dayMonthYear ? formatDate(toDate).dayMonthYear : 'Invalid date'}</h2>
+      <Link href='/reports' className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
+        Back
+      </Link>
+      <div className='max-w-6xl m-auto my-3'>
+        <div>
+          <h2 className="text-2xl font-semibold mb-4">
+            Payments From {formatDate(fromDate).dayMonthYear || 'Invalid date'} - To {formatDate(toDate).dayMonthYear || 'Invalid date'}
+          </h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-8 gap-3 md:gap-5 mb-2 items-center">
-       <div className='md:col-span-2'>
-       <p className="text-sm font-medium">From Date</p>
-       <DatePicker date={fromDate} setDate={setFromDate} />
-       </div>
-       <div className='md:col-span-2'>
-       <p className="text-sm font-medium">To Date</p>
-       <DatePicker date={toDate} setDate={setToDate} />
- </div>
- <div className='md:pt-4'>
-        <Button
-        size='sm'
-          onClick={fetchPayments}
-          disabled={loading}
-          className="w-full md:w-auto"
-        >
-          {btloading ? <Loader2 className='animate-spin h-5'/> : "Get Reciepts"}
-        </Button>
-      </div>
-      <div className='md:pt-4'>
-      <Button
-        size='sm'
-          onClick={
-            ()=>handleReceiptClick(payments)
-          }
-          className="w-full md:w-auto"
-        >
-       Print  
-       </Button>
-      </div>
-      </div>
-      <div className='rounded-t-md bg-gray-100 p-1'>
- <Table className="bg-white">
-<TableHeader className='bg-gray-100'>
-  <TableRow>
-    <TableHead className="font-medium">Date</TableHead>
-    <TableHead className="font-medium">Reciept No.</TableHead>
-    <TableHead className="font-medium">Category</TableHead>
-    <TableHead className="font-medium">status</TableHead>
-    <TableHead className="font-medium">To</TableHead>
-    <TableHead className="font-medium">Amount</TableHead>
-  </TableRow>
-</TableHeader>
-<TableBody>
-  {payments?.map((payment) => {
-    const { dayMonthYear, time } = formatDate(payment?.date);
-    return(
-      <TableRow key={payment?._id}>
-        <TableCell>
-        <div className='text-sm'>{dayMonthYear}</div>
-        <div className="text-xs text-gray-500">{time}</div>
-        </TableCell>
-        <TableCell>
-          <div className='text-sm'>{payment?.receiptNumber}</div>
-        </TableCell>
-        <TableCell>
-          <div className='text-sm'>{payment?.categoryId.name}</div>
-        </TableCell>
-        <TableCell>
-          <div className='text-sm'>{payment?.status}</div>
-        </TableCell>
-        <TableCell>
-          <div className='text-sm'>
-          {payment?.paymentTo}
+          <div className='md:col-span-2'>
+            <p className="text-sm font-medium">From Date</p>
+            <DatePicker date={fromDate} setDate={setFromDate} />
           </div>
-        </TableCell>
-        <TableCell>
-          <div className='text-sm'>₹{(payment?.total).toFixed(2)}</div>
-        </TableCell>
-      </TableRow>
-      )
-  })}
-  {payments.length === 0 && (
-      <TableCell colSpan={3} className="text-center text-gray-600 text-sm">
-        <h4 className="text-lg font-bold">No payments...</h4>
-      </TableCell>
-      )}
-</TableBody>
-</Table>
- </div>
-  </div>
-</div>
+          <div className='md:col-span-2'>
+            <p className="text-sm font-medium">To Date</p>
+            <DatePicker date={toDate} setDate={setToDate} />
+          </div>
+          <div className='md:col-span-2'>
+            <p className="text-sm font-medium">Category</p>
+            <select
+              className='border border-gray-300 rounded-sm p-1 bg-white'
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value=''>All Categories</option>
+              {categories.map((category:any) => (
+                <option key={category._id} value={category.name}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className='md:pt-4'>
+            <Button
+              size='sm'
+              onClick={fetchPayments}
+              disabled={loading}
+              className="w-full md:w-auto"
+            >
+              {btloading ? <Loader2 className='animate-spin h-5' /> : "Get Receipts"}
+            </Button>
+          </div>
+          <div className='md:pt-4'>
+            <Button
+              size='sm'
+              onClick={() => handleReceiptClick(filteredPayments)}
+              className="w-full md:w-auto"
+            >
+              Print  
+            </Button>
+          </div>
+        </div>
+        <div className='rounded-t-md bg-gray-100 p-1'>
+          <Table className="bg-white">
+            <TableHeader className='bg-gray-100'>
+              <TableRow>
+                <TableHead className="font-medium">Date</TableHead>
+                <TableHead className="font-medium">Receipt No.</TableHead>
+                <TableHead className="font-medium">Category</TableHead>
+                <TableHead className="font-medium">Status</TableHead>
+                <TableHead className="font-medium">To</TableHead>
+                <TableHead className="font-medium">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredPayments.map((payment) => {
+                const { dayMonthYear, time } = formatDate(payment?.date);
+                return (
+                  <TableRow key={payment?._id}>
+                    <TableCell>
+                      <div className='text-sm'>{dayMonthYear}</div>
+                      <div className="text-xs text-gray-500">{time}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className='text-sm'>{payment?.receiptNumber}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className='text-sm'>{payment?.categoryId.name}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className='text-sm'>{payment?.status}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className='text-sm'>{payment?.paymentTo}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className='text-sm'>₹{(payment?.total).toFixed(2)}</div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+              {filteredPayments.length === 0 && (
+                <TableCell colSpan={6} className="text-center text-gray-600 text-sm">
+                  <h4 className="text-lg font-bold">No payments...</h4>
+                </TableCell>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </div>
   )
 }
 

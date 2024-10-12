@@ -455,8 +455,9 @@ const[selectedFile,setSelectedFile] = useState<any>(null)
       )}
     </div>
     
-    <DialogFooter>
-      <Button size="sm" variant="outline" onClick={() => setShowDialog(false)}>
+    <DialogFooter >
+      <div className='space-x-2'>
+        <Button size="sm" variant="outline" onClick={() => setShowDialog(false)}>
         Cancel
       </Button>
       {loading ? (
@@ -471,7 +472,7 @@ const[selectedFile,setSelectedFile] = useState<any>(null)
         >
           Send
         </Button>
-      )}
+      )}</div>
     </DialogFooter>
   </DialogContent>
 </Dialog>

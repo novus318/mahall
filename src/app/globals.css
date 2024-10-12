@@ -64,6 +64,48 @@
   }
 }
 
+@keyframes wave {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.wave-button {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 8px 16px;
+  background-color: #4f46e5; /* Your button color */
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.wave-button:hover {
+  background-color: #4338ca; /* Darker shade for hover effect */
+}
+
+.wave-animation {
+  position: absolute;
+  content: '';
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2); /* Light wave color */
+  animation: wave 1s infinite; /* Animation duration */
+  transform: translateY(-100%); /* Start above the button */
+}
+
+
+
 input[type="number"]::-webkit-inner-spin-button, 
 input[type="number"]::-webkit-outer-spin-button { 
     -webkit-appearance: none;

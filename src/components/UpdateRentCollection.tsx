@@ -270,16 +270,16 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections }: a
                                 </SelectContent>
                             </Select>
                             <div>
-                                <Label>Leave (Max 30 days)</Label>
+                                <Label>deduction (Max 30 days)</Label>
                                 <Input
                                     type="number"
                                     min={0}
                                     max={30}
-                                    placeholder="Number of leave days"
+                                    placeholder="Number of deduction days"
                                     value={leaveDays || ''}
                                     onChange={(e: any) => setLeaveDays(e.target.value)} // Ensure leaveDays is between 0 and 30
                                 />
-                                <p className='text-sm'>Leave deduction: ₹{leaveDeduction.toFixed(2)}</p>
+                                <p className='text-sm'>Deduction amount: ₹{leaveDeduction.toFixed(2)}</p>
                             </div>
 
                         </div>

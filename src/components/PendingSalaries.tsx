@@ -53,7 +53,7 @@ const PendingSalaries = ({id,fetchStaffDetails}:any) => {
               </TableCell>
               <TableCell>₹{payslip?.basicPay}</TableCell>
               <TableCell>
-              <UpdateSalaryPayment fetchSalary={fetchStaffDetails} salary={payslip} />  </TableCell>
+              <UpdateSalaryPayment  salary={payslip} />  </TableCell>
             </TableRow>
           ))}
           {pendingPaySlips?.length === 0 && (

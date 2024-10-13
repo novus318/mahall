@@ -68,23 +68,41 @@ const Page = () => {
     return age;
   };
 
-  const handleMemberSelect = (memberId:any) => {
-    if (selectedMembers.includes(memberId)) {
-      setSelectedMembers(selectedMembers.filter((id:any) => id !== memberId));
+  const handleMemberSelect = (member: any) => {
+    const selectedMember = {
+      _id: member._id,
+      name: member.name,
+      mobile: member.mobile,
+      whatsappNumber: member.whatsappNumber,
+    };
+  
+    if (selectedMembers.some((selected: any) => selected._id === member._id)) {
+      setSelectedMembers(
+        selectedMembers.filter((selected: any) => selected._id !== member._id)
+      );
     } else {
-      setSelectedMembers([...selectedMembers, memberId]);
+      setSelectedMembers([...selectedMembers, selectedMember]);
     }
   };
+  
 
   const handleSelectAll = () => {
     if (selectAll) {
       setSelectedMembers([]); // Deselect all
     } else {
-      const allMemberIds = filteredData.flatMap(house => house.members.map(member => member._id));
-      setSelectedMembers(allMemberIds); // Select all members
+      const allMembers = filteredData.flatMap(house =>
+        house.members.map(member => ({
+          _id: member._id,
+          name: member.name,
+          mobile: member.mobile,
+          whatsappNumber: member.whatsappNumber,
+        }))
+      );
+      setSelectedMembers(allMembers); // Select all members with required fields
     }
     setSelectAll(!selectAll);
   };
+  
   // Fetch member data on component mount
   useEffect(() => {
     const fetchMembers = async () => {
@@ -309,7 +327,8 @@ const Page = () => {
   Clear all
 </Button>
 <MembersReport data={filteredData}/>
-<BulkMessage members={selectedMembers}/>
+{selectedMembers.length > 0 && 
+  <BulkMessage members={selectedMembers}/>}
 </div>
 
 <div className='mb-4 flex items-center gap-2 mx-auto px-2 rounded-sm py-2 border'
@@ -349,14 +368,14 @@ onClick={handleSelectAll}>
                   {house.members.map((member) => (
                     <tr key={member._id}>
                       <td className='px-4 py-4 whitespace-nowrap text-sm'>
-                        <Checkbox
-                          checked={selectedMembers.includes(member._id)}
-                          onCheckedChange={() => handleMemberSelect(member._id)}
-                        />
+                      <Checkbox
+  checked={selectedMembers.some((selected: any) => selected._id === member._id)}
+  onCheckedChange={() => handleMemberSelect(member)}
+/>
                       </td>
                       <td className='px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>{member.name}</td>
                       <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>{member.status}</td>
-                      <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>{member?.mobile ||member?.whatsappNumber|| 'NIL'}</td>
+                      <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>{member?.whatsappNumber||member?.mobile|| 'NIL'}</td>
                       <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>{calculateAge(member.DOB)}</td>
                       <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>{member.gender}</td>
                       <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>{member.maritalStatus}</td>

@@ -26,7 +26,7 @@ interface BankAccount {
 }
 const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections }: any) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const [paymentType, setPaymentType] = useState<string>('');
     const [bank, setBank] = useState<BankAccount[]>([])
@@ -203,6 +203,16 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections }: a
     const leaveDeduction = (selectedCollection?.amount / 30) * (leaveDays || 0);
     const advanceDeduction = advanceRepayment;
     const amount = selectedCollection?.amount - leaveDeduction - (advanceDeduction || 0)
+    const formatCurrency = (amount: any) => {
+        // Round off to the nearest integer and then format to two decimal places
+        const roundedAmount = Math.round(amount * 100) / 100; // Round to two decimal places
+        return `₹${roundedAmount.toLocaleString('en-IN', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`;
+      };
+      
+
     return (
         <>
             <Button size='sm' onClick={handleOpenDialog} className="cursor-pointer">
@@ -219,7 +229,6 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections }: a
                         Rent Amount: ₹{(selectedCollection?.amount ?? 0).toFixed(2)}
                         <br />
                         Name: {selectedCollection?.tenantName}<br/>
-                        Advance: ₹{(selectedCollection?.advancePayment || 0).toFixed(2)}
                     </DialogDescription>
                     {!otpSent && (<div>
                         <div>
@@ -273,19 +282,8 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections }: a
                                 <p className='text-sm'>Leave deduction: ₹{leaveDeduction.toFixed(2)}</p>
                             </div>
 
-                           {selectedCollection?.advancePayment > 0 &&
-                            <div>
-                                <Label>Advance Deduction</Label>
-                                <Input
-                                    type="number"
-                                    max={selectedCollection?.advancePayment} // Ensure repayment does not exceed advance payment
-                                    placeholder="Repayment amount"
-                                    value={advanceRepayment || ''}
-                                    onChange={(e: any) => setAdvanceRepayment(e.target.value)}
-                                />
-                            </div>}
                         </div>
-                        <h4 className='font-semibold text-muted-foreground'>Amount : ₹{amount}</h4>
+                        <h4 className='font-semibold text-muted-foreground'>Amount : {formatCurrency(amount)}</h4>
                     </div>)}
                     {otpSent && (
                         <div className='grid grid-cols-5 items-center gap-2'>
@@ -331,7 +329,7 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections }: a
                         >
                             Reject
                         </Button>
-                        {!otpSent && (<Button onClick={handleSubmitPayment} disabled={!paymentType || !targetAccount}>
+                        {!otpSent && (<Button onClick={handleSubmitPayment} disabled={!paymentType || !targetAccount || loading}>
                             Submit
                         </Button>)}
                     </DialogFooter>

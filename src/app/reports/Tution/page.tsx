@@ -150,8 +150,15 @@ const TutionPage = () => {
       time: format(date, 'hh:mm a'),
     };
   };
-
+  const formatCurrency = (amount:any) => {
+    return `₹${amount.toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
   const handleReceiptClick = async (data: any) => {
+    const totalAmount = data.reduce((sum: number, collection: any) => sum + (collection?.amount || 0), 0);
+    const totalCollections = data.length;
     const doc = (
       <Document>
         <Page size="A4" style={styles.page}>
@@ -168,7 +175,11 @@ const TutionPage = () => {
           <Text style={styles.sectionTitle}>
             Collections From: {formatDate(fromDate).dayMonthYear} - To: {formatDate(toDate).dayMonthYear}
           </Text>
-  
+          <View style={styles.summaryContainer}>
+    <Text style={styles.summaryText}>Total Amount: {formatCurrency(totalAmount)}</Text>
+    <Text style={styles.summaryText}>Total Collections: {totalCollections}</Text>
+</View>
+
           {/* Table Section */}
           <View style={styles.tableContainer}>
             {/* Table Header */}
@@ -187,7 +198,7 @@ const TutionPage = () => {
                 <Text style={styles.tableCell}>{formatDate(collection?.date).dayMonthYear}</Text>
                 <Text style={styles.tableCell}>{collection?.receiptNumber}</Text>
                 <Text style={styles.tableCell}>{collection?.houseId?.number}</Text>
-                <Text style={styles.tableCell}>{collection?.amount}</Text>
+                <Text style={styles.tableCell}>{formatCurrency(collection?.amount)}</Text>
                 <Text style={styles.tableCell}>{collection?.memberId?.name}</Text>
                 <Text style={styles.tableCell}>{collection?.status}</Text>
               </View>
@@ -208,68 +219,83 @@ const TutionPage = () => {
   
   const styles = StyleSheet.create({
     page: {
-      padding: 30, // Padding for A4 layout
-      fontFamily: 'Roboto',
-      fontSize: 11,
-      color: '#333',
-      lineHeight: 1.5,
+        padding: 30, // Padding for A4 layout
+        fontFamily: 'Roboto',
+        fontSize: 11,
+        color: '#333',
+        lineHeight: 1.5,
     },
     header: {
-      textAlign: 'center',
-      marginBottom: 15,
+        textAlign: 'center',
+        marginBottom: 15,
     },
     headerTitle: {
-      fontSize: 14,
-      fontWeight: 'bold',
-      marginBottom: 5,
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginBottom: 5,
     },
     headerText: {
-      fontSize: 10,
-      marginBottom: 4,
+        fontSize: 10,
+        marginBottom: 4,
     },
     logo: {
-      width: 80,
-      height: 80,
-      marginBottom: 10,
-      alignSelf: 'center',
+        width: 80,
+        height: 80,
+        marginBottom: 10,
+        alignSelf: 'center',
     },
     separator: {
-      borderBottomWidth: 2,
-      borderBottomColor: '#E5E7EB',
-      marginVertical: 15,
+        borderBottomWidth: 2,
+        borderBottomColor: '#E5E7EB',
+        marginVertical: 15,
     },
     sectionTitle: {
-      fontSize: 12,
-      fontWeight: 'bold',
-      color: '#444',
-      marginBottom: 15,
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: '#444',
+        marginBottom: 15,
     },
     tableContainer: {
-      marginTop: 10,
-      borderWidth: 1,
-      borderColor: '#E5E7EB',
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
     },
     tableRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      borderBottomWidth: 1,
-      borderBottomColor: '#E5E7EB',
-      paddingVertical: 8,
-      paddingHorizontal: 5,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        borderBottomWidth: 1,
+        borderBottomColor: '#E5E7EB',
+        paddingVertical: 8,
+        paddingHorizontal: 5,
     },
     tableHeader: {
-      backgroundColor: '#F5F5F5',
-      fontWeight: 'bold',
+        backgroundColor: '#F5F5F5',
+        fontWeight: 'bold',
     },
     tableCell: {
-      flex: 1,
-      textAlign: 'center',
-      fontSize: 10,
+        flex: 1,
+        textAlign: 'center',
+        fontSize: 10,
     },
     headerCell: {
-      fontWeight: 'bold',
+        fontWeight: 'bold',
     },
-  });
+    summaryContainer: {
+        marginTop: 15,
+        marginBottom: 10,
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        backgroundColor: '#F9F9F9', // Light background for summary
+    },
+    summaryText: {
+        fontSize: 11,
+        fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'right', // Right align for a neat summary look
+    },
+});
+
   
 
   if (loading) return <RecentrecieptSkeleton />;
@@ -337,7 +363,7 @@ const TutionPage = () => {
                   <TableCell>{formatDate(collection?.date).dayMonthYear}</TableCell>
                   <TableCell>{collection?.receiptNumber}</TableCell>
                   <TableCell>{collection?.houseId?.number}</TableCell>
-                  <TableCell>{collection?.amount}</TableCell>
+                  <TableCell>{formatCurrency(collection?.amount)}</TableCell>
                   <TableCell>{collection?.memberId?.name}</TableCell>
                   <TableCell>{collection?.status}</TableCell>
                 </TableRow>

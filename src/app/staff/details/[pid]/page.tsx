@@ -5,19 +5,12 @@ import axios from 'axios'
 import React, { Suspense, useEffect, useState } from 'react'
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { Button } from '@/components/ui/button'
-import { DownloadIcon, FilePenIcon, IndianRupee, Loader2, TrashIcon } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import PendingSalaries from '@/components/PendingSalaries'
 import EditStaff from '@/components/EditStaff'
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
-import { toast } from '@/components/ui/use-toast'
 import RequestAdvancePay from '@/components/RequestAdvancePay'
 import DownloadPayslip from '@/components/DownloadPayslip'
-import RepayAdvancePay from '@/components/RepayAdvancePay'
 import StaffResign from '@/components/StaffResign'
 
 
@@ -121,9 +114,6 @@ const PageComponent = ({ params }: PageProps) => {
                 (<div className='grid grid-cols-2 gap-2 md:grid-cols-4'>
                   <EditStaff staff={staff} fetchStaffDetails={fetchStaffDetails} />
                   <RequestAdvancePay id={pid} fetchStaffDetails={fetchStaffDetails} />
-                  {Number(staff?.advancePayment) > 0 && (
-                    <RepayAdvancePay id={pid} fetchStaffDetails={fetchStaffDetails} staff={staff} />
-                  )}
                   <StaffResign id={pid} />
                 </div>)
               }
@@ -203,10 +193,13 @@ const PageComponent = ({ params }: PageProps) => {
               </TableHeader>
               <TableBody>
                 {paySlips?.map((pay: any) => {
+                  const netPay = pay?.status === 'Paid' ? pay?.netPay : pay?.basicPay
+
+                  const formattedNetPay = Math.round(netPay).toLocaleString();
                   return (
                     <TableRow key={pay?._id}>
                       <TableCell>{format(pay?.salaryPeriod?.startDate, 'MMM yyyy')}</TableCell>
-                      <TableCell>₹{pay?.status === 'Paid' ? pay?.netPay : pay?.basicPay}</TableCell>
+                      <TableCell>₹{formattedNetPay}</TableCell>
                       <TableCell>
                         {pay?.status === 'Paid' ? (
                           <DownloadPayslip payslip={pay} staff={staff} />

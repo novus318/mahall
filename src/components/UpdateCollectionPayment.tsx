@@ -172,7 +172,7 @@ if(!otpVerified){
 
   return (
     <>
-      <Button className="font-bold" onClick={handlePayNowClick}>
+      <Button size='sm' className="font-bold" onClick={handlePayNowClick}>
         Pay
       </Button>
       <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>

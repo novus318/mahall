@@ -139,8 +139,12 @@ const ListMembers = ({ members, familyHead }: any) => {
             <span>{selectedMember?.maritalStatus}</span>
           </div>
           <div className="flex gap-2">
-            <span className="font-medium">Status:</span>
+            <span className="font-medium">Current ocupation:</span>
             <span>{selectedMember?.status}</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="font-medium">Place:</span>
+            <span>{selectedMember?.place}</span>
           </div>
           <div className="flex gap-2">
             <span className="font-medium">ID Cards:</span>

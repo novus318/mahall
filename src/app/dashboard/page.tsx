@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { withAuth } from "@/components/withAuth";
 import axios from "axios";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import React from 'react'
@@ -86,11 +87,17 @@ const Page = () => {
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold">
-                ₹{new Intl.NumberFormat('en-IN', {
-                  style: 'decimal',
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }).format(asset || 0)}
+              {asset ? (
+                 <>
+                  ₹{new Intl.NumberFormat('en-IN', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }).format(asset || 0)}
+                  </>
+              ):(
+                <Loader2 className="animate-spin"/>
+              )}
               </div>
 
             </CardContent>
@@ -102,11 +109,14 @@ const Page = () => {
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold">
-                ₹{new Intl.NumberFormat('en-IN', {
+                {income ? (<>
+                  ₹{new Intl.NumberFormat('en-IN', {
                   style: 'decimal',
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-                }).format(income || 0)}
+                }).format(income || 0)}</>):(
+                  <Loader2 className="animate-spin"/>
+                )}
               </div>
 
             </CardContent>
@@ -123,11 +133,14 @@ const Page = () => {
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold">
-                ₹{new Intl.NumberFormat('en-IN', {
+                {expense ? (<>
+                  ₹{new Intl.NumberFormat('en-IN', {
                   style: 'decimal',
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-                }).format(expense || 0)}
+                }).format(expense || 0)}</>):(
+                  <Loader2 className="animate-spin"/>
+                )}
               </div>
 
             </CardContent>

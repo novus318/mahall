@@ -25,7 +25,7 @@ interface BankAccount {
   primary: boolean;
 }
 
-const UpdateSalaryPayment = ({ fetchSalary, salary }: any) => {
+const UpdateSalaryPayment = ({  salary }: any) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [selectedSalary, setSelectedSalary] = useState<any>(null);
@@ -113,12 +113,12 @@ const UpdateSalaryPayment = ({ fetchSalary, salary }: any) => {
           title: 'Salary has been rejected successfully',
           variant: 'default',
         });
-        fetchSalary();
         setIsDialogOpen(false);
         setTargetAccount(null);
         setPayDate(null);
         setLeaveDays(null);
-        setAdvanceRepayment(null); // Reset advance repayment
+        setAdvanceRepayment(null);
+        window.location.reload();
       }
     } catch (error: any) {
       toast({
@@ -176,12 +176,12 @@ const UpdateSalaryPayment = ({ fetchSalary, salary }: any) => {
           title: 'Salary has been updated successfully',
           variant: 'default',
         });
-        fetchSalary();
         setIsDialogOpen(false);
         setTargetAccount(null);
         setPayDate(null);
         setLeaveDays(null);
-        setAdvanceRepayment(null); // Reset advance repayment
+        setAdvanceRepayment(null);
+        window.location.reload();
       }
     } catch (error: any) {
       toast({
@@ -202,7 +202,7 @@ const UpdateSalaryPayment = ({ fetchSalary, salary }: any) => {
 
   // Net pay calculation now includes leave and advance repayment deductions
   const netPay = selectedSalary?.basicPay - leaveDeduction - (advanceDeduction || 0);
-
+  const formattedNetPay = Math.round(netPay).toLocaleString();
   const handleDialogClose = () => {
     setIsDialogOpen(false);
     setOtpSent(false);
@@ -280,7 +280,7 @@ const UpdateSalaryPayment = ({ fetchSalary, salary }: any) => {
            </div>
            }
 
-            <h4 className='font-semibold text-muted-foreground'>Net Pay: ₹{netPay.toFixed(2)}</h4>
+            <h4 className='font-semibold text-muted-foreground'>Net Pay: ₹{formattedNetPay}</h4>
           </div>)}
           {otpSent && (
             <div className='grid grid-cols-5 items-center gap-2'>

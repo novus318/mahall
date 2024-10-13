@@ -25,7 +25,12 @@ const DownloadrentReciept = ({ collection, contractDetails, room }: any) => {
 
     const leaveDays = collection?.onleave?.days || 0;
     const leaveDeductAmount = collection?.onleave?.deductAmount || 0;
-
+    const formatCurrency = (amount:any) => {
+      return `₹${amount.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`;
+    };
     const doc = (
       <Document>
         <Page size="A5" style={styles.page}>
@@ -75,16 +80,12 @@ const DownloadrentReciept = ({ collection, contractDetails, room }: any) => {
               <Text style={styles.tableCell}>{collection?.paymentMethod}</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={styles.tableCellHeader}>Advance Deduction:</Text>
-              <Text style={styles.tableCell}>₹{collection?.advanceDeduction || 0}</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCellHeader}>Leave Days:</Text>
+              <Text style={styles.tableCellHeader}>Deduction Days:</Text>
               <Text style={styles.tableCell}>{leaveDays}</Text>
             </View>
             <View style={styles.tableRow}>
-              <Text style={styles.tableCellHeader}>Leave Deduction:</Text>
-              <Text style={styles.tableCell}>₹{leaveDeductAmount}</Text>
+              <Text style={styles.tableCellHeader}>Deduction amount:</Text>
+              <Text style={styles.tableCell}>{formatCurrency(leaveDeductAmount)}</Text>
             </View>
             <View style={styles.tableRow}>
               <Text style={styles.tableCellHeader}>Payment Status:</Text>
@@ -94,10 +95,9 @@ const DownloadrentReciept = ({ collection, contractDetails, room }: any) => {
 
           {/* Payment Calculation */}
           <View style={styles.totalSection}>
-            <Text style={styles.totalText}>Total Rent: ₹{contractDetails?.rent}</Text>
-            <Text style={styles.totalText}>Advance Deduction: ₹{collection?.advanceDeduction || 0}</Text>
-            <Text style={styles.totalText}>Leave Deduction: ₹{leaveDeductAmount}</Text>
-            <Text style={styles.totalText}>Total Paid: ₹{collection?.PaymentAmount}</Text>
+            <Text style={styles.totalText}>Total Rent: {formatCurrency(contractDetails?.rent)}</Text>
+            <Text style={styles.totalText}>Leave Deduction: {formatCurrency(leaveDeductAmount)}</Text>
+            <Text style={styles.totalText}>Total Paid: {formatCurrency(collection?.PaymentAmount)}</Text>
           </View>
 
           {/* Footer */}

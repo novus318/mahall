@@ -143,16 +143,12 @@ const PageComponent = ({ params }: PageProps) => {
                   {contractDetails?.status === 'active' && 
                   <div className='grid grid-cols-2 gap-2 md:grid-cols-4'>
                   <EditContract buildingID={pid} roomId={roomId} fetchRoomDetails={fetchRoomDetails} contractDetails={contractDetails}/>
-                  <AdvancePay buildingID={pid} roomId={roomId} fetchRoomDetails={fetchRoomDetails} contractId={contractDetails._id}/>
                 </div>
                 }
                 </div>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="grid gap-2">
-                  <div className="flex items-center justify-between">
-                      <div className="text-sm font-medium">Advance payment</div>
-                      <div>₹{(contractDetails?.advancePayment||0).toFixed(2)}</div>
-                    </div>
+               
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-medium">From</div>
                       <div>{contractDetails?.from ? format(contractDetails?.from, 'PPP') : 'Null'}</div>

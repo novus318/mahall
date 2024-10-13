@@ -141,7 +141,12 @@ const StaffPage = () => {
     applyFilters();
   }, [collections, statusFilter]); 
   
-
+  const formatCurrency = (amount:any) => {
+    return `₹${amount.toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
 
   const formatDate = (dateString: any) => {
     const date = new Date(dateString ||new Date());
@@ -152,6 +157,21 @@ const StaffPage = () => {
   };
 
   const handleReceiptClick = async (data: any) => {
+    const totalCollections = data.length;
+    let totalNetPay = 0; // Initialize total net pay
+  let Salary =0
+    data.forEach((collection: any) => {
+      // Accumulate net pay if it exists; otherwise, you can decide how to handle missing values
+      if (collection?.netPay) {
+        totalNetPay += collection.netPay;
+      }
+      if (collection?.salary) {
+        Salary += collection.salary;
+      }
+    });
+  
+    const totalAmount = totalNetPay;
+    const totalAmountSalary = Salary
     const doc = (
       <Document>
         <Page size="A4" style={styles.page}>
@@ -168,7 +188,11 @@ const StaffPage = () => {
           <Text style={styles.sectionTitle}>
             Collections From: {formatDate(fromDate).dayMonthYear} - To: {formatDate(toDate).dayMonthYear}
           </Text>
-  
+          <View style={styles.summaryContainer}>
+          <Text style={styles.summaryText}>Total Salary Amount: {formatCurrency(totalAmountSalary)}</Text>
+    <Text style={styles.summaryText}>Total NetPayAmount: {formatCurrency(totalAmount)}</Text>
+    <Text style={styles.summaryText}>Total Collections: {totalCollections}</Text>
+</View>
           {/* Table Section */}
           <View style={styles.tableContainer}>
             {/* Table Header */}
@@ -189,8 +213,8 @@ const StaffPage = () => {
                 <Text style={styles.tableCell}>{collection?.staffId?.employeeId}</Text>
                 <Text style={styles.tableCell}>{collection?.staffId?.name}</Text>
                 <Text style={styles.tableCell}>{formatMonth(collection?.salaryPeriod?.startDate)}</Text>
-                <Text style={styles.tableCell}>₹{(collection?.basicPay || 0).toFixed(2)}</Text>
-                <Text style={styles.tableCell}>{collection?.netPay ? `₹${(collection?.netPay).toFixed(2)}` : 'pending'}</Text>
+                <Text style={styles.tableCell}>{formatCurrency(collection?.basicPay)}</Text>
+                <Text style={styles.tableCell}>{collection?.netPay ? `${formatCurrency(collection?.netPay)}` : 'pending'}</Text>
                 <Text style={styles.tableCell}>{new Date(collection?.createdAt).toLocaleDateString()}</Text>
                 <Text style={styles.tableCell}>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString(): 'Pending'}</Text>
                 <Text style={styles.tableCell}>{collection?.status}</Text>
@@ -218,6 +242,20 @@ const StaffPage = () => {
       color: '#333',
       lineHeight: 1.5,
     },
+    summaryContainer: {
+      marginTop: 15,
+      marginBottom: 10,
+      padding: 10,
+      borderWidth: 1,
+      borderColor: '#E5E7EB',
+      backgroundColor: '#F9F9F9', // Light background for summary
+  },
+  summaryText: {
+      fontSize: 11,
+      fontWeight: 'bold',
+      color: '#333',
+      textAlign: 'right', // Right align for a neat summary look
+  },
     header: {
       textAlign: 'center',
       marginBottom: 15,
@@ -346,8 +384,8 @@ const StaffPage = () => {
                      <TableCell>{collection?.staffId?.employeeId}</TableCell>
                 <TableCell>{collection?.staffId?.name}</TableCell>
                 <TableCell>{formatMonth(collection?.salaryPeriod?.startDate)}</TableCell>
-                <TableCell>₹{(collection?.basicPay || 0).toFixed(2)}</TableCell>
-                <TableCell>{collection?.netPay ? `₹${(collection?.netPay).toFixed(2)}` : 'pending'}</TableCell>
+                <TableCell>{formatCurrency(collection?.basicPay)}</TableCell>
+                <TableCell>{collection?.netPay ? `${formatCurrency(collection?.netPay)}` : 'pending'}</TableCell>
                 <TableCell>{new Date(collection?.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString(): 'Pending'}</TableCell>
                   <TableCell>{collection?.status}</TableCell>

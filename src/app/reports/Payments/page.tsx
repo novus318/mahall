@@ -139,6 +139,12 @@ const fetchInitialPayments = async () => {
     fetchPayCategories();
   }, []);
 
+  const formatCurrency = (amount:any) => {
+    return `₹${amount.toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
   const formatDate = (dateString:any) => {
     const date = new Date(dateString);
     return {
@@ -148,6 +154,8 @@ const fetchInitialPayments = async () => {
   };
 
   const handleReceiptClick = async (data: any) => {
+    const totalAmount = data.reduce((acc: number, receipt: any) => acc + receipt.total, 0);
+    const totalPayments = data.length;
     const doc = (
       <Document>
         <Page size="A4" style={styles.page}>
@@ -160,6 +168,10 @@ const fetchInitialPayments = async () => {
             <View style={styles.separator} />
           </View>
           <Text style={styles.sectionTitle}>From-To : {formatDate(fromDate).dayMonthYear} - {formatDate(toDate).dayMonthYear}</Text>
+          <View style={styles.summaryContainer}>
+                    <Text style={styles.summaryText}>Total Amount: {formatCurrency(totalAmount)}</Text>
+                    <Text style={styles.summaryText}>Total Payments: {totalPayments}</Text>
+                </View>
           {/* Table Header */}
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderItem, styles.dateColumn]}>Date</Text>
@@ -183,7 +195,7 @@ const fetchInitialPayments = async () => {
                   {receipt?.paymentTo}
                 </Text>
                 <Text style={[styles.tableItem, styles.amountColumn]}>
-                  ₹{(receipt?.total).toFixed(2)}
+                  {formatCurrency(receipt?.total)}
                 </Text>
               </View>
             );
@@ -212,6 +224,19 @@ const fetchInitialPayments = async () => {
       fontSize: 10,
       marginBottom: 4,
     },
+    summaryContainer: {
+      marginBottom: 10,
+      padding: 10,
+      borderWidth: 1,
+      borderColor: '#E5E7EB',
+      backgroundColor: '#F9F9F9', // Light background for summary
+  },
+  summaryText: {
+      fontSize: 11,
+      fontWeight: 'bold',
+      color: '#333',
+      textAlign: 'right', // Right align for better readability
+  },
     logo: {
       width: 100,
       height: 100,
@@ -361,7 +386,7 @@ const fetchInitialPayments = async () => {
                       <div className='text-sm'>{payment?.paymentTo}</div>
                     </TableCell>
                     <TableCell>
-                      <div className='text-sm'>₹{(payment?.total).toFixed(2)}</div>
+                      <div className='text-sm'>{formatCurrency(payment?.total)}</div>
                     </TableCell>
                   </TableRow>
                 );

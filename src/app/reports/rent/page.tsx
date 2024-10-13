@@ -150,8 +150,15 @@ const RentPage = () => {
       time: format(date, 'hh:mm a'),
     };
   };
-
+  const formatCurrency = (amount:any) => {
+    return `₹${amount.toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
   const handleReceiptClick = async (data: any) => {
+    const totalAmount = data.reduce((acc: number, collection: any) => acc + collection.amount, 0);
+    const totalCollections = data.length;
     const doc = (
       <Document>
         <Page size="A4" style={styles.page}>
@@ -168,7 +175,10 @@ const RentPage = () => {
           <Text style={styles.sectionTitle}>
             Collections From: {formatDate(fromDate).dayMonthYear} - To: {formatDate(toDate).dayMonthYear}
           </Text>
-  
+          <View style={styles.summaryContainer}>
+                    <Text style={styles.summaryText}>Total Amount: ₹{formatCurrency(totalAmount)}</Text>
+                    <Text style={styles.summaryText}>Total Collections: {totalCollections}</Text>
+                </View>
           {/* Table Section */}
           <View style={styles.tableContainer}>
             {/* Table Header */}
@@ -190,7 +200,7 @@ const RentPage = () => {
                 <Text style={styles.tableCell}>{collection.roomNumber}</Text>
                 <Text style={styles.tableCell}>{collection.tenantName}</Text>
                 <Text style={styles.tableCell}>{collection.period}</Text>
-                <Text style={styles.tableCell}>{collection.amount}</Text>
+                <Text style={styles.tableCell}>{formatCurrency(collection.amount)}</Text>
                 <Text style={styles.tableCell}>{new Date(collection.dueDate).toLocaleDateString()}</Text>
                 <Text style={styles.tableCell}>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString(): 'Pending'}</Text>
                 <Text style={styles.tableCell}>{collection?.status}</Text>
@@ -218,6 +228,20 @@ const RentPage = () => {
       color: '#333',
       lineHeight: 1.5,
     },
+    summaryContainer: {
+      marginTop: 15,
+      marginBottom: 10,
+      padding: 10,
+      borderWidth: 1,
+      borderColor: '#E5E7EB',
+      backgroundColor: '#F9F9F9', // Light background for summary
+  },
+  summaryText: {
+      fontSize: 11,
+      fontWeight: 'bold',
+      color: '#333',
+      textAlign: 'right', // Right align for a neat summary look
+  },
     header: {
       textAlign: 'center',
       marginBottom: 15,
@@ -344,7 +368,7 @@ const RentPage = () => {
                 <TableCell>{collection.roomNumber}</TableCell>
                 <TableCell>{collection.tenantName}</TableCell>
                 <TableCell>{collection.period}</TableCell>
-                <TableCell>{collection.amount}</TableCell>
+                <TableCell>{formatCurrency(collection.amount)}</TableCell>
                 <TableCell>{new Date(collection.dueDate).toLocaleDateString()}</TableCell>
                 <TableCell>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString(): 'Pending'}</TableCell>
                   <TableCell>{collection?.status}</TableCell>

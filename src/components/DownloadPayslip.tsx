@@ -19,6 +19,14 @@ const DownloadPayslip = ({ payslip, staff }: any) => {
   });
 
   const handlePayslipClick = async () => {
+
+ const formatCurrency = (amount:any) => {
+  return `₹${amount.toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
+
     const doc = (
       <Document>
         <Page size="A5" style={styles.page}>
@@ -69,12 +77,12 @@ const DownloadPayslip = ({ payslip, staff }: any) => {
               <Text style={styles.infoValue}>{format(new Date(payslip.salaryPeriod.startDate), 'MMM yyyy')}</Text>
             </View>
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Basic Pay:</Text>
-              <Text style={styles.infoValue}>₹{payslip.basicPay}</Text>
+              <Text style={styles.infoLabel}>Total salary:</Text>
+              <Text style={styles.infoValue}>{formatCurrency(payslip.basicPay)}</Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Advance Deduction:</Text>
-              <Text style={styles.infoValue}>₹{payslip.advanceDeduction}</Text>
+              <Text style={styles.infoValue}>{formatCurrency(payslip.advanceDeduction)}</Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>On Leave Days:</Text>
@@ -82,7 +90,7 @@ const DownloadPayslip = ({ payslip, staff }: any) => {
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Leave Deduction:</Text>
-              <Text style={styles.infoValue}>₹{payslip.onleave.deductAmount}</Text>
+              <Text style={styles.infoValue}>{formatCurrency(payslip.onleave.deductAmount)}</Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Status:</Text>
@@ -94,7 +102,7 @@ const DownloadPayslip = ({ payslip, staff }: any) => {
 
           {/* Net Pay Highlighted */}
           <View style={styles.totalSection}>
-            <Text style={styles.totalText}>Net Pay: ₹{payslip.netPay}</Text>
+            <Text style={styles.totalText}>Net Pay: {formatCurrency(payslip.netPay)}</Text>
           </View>
 
           <View style={styles.separator} />

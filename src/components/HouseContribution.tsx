@@ -242,7 +242,7 @@ const HouseContribution = ({id,contribution}:any) => {
                {collection?.memberId?.name}
                </TableCell>
                <TableCell>
-               {collection?.description}
+               Receipt for {collection.categoryId.name} by {collection?.recieptType} - {collection?.receiptNumber}
                </TableCell>
                <TableCell>
                ₹{collection?.amount.toFixed(2)}

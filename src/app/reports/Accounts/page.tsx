@@ -230,8 +230,8 @@ const TransactionPage = () => {
             <Text style={styles.transactionTextHeader}>Date</Text>
             <Text style={styles.transactionTextHeader}>Category</Text>
             <Text style={styles.transactionTextHeader}>Account</Text>
-            <Text style={styles.transactionTextHeaderAmount}>Debit</Text>
-            <Text style={styles.transactionTextHeaderAmount}>Credit</Text>
+            <Text style={styles.transactionTextHeaderAmount}>Withdrawals</Text>
+            <Text style={styles.transactionTextHeaderAmount}>Deposits</Text>
             <Text style={styles.transactionTextHeaderAmount}>Balance</Text>
           </View>
 

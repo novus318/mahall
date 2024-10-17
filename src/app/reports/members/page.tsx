@@ -312,7 +312,7 @@ const Page = () => {
     <option value='Son in law'>Son in law</option>
     <option value='Daughter in law'>Daughter in law</option>
   </select>
-  <Button variant='outline' size='sm'
+  <Button size='sm'
   onClick={()=>{
     setSearch('')
     setDobFilter('')

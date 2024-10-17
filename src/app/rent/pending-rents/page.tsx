@@ -19,6 +19,9 @@ interface RentCollection {
     dueDate: string;
     shop: string;
     status: 'Pending' | 'Overdue' | 'Paid';
+    contractId:string;
+    roomId:string;
+    buildingId:string;
 }
 
 const Page = () => {
@@ -81,7 +84,7 @@ const Page = () => {
                                 sub_type: 'url',
                                 index: '0',
                                 parameters: [
-                                    { type: 'text', text: `${collection.buildingName}/${collection.roomNumber}` } // Adjust this as needed
+                                    { type: 'text', text: `${collection.buildingId}/${collection.roomId}/${collection.contractId}` }
                                 ]
                             }
                         ]

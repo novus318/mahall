@@ -755,8 +755,13 @@ const dobYear = new Date(newMember.DOB).getFullYear();
             </div>
                 </div>
                 <div className='mt-4'>
-                        <Button disabled={loading}
+                       {loading ? (
+                         <Button disabled={loading}
+                         ><Loader2 className='animate-spin'/></Button>
+                       ):(
+                         <Button disabled={loading}
                          onClick={handleSubmit}>Create House</Button>
+                       )}
                 </div>
             </div>
         </div>

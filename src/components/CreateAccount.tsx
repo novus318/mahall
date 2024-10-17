@@ -191,7 +191,7 @@ const CreateAccount = ({fetchAccounts}:any) => {
                         <Loader2 className='animate-spin' />
                     </Button>
                 ) : (
-                    <Button onClick={handleSubmit}>
+                    <Button disabled={loading} onClick={handleSubmit}>
                         Create
                     </Button>
                 )}

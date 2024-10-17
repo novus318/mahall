@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { toast } from '@/components/ui/use-toast'
 import { withAuth } from '@/components/withAuth'
 import axios from 'axios'
 import { Loader2 } from 'lucide-react'
@@ -123,10 +124,18 @@ const PageComponent = ({ params }: PageProps) => {
         )
         setIsOpen(false);
         fetchHouse(pid)
+        toast({
+          title: 'House edited successfully',
+          variant: 'default',
+        })
       }
-    } catch (error) {
+    } catch (error:any) {
       setloading(false)
-      console.error('Error editing house:', error);
+      toast({
+        title: 'Error editing house',
+        description: error.response?.data?.message || error.message || 'Something went wrong',
+        variant: 'destructive',
+      })
     }
   }
   if (!house) {
@@ -368,14 +377,17 @@ const PageComponent = ({ params }: PageProps) => {
               onChange={(e) => handlFamilyHeadChange('amount', e.target.value)}
             />
           </div>
-          {loading ? (<Button>
+         <div>
+         {loading ? (<Button>
             <Loader2 className='animate-spin' />
           </Button>) : (
             <Button
+            disabled={loading}
             onClick={handleSubmitEdit}>
               Submit
             </Button>
           )}
+         </div>
         </DialogContent>
       </Dialog>
     </div>

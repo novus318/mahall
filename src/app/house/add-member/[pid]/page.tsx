@@ -175,6 +175,7 @@ const PageComponent = ({ params }: PageProps) => {
   // Handle form submission for creating a new member
   const handleCreateMember = async () => {
     if (!validate()) return;
+    
     setLoading(true);
     try {
       const data = {

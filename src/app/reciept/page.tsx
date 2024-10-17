@@ -12,7 +12,7 @@ import { withAuth } from '@/components/withAuth'
 import axios from 'axios'
 import { Loader2} from 'lucide-react'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 
 interface BankAccount {
@@ -53,7 +53,13 @@ const Page = () => {
   const [targetCategory, setTargetCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [recieptRecieptNo, setrecieptRecieptNo] = useState<any>(''); 
+  const inputRef = useRef<any>(null);
 
+  useEffect(() => {
+    if (recieptTo === "member" && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [recieptTo]);
     // Filter members based on the search query
     const filteredMembers = members?.filter((member) =>
       member.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -298,31 +304,36 @@ const Page = () => {
         </div>
   
         {recieptTo === 'member' && (
-          <div className="w-full">
-            <Label>Select Member</Label>
-            <Select onValueChange={setSelectedMember}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select member" />
-              </SelectTrigger>
-              <SelectContent>
-                <div className="px-3 pb-4">
-                  <Input
-                    type="text"
-                    className="w-full border border-gray-300 rounded-md"
-                    placeholder="Search member"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                {filteredMembers?.map((member:any) => (
-                  <SelectItem key={member._id} value={member._id}>
-                    {member.name} - <span className='text-muted-foreground'>{member?.house.number}</span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+  <div className="w-full">
+    <Label>Select Member</Label>
+    <Select onValueChange={setSelectedMember}>
+      <SelectTrigger>
+        <SelectValue placeholder="Select a member" />
+      </SelectTrigger>
+      <SelectContent>
+        <Input
+          type="text"
+          ref={inputRef}
+          placeholder="Search member"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md mb-3"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onBlur={(e) => {
+            if (!e.relatedTarget || !e.relatedTarget.closest(".select-content")) {
+              inputRef.current.focus();
+            }
+          }}
+        />
+        {filteredMembers?.map((member: any) => (
+          <SelectItem key={member._id} value={member._id}>
+            {member.name} - <span className="text-gray-500">{member?.house.number}</span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  </div>
+)}
+
   
         {recieptTo === 'other' && (
           <div className="w-full">
@@ -366,7 +377,7 @@ const Page = () => {
       </div>
   
       <div className="flex justify-end mt-4">
-        <Button onClick={handleSubmit}>
+        <Button size='sm' onClick={handleSubmit}>
           {loading ? <Loader2 className="animate-spin" /> : 'Create'}
         </Button>
       </div>

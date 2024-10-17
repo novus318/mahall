@@ -74,7 +74,9 @@ const EditRoomNumber = ({roomId,buildingId,fetchRoomDetails,room,building}:any) 
                 </Button>
               ) : (
                 <Button size='sm'
-                  disabled={loading} onClick={handleSubmit}>Update</Button>
+                  disabled={loading} onClick={handleSubmit}>
+                    {loading ? <Loader2 className='animate-spin'/>:'Update'}
+                  </Button>
               )}
             </DialogFooter>
           </DialogContent>

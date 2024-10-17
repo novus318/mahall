@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import axios from 'axios'
-import { Trash2 } from 'lucide-react'
+import { Loader2, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
@@ -175,7 +175,9 @@ const Page = () => {
             </div>
             <div className='mt-4'>
               <Button
-              disabled={loading} onClick={handleSubmit}>Create Building</Button>
+              disabled={loading} onClick={handleSubmit}>
+                {loading? <Loader2 className='animate-spin' /> : 'Create Building'}
+              </Button>
             </div>
           </div>
         </div>

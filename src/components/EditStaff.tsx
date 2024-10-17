@@ -172,7 +172,8 @@ const EditStaff = ({staff,fetchStaffDetails}:any) => {
                             className='w-full'
                         />
                     </div>
-                {loading ? (
+            <div>
+            {loading ? (
                     <Button disabled>
                         <Loader2 className='animate-spin' />
                     </Button>
@@ -183,6 +184,7 @@ const EditStaff = ({staff,fetchStaffDetails}:any) => {
                         Update
                     </Button>
                 )}
+            </div>
             </DialogContent>
         </Dialog>
     );

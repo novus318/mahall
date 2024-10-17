@@ -173,7 +173,8 @@ const handleDateChange = (date: any, type: 'fromDate' | 'toDate') => {
                     </div>
                 </div>
             </div>
-        {loading ? (
+     <div>
+     {loading ? (
             <Button disabled>
                 <Loader2 className='animate-spin' />
             </Button>
@@ -184,6 +185,7 @@ const handleDateChange = (date: any, type: 'fromDate' | 'toDate') => {
                 Update
             </Button>
         )}
+     </div>
     </DialogContent>
 </Dialog>
   )

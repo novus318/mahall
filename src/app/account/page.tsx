@@ -150,11 +150,24 @@ const Page = () => {
 
   const saveEdit = async () => {
     if (selectedAccount) {
+      setLoading(true)
       const response = await axios.put(`${apiUrl}/api/account/edit/${selectedAccount._id}`, selectedAccount)
       if (response.data.success) {
         fetchAccounts()
         setSelectedAccount(null)
         setShowEditDialog(false);
+        toast({
+          title: 'Account updated successfully',
+          variant: 'default',
+        });
+        setLoading(false)
+      }else{
+        toast({
+          title: 'Failed to update account',
+          description: response.data.message || 'Something went wrong, please try again',
+          variant: 'destructive',
+        });
+        setLoading(false)
       }
     }
   }
@@ -317,7 +330,7 @@ const Page = () => {
                 <Loader2 className='animate-spin' />
               </Button>
             ) : (
-              <Button size='sm' onClick={saveEdit}>Update</Button>
+              <Button size='sm' disabled={loading} onClick={saveEdit}>Update</Button>
             )}
           </DialogFooter>
         </DialogContent>

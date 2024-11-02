@@ -128,11 +128,11 @@ const ListMembers = ({ members, familyHead }: any) => {
           </div>
           <div className="flex gap-2">
             <span className="font-medium">Education:</span>
-            <span>{selectedMember?.education.level} / {selectedMember?.education?.description}</span>
+            <span>{selectedMember?.education?.level} / {selectedMember?.education?.description}</span>
           </div>
           <div className="flex gap-2">
             <span className="font-medium">Madrassa:</span>
-            <span>{selectedMember?.madrassa.level} / {selectedMember?.madrassa?.description}</span>
+            <span>{selectedMember?.madrassa?.level} / {selectedMember?.madrassa?.description}</span>
           </div>
           <div className="flex gap-2">
             <span className="font-medium">Marital Status:</span>
@@ -149,11 +149,11 @@ const ListMembers = ({ members, familyHead }: any) => {
           <div className="flex gap-2">
             <span className="font-medium">ID Cards:</span>
            <div>
-           <span>Aadhaar - {selectedMember?.idCards.aadhaar ? 'Yes': 'No'}</span><br/>
-            <span>Driving License - {selectedMember?.idCards.drivingLicense? 'Yes': 'No'}</span><br />
-            <span>Voter ID - {selectedMember?.idCards.voterID? 'Yes': 'No'}</span><br />
-            <span>Pan Card - {selectedMember?.idCards.panCard? 'Yes': 'No'}</span><br />
-            <span>Health Card - {selectedMember?.idCards.HealthCard? 'Yes': 'No'}</span>
+           <span>Aadhaar - {selectedMember?.idCards?.aadhaar ? 'Yes': 'No'}</span><br/>
+            <span>Driving License - {selectedMember?.idCards?.drivingLicense? 'Yes': 'No'}</span><br />
+            <span>Voter ID - {selectedMember?.idCards?.voterID? 'Yes': 'No'}</span><br />
+            <span>Pan Card - {selectedMember?.idCards?.panCard? 'Yes': 'No'}</span><br />
+            <span>Health Card - {selectedMember?.idCards?.HealthCard? 'Yes': 'No'}</span>
            </div>
           </div>
          <div className='flex justify-center'>

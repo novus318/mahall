@@ -1,7 +1,7 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
-import { Card, CardHeader, CardTitle, CardContent} from '@/components/ui/card';
+import { Table, TableHead, TableBody, TableRow, TableCell,TableHeader } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { useHouseContext } from '@/context/HouseContext';
 import Link from 'next/link';
@@ -23,6 +23,13 @@ const Page = () => {
     house?.familyHead?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const sortedHouses = useMemo(() => {
+    return [...filteredHouses].sort((a: any, b: any) => {
+      const numA = a.number.toString().toLowerCase();
+      const numB = b.number.toString().toLowerCase();
+      return numA.localeCompare(numB, undefined, { numeric: true, sensitivity: 'base' });
+    });
+  }, [filteredHouses]);
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
       <div className="w-full md:w-1/6 bg-gray-100">
@@ -39,33 +46,34 @@ const Page = () => {
           <Link href='/house/create-house' className='bg-gray-900 text-white py-1 px-2 rounded-md'>
             Create House</Link>
         </div>
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-        {filteredHouses.map((house: any) => (
-            <Card key={house?._id} className="border rounded-lg shadow-sm hover:shadow-md transition-shadow">
-              <Link href={`/house/house-details/${house?._id}`}>
-                <CardHeader className="mb-2 bg-gray-100 rounded-t-md">
-                  <CardTitle className="text-lg font-medium">House {house?.number}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                <div className="grid grid-cols-3 text-sm">
-                    <p className="font-semibold">Head:</p>
-                    <p className="col-span-2 text-gray-900 truncate">{house?.familyHead?.name || 'NIL'}</p>
-                  </div>
-                  <div className="grid grid-cols-3 text-sm">
-                    <p className="font-semibold">Address:</p>
-                    <p className="col-span-2 text-gray-900 truncate">{house?.address}</p>
-                  </div>
-                  <div className="grid grid-cols-3 text-sm">
-                    <p className="font-semibold">house:</p>
-                    <p className="col-span-2 text-gray-900">{house?.name}</p>
-                  </div>
-                </CardContent>
-              </Link>
-            </Card>
-          ))}
+      <div>
+      <Table className="border rounded-t-lg shadow-sm">
+    <TableHeader className='w-f'>
+      <TableRow>
+        <TableHead className="px-4 py-2 font-medium text-gray-700">House Number</TableHead>
+        <TableHead className="px-4 py-2 font-medium text-gray-700">Head</TableHead>
+        <TableHead className="px-4 py-2 font-medium text-gray-700">Address</TableHead>
+        <TableHead className="px-4 py-2 font-medium text-gray-700">House Name</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {sortedHouses.map((house: any) => (
+        <TableRow key={house?._id} className="border-t hover:bg-gray-50 transition-colors">
+          <TableCell className="px-4 py-2">
+            <Link href={`/house/house-details/${house?._id}`}>
+              <span className="text-blue-600 hover:underline">House {house?.number}</span>
+            </Link>
+          </TableCell>
+          <TableCell className="px-4 py-2">{house?.familyHead?.name || 'NIL'}</TableCell>
+          <TableCell className="px-4 py-2">{house?.address || 'NIL'}</TableCell>
+          <TableCell className="px-4 py-2">{house?.name || 'NIL'}</TableCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+      </div>
         </div>
       </div>
-    </div>
   );
 };
 

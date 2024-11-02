@@ -97,32 +97,32 @@ const PageComponent = ({ params }: any) => {
       .then(response => {
         if (response.data.success) {
           setNewMember({
-            _id: response.data.member._id,
-            name: response.data.member.name,
-            house: response.data.member.house._id,
-            status: response.data.member.status,
-            DOB: new Date(response.data.member.DOB),
-            maritalStatus: response.data.member.maritalStatus,
+            _id: response.data.member?._id,
+            name: response.data.member?.name,
+            house: response.data.member?.house._id,
+            status: response.data.member?.status,
+            DOB: new Date(response.data.member?.DOB),
+            maritalStatus: response.data.member?.maritalStatus,
             education: {
-              level: response.data.member.education.level,
-              description: response.data.member.education?.description
+              level: response.data.member?.education?.level,
+              description: response.data.member?.education?.description
             },
-            bloodGroup: response.data.member.bloodGroup,
+            bloodGroup: response.data.member?.bloodGroup,
             madrassa: {
-              level: response.data.member.madrassa?.level,
-              description: response.data.member.madrassa?.description
+              level: response.data.member?.madrassa?.level,
+              description: response.data.member?.madrassa?.description
             },
-            gender: response.data.member.gender,
-            mobile: response.data.member.mobile,
-            whatsappNumber: response.data.member.whatsappNumber,
-            place: response.data.member.place,
-            idCards: response.data.member.idCards
+            gender: response.data.member?.gender,
+            mobile: response.data.member?.mobile,
+            whatsappNumber: response.data.member?.whatsappNumber,
+            place: response.data.member?.place,
+            idCards: response.data.member?.idCards
           })
-          if (response.data.member.relation) {
+          if (response.data.member?.relation) {
             setSelectedRelation({
-              memberId: response.data.member.relation.member._id,
-              name: response.data.member.relation.member.name,
-              relation: response.data.member.relation.relationType
+              memberId: response.data.member?.relation?.member._id,
+              name: response.data.member?.relation?.member.name,
+              relation: response.data.member?.relation?.relationType
             })
           }else{
             setSelectedRelation({
@@ -131,11 +131,11 @@ const PageComponent = ({ params }: any) => {
               relation: ''
             })
           }
-          setMembers(response.data.members)
+          setMembers(response.data?.members)
         }
       })
       .catch(error => {
-        router.push('/house')
+        console.log(error)
       })
   }, [pid])
 
@@ -344,7 +344,7 @@ const PageComponent = ({ params }: any) => {
               <p className='text-sm'>Aadhaar</p>
               <RadioGroup
               className='flex'
-                value={newMember.idCards.aadhaar ? 'yes' : 'no'}
+                value={newMember?.idCards?.aadhaar ? 'yes' : 'no'}
                 onValueChange={(value) => handleIdCardChange('aadhaar', value === 'yes')}
               >
                 <Label>
@@ -360,7 +360,7 @@ const PageComponent = ({ params }: any) => {
               <p className='text-sm'>Driving License</p>
               <RadioGroup
               className='flex'
-                value={newMember.idCards.drivingLicense ? 'yes' : 'no'}
+                value={newMember?.idCards?.drivingLicense ? 'yes' : 'no'}
                 onValueChange={(value) => handleIdCardChange('drivingLicense', value === 'yes')}
               >
                 <Label>
@@ -376,7 +376,7 @@ const PageComponent = ({ params }: any) => {
               <p className='text-sm'>Voter ID</p>
               <RadioGroup
               className='flex'
-                value={newMember.idCards.voterID ? 'yes' : 'no'}
+                value={newMember?.idCards?.voterID ? 'yes' : 'no'}
                 onValueChange={(value) => handleIdCardChange('voterID', value === 'yes')}
               >
                 <Label>
@@ -392,7 +392,7 @@ const PageComponent = ({ params }: any) => {
               <p className='text-sm'>PAN Card</p>
               <RadioGroup
               className='flex'
-                value={newMember.idCards.panCard ? 'yes' : 'no'}
+                value={newMember?.idCards?.panCard ? 'yes' : 'no'}
                 onValueChange={(value) => handleIdCardChange('panCard', value === 'yes')}
               >
                  <Label>
@@ -407,7 +407,7 @@ const PageComponent = ({ params }: any) => {
               <p className='text-sm'>Health Card</p>
               <RadioGroup
               className='flex'
-                value={newMember.idCards.HealthCard ? 'yes' : 'no'}
+                value={newMember?.idCards?.HealthCard ? 'yes' : 'no'}
                 onValueChange={(value) => handleIdCardChange('HealthCard', value === 'yes')}
               >
                  <Label>

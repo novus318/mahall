@@ -7,7 +7,7 @@ import axios from 'axios'
 import { format } from 'date-fns'
 import { Dialog, DialogContent, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import React, { useEffect, useState } from 'react'
-import { FileText, ImageDown, Loader2, Music, Paperclip, Trash } from 'lucide-react'
+import { FileText, ImageDown, Loader2, Music, Paperclip, Trash, Trash2 } from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
 import Image from 'next/image'
@@ -59,6 +59,7 @@ const Page = () => {
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(false)
+  const [deleteLoadingStates, setDeleteLoadingStates] = useState<{ [key: string]: boolean }>({});
   const [showDialog, setShowDialog] = useState(false);
   const [selectedMessageMember, setSelectedMessageMember] = useState<any>(null);
   const [isImageOpen, setIsImageOpen] = useState(false);
@@ -85,21 +86,34 @@ const[selectedFile,setSelectedFile] = useState<any>(null)
       })
   }
 
-  const deleteMessages = (number: any, name: any) => {
-    axios.delete(`${apiUrl}/api/message/messages/delete`, {
-      data: {
-        senderName: name,
-        senderNumber: number
-      },
-    }).then(response => {
+  const deleteMessages = async (number: string, name: string) => {
+    setDeleteLoadingStates(prev => ({ ...prev, [number]: true }));
+  
+    try {
+      const response = await axios.delete(`${apiUrl}/api/message/messages/delete`, {
+        data: {
+          senderName: name,
+          senderNumber: number,
+        },
+      });
+  
       if (response.data.success) {
-        fetchMessages()
+        setMessages(prevMessages =>
+          prevMessages.filter(
+            (msg:any) => !(msg.senderName === name && msg.senderNumber === number)
+          )
+        );
+        fetchMessages(); // Wait for fetchMessages to complete
       }
-    })
-      .catch(error => {
-        console.log('Error fetching messages:', error)
-      })
-  }
+    } catch (error) {
+      console.log('Error deleting message:', error);
+    } finally {
+      // Reset the loading state for the specific sender after fetchMessages completes
+      setDeleteLoadingStates(prev => ({ ...prev, [number]: false }));
+    }
+  };
+  
+  
 
   useEffect(() => {
     fetchMessages()
@@ -266,7 +280,7 @@ const[selectedFile,setSelectedFile] = useState<any>(null)
               <div key={key} className="flex flex-col gap-2 p-4 border rounded-lg">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Avatar className="w-8 h-8 border">
+                 <Avatar className="w-8 h-8 border">
                       <AvatarFallback>
                         {(firstMessage?.senderName || 'No name').substring(0, 1)}
                         {(firstMessage?.senderName || 'No name').substring(1, 2)}
@@ -277,6 +291,22 @@ const[selectedFile,setSelectedFile] = useState<any>(null)
                       <div className="text-xs text-muted-foreground">+{firstMessage?.senderNumber}</div>
                     </div>
                   </div>
+                  <div>
+                  <Button
+            variant="destructive"
+            size="icon"
+            disabled={deleteLoadingStates[firstMessage.senderNumber] || false}
+            onClick={() => {
+              deleteMessages(firstMessage.senderNumber, firstMessage.senderName);
+            }}
+          >
+            {deleteLoadingStates[firstMessage.senderNumber] ? (
+              <Loader2 className="animate-spin h-4" />
+            ) : (
+              <Trash2 className="h-4 w-4" />
+            )}
+          </Button>
+                 </div>
                 </div>
                 <div className="text-sm leading-relaxed bg-white p-4 rounded-lg shadow-md border">
                   <div className="font-semibold text-gray-700 mb-3">Messages:</div>

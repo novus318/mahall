@@ -4,8 +4,8 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../ui
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Loader2 } from 'lucide-react';
-import initialNumbers from '@/data/number.json'; // Adjust the import according to your structure
 import { toast } from '../ui/use-toast';
+import axios from 'axios';
 
 interface PhoneNumber {
   id: number;
@@ -14,94 +14,77 @@ interface PhoneNumber {
 }
 
 const AdminPhonenumbers = () => {
-  const [numbers, setNumbers] = useState<PhoneNumber[]>(initialNumbers);
+  const [numbers, setNumbers] = useState<PhoneNumber[]>([]);
   const [newNumber, setNewNumber] = useState('');
   const [newName, setNewName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchNumbers = async () => {
     try {
-      const response = await fetch('/api/numbers');
-      if (response.ok) {
-        const data = await response.json();
-        setNumbers(data); // Assuming the GET response returns an array of numbers
-      } else {
-        console.error('Failed to fetch numbers');
-      }
+      const response = await axios.get(`${apiUrl}/api/admin/get-numbers`);
+      setNumbers(response.data || []);
     } catch (error) {
-      console.error('Error fetching numbers:', error);
+      toast({
+        title: 'Error fetching numbers',
+        description: 'Could not retrieve numbers from the server.',
+        variant: 'destructive',
+      });
     }
   };
 
   useEffect(() => {
-    fetchNumbers(); // Fetch numbers when the component mounts
+    fetchNumbers(); // Fetch numbers on mount
   }, []);
 
   const handleAddOrUpdateNumber = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (newName.trim() === '') {
-        toast({
-            title: 'Validation Error',
-            description: 'Name cannot be empty.',
-            variant: 'destructive',
-        });
-        return; // Exit if validation fails
+    if (newName.trim() === '' || newNumber.trim() === '' || newNumber.length !== 10 || isNaN(Number(newNumber))) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please enter a valid name and a 10-digit phone number.',
+        variant: 'destructive',
+      });
+      return;
     }
 
-    if (newNumber.trim() === '' || newNumber.length !== 10 || isNaN(Number(newNumber))) {
+    setIsLoading(true);
+    const payload = {
+      newNumber,
+      newName,
+      id: editingIndex !== null ? numbers[editingIndex].id : undefined,
+    };
+    const method = editingIndex !== null ? 'PUT' : 'POST';
+    const endpoint = editingIndex !== null ? '/update-number' : '/add-number';
+
+    try {
+      const response = await axios({
+        method,
+        url: `${apiUrl}/api/admin${endpoint}`,
+        data: payload,
+      });
+
+      if (response.status === 200) {
+        fetchNumbers();
+        setNewNumber('');
+        setNewName('');
+        setEditingIndex(null);
         toast({
-            title: 'Validation Error',
-            description: 'Phone number must be a 10-digit number.',
-            variant: 'destructive',
+          title: 'Success',
+          description: editingIndex !== null ? 'Number updated successfully' : 'Number added successfully',
+          variant: 'default',
         });
-        return; // Exit if validation fails
-    }
-    if ( newName.trim() !== '') {
-      setIsLoading(true);
-      
-      const payload = {
-        newNumber,
-        newName,
-        id: editingIndex !== null ? numbers[editingIndex].id : undefined, // Include id for updates
-      };
-
-      const method = editingIndex !== null ? 'PUT' : 'POST'; // Determine method based on editing state
-
-      try {
-        const response = await fetch('/api/numbers', {
-          method: method,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (response.status === 200) {
-          fetchNumbers(); // Refetch numbers after adding/updating
-          setNewNumber('');
-          setNewName('');
-          setEditingIndex(null); 
-        } else {
-          const data = await response.json();
-          toast({
-            title: 'Failed to add/update number',
-            description: data|| 'Something went wrong',
-            variant: 'destructive',
-          })
-        }
-      } catch (error:any) {
-        console.log(error)
-        toast({
-            title: 'Failed to add/update number',
-            description: 'Something went wrong',
-            variant: 'destructive',
-        })
       }
-
-      setIsLoading(false);
+    } catch (error:any) {
+      toast({
+        title: 'Failed to add/update number',
+        description: error.response?.data?.message || 'Something went wrong',
+        variant: 'destructive',
+      });
     }
+    setIsLoading(false);
   };
 
   const handleEdit = (index: number) => {
@@ -113,24 +96,25 @@ const AdminPhonenumbers = () => {
 
   const handleDelete = async (id: number) => {
     setIsLoading(true);
-    
+
     try {
-      const response = await fetch('/api/numbers', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id }),
+      const response = await axios.delete(`${apiUrl}/api/admin/delete-number`, {
+        data: { id },
       });
 
-      if (response.ok) {
-        fetchNumbers(); // Refetch numbers after deletion
-      } else {
-        const data = await response.json();
-        console.error('Failed to delete number', data);
+      if (response.status === 200) {
+        fetchNumbers();
+        toast({
+          title: 'Number deleted successfully',
+          variant: 'default',
+        });
       }
-    } catch (error) {
-      console.error('Error:', error);
+    } catch (error:any) {
+      toast({
+        title: 'Failed to delete number',
+        description: error.response?.data?.message || 'Something went wrong',
+        variant: 'destructive',
+      });
     }
 
     setIsLoading(false);
@@ -145,7 +129,7 @@ const AdminPhonenumbers = () => {
         </CardHeader>
         <CardContent>
           <div>
-            {numbers.map((number, index) => (
+            {numbers?.map((number, index) => (
               <div key={number.id} className="flex items-center space-x-4 space-y-2">
                 <p>{number.name}: {number.number}</p>
                 <Button size='sm' onClick={() => handleEdit(index)} variant="outline">Edit</Button>

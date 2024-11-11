@@ -52,6 +52,7 @@ const Page = () => {
       <TableRow>
         <TableHead className="px-4 py-2 font-medium text-gray-700">House Number</TableHead>
         <TableHead className="px-4 py-2 font-medium text-gray-700">Head</TableHead>
+        <TableHead className="px-4 py-2 font-medium text-gray-700">Number</TableHead>
         <TableHead className="px-4 py-2 font-medium text-gray-700">Address</TableHead>
         <TableHead className="px-4 py-2 font-medium text-gray-700">House Name</TableHead>
       </TableRow>
@@ -65,6 +66,7 @@ const Page = () => {
             </Link>
           </TableCell>
           <TableCell className="px-4 py-2">{house?.familyHead?.name || 'NIL'}</TableCell>
+          <TableCell className="px-4 py-2">{house?.familyHead?.whatsappNumber || 'NIL'}</TableCell>
           <TableCell className="px-4 py-2">{house?.address || 'NIL'}</TableCell>
           <TableCell className="px-4 py-2">{house?.name || 'NIL'}</TableCell>
         </TableRow>

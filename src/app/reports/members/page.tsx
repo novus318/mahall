@@ -31,6 +31,7 @@ interface Member {
 
 interface House {
   house: string;
+ familyHead: string;
   houseNumber: string;
   totalMembers: number;
   members: Member[];
@@ -344,7 +345,7 @@ onClick={handleSelectAll}>
 {filteredData.map((house, index) => (
         house.members.length > 0 && (
           <div key={index} className='mb-8 p-4 border border-gray-300 rounded-lg shadow-md'>
-            <h2 className='text-2xl font-bold mb-3'>{house.house}</h2>
+            <h2 className='text-xl font-bold mb-3'>{house?.familyHead} - {house?.house}</h2>
             <p className='text-gray-700 mb-2'>House Number: <span className='font-semibold'>{house.houseNumber}</span></p>
             <p className='text-gray-700 mb-4'>Total Members: <span className='font-semibold'>{house.totalMembers}</span></p>
             <div className='overflow-x-auto'>

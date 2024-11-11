@@ -596,6 +596,7 @@ const dobYear = new Date(newMember.DOB).getFullYear();
                   <SelectItem value='O-'>O-</SelectItem>
                   <SelectItem value='AB+'>AB+</SelectItem>
                   <SelectItem value='AB-'>AB-</SelectItem>
+                  <SelectItem value='NIL'>NIL-</SelectItem>
                 </SelectContent>
               </Select>
             </div>

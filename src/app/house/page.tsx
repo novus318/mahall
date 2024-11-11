@@ -46,6 +46,9 @@ const Page = () => {
           <Link href='/house/create-house' className='bg-gray-900 text-white py-1 px-2 rounded-md'>
             Create House</Link>
         </div>
+        <div >
+          <h4 className="text-lg font-semibold">Total Houses : {houses?.length}</h4>
+          </div>
       <div>
       <Table className="border rounded-t-lg shadow-sm">
     <TableHeader className='w-f'>

@@ -14,6 +14,7 @@ import Spinner from '@/components/Spinner'
 import { RadioGroup,RadioGroupItem } from '@/components/ui/radio-group'
 import { Loader2 } from 'lucide-react'
 import { places } from '@/data/data'
+import DeleteMember from '@/components/DeleteMember'
 
 
 interface Member {
@@ -225,12 +226,6 @@ const PageComponent = ({ params }: any) => {
   const handleDateChange = (date: any) => {
     setNewMember((prev) => ({ ...prev, DOB: date }));
   };
-  const handleMadrassaChange = (field:any, value:any) => {
-    setNewMember((prev) => ({
-      ...prev,
-      madrassa: { ...prev.madrassa, [field]: value },
-    }));
-  };
   const handleIdCardChange = (card:any, value:any) => {
     setNewMember((prev) => ({
       ...prev,
@@ -249,6 +244,7 @@ const PageComponent = ({ params }: any) => {
           <Link href={`/house/house-details/${newMember.house}`} className='bg-gray-900 text-white rounded-sm py-2 px-3 text-sm'>
             Back
           </Link>
+          <DeleteMember memberId={pid} houseId={newMember.house}/>
         </div>
 
         <div className='mx-auto p-4 bg-white rounded-md border my-8'>

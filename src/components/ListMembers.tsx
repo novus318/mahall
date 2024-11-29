@@ -8,11 +8,11 @@ import { Button } from './ui/button';
 const ListMembers = ({ members, familyHead }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<any>(null);
-  const filteredMembers = members.filter((member: any) => member?._id !== familyHead?._id);
+  const filteredMembers = members?.filter((member: any) => member?._id !== familyHead?._id);
 
   // Separate members into those with relations and those without
-  const membersWithRelations = filteredMembers.filter((member: any) => member?.relation);
-  const membersWithoutRelations = filteredMembers.filter((member: any) => !member?.relation);
+  const membersWithRelations = filteredMembers?.filter((member: any) => member?.relation);
+  const membersWithoutRelations = filteredMembers?.filter((member: any) => !member?.relation);
 
   return (
     <div className="flex flex-col items-center space-y-8 p-2 md:p-8 bg-background rounded-lg border mx-auto max-w-5xl">
@@ -33,7 +33,7 @@ const ListMembers = ({ members, familyHead }: any) => {
       </div>
 
       <div className="flex flex-col space-y-6 md:space-y-8 w-full">
-        {membersWithRelations.map((member: any, index: any) => (
+        {membersWithRelations?.map((member: any, index: any) => (
           <div key={member._id} className="flex flex-row items-center justify-between space-y-1 md:space-y-0 md:space-x-8 w-full">
             <div
              onClick={
@@ -77,9 +77,9 @@ const ListMembers = ({ members, familyHead }: any) => {
       </div>
 
       {/* Members without Relations */}
-      {membersWithoutRelations.length > 0 && (
+      {membersWithoutRelations?.length > 0 && (
         <div className="flex flex-col space-y-8">
-          {membersWithoutRelations.map((member: any, index: any) => (
+          {membersWithoutRelations?.map((member: any, index: any) => (
             <div
             onClick={
               () => {

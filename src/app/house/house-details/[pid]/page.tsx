@@ -356,7 +356,7 @@ const PageComponent = ({ params }: PageProps) => {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {members.map((member: any) => (
+                {members?.map((member: any) => (
                   <SelectItem key={member._id} value={member._id}>
                     {member.name}
                   </SelectItem>

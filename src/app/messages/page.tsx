@@ -10,7 +10,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { FileText, ImageDown, Loader2, Music, Paperclip, Trash, Trash2 } from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
-import Image from 'next/image'
 
 
 interface Member {
@@ -371,7 +370,7 @@ const loader = useRef<any>(null);
                             )}
                             {msg.messageType === 'image' && (
                               <div className="flex flex-col items-start space-y-2">
-                                <Image
+                                <img
                                   width={300}
                                   height={300}
                                   src={`${apiUrl}/api/message/media/${msg._id}`}
@@ -387,7 +386,7 @@ const loader = useRef<any>(null);
                               </div>
                             )}
                             {msg.messageType === 'sticker' && (
-                              <Image
+                              <img
                                 width={120}
                                 height={120}
                                 src={`${apiUrl}/api/message/media/${msg._id}`}
@@ -456,7 +455,7 @@ const loader = useRef<any>(null);
                   {isImageOpen && (
                    <Dialog open={isImageOpen} onOpenChange={closeImageModal}>
                    <DialogContent className='pt-9 pb-2 px-2'>
-                                <Image
+                                <img
                                   className="w-full h-auto rounded-md"
                                   width={900}
                                   height={900}

@@ -6,7 +6,7 @@ import { withAuth } from '@/components/withAuth'
 import axios from 'axios'
 import { format } from 'date-fns'
 import { Dialog, DialogContent, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { FileText, ImageDown, Loader2, Music, Paperclip, Trash, Trash2 } from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
@@ -56,7 +56,7 @@ const Page = () => {
   const WHATSAPP_API_URL: any = process.env.NEXT_PUBLIC_WHATSAPP_API_URL;
   const WHATSAPP_MEDIA_UPLOAD_URL:any = process.env.NEXT_PUBLIC_WHATSAPP_MEDIA_UPLOAD_URL
   const ACCESS_TOKEN = process.env.NEXT_PUBLIC_WHATSAPP_TOKEN;
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState<any>([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [deleteLoadingStates, setDeleteLoadingStates] = useState<{ [key: string]: boolean }>({});
@@ -65,6 +65,11 @@ const Page = () => {
   const [isImageOpen, setIsImageOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
 const[selectedFile,setSelectedFile] = useState<any>(null)
+const [count, setCount] = useState(0);
+const [loadingNextPage, setLoadingNextPage] = useState(false);
+const [currentPage, setCurrentPage] = useState(1);
+const loader = useRef<any>(null);
+
   const openImageModal = (imageUrl: any) => {
     setSelectedImage(imageUrl);
     setIsImageOpen(true);
@@ -75,16 +80,52 @@ const[selectedFile,setSelectedFile] = useState<any>(null)
     setSelectedImage('');
   };
 
-  const fetchMessages = () => {
-    axios.get(`${apiUrl}/api/message/messages`).then(response => {
+  const fetchMessages = useCallback(async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/message/messages?page=1`);
       if (response.data.success) {
-        setMessages(response.data.messages)
+        setMessages(response.data.messages);
+        setCount(response.data.totalCount);
+        setCurrentPage(1); // Reset to the first page
       }
-    })
-      .catch(error => {
-        console.log('Error fetching messages:', error)
-      })
-  }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  }, [apiUrl]);
+
+  // Fetch next page of messages
+  const fetchNextMessages = useCallback(async () => {
+    if (loadingNextPage || messages.length >= count) return;
+
+    setLoadingNextPage(true);
+    try {
+      const nextPage = currentPage + 1;
+      const response = await axios.get(`${apiUrl}/api/message/messages?page=${nextPage}`);
+      if (response.data.success) {
+        setMessages((prev:any) => [...prev, ...response.data.messages]);
+        setCurrentPage(nextPage);
+      }
+    } catch (error) {
+      console.error('Error fetching next page of messages:', error);
+    } finally {
+      setLoadingNextPage(false);
+    }
+  }, [apiUrl, currentPage, messages.length, count, loadingNextPage]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) fetchNextMessages();
+      },
+      { root: null, threshold: 0.5 }
+    );
+
+    if (loader.current) observer.observe(loader.current);
+    return () => {
+      if (loader.current) observer.unobserve(loader.current);
+    };
+  }, [loader, fetchNextMessages]);
+
 
   const deleteMessages = async (number: string, name: string) => {
     setDeleteLoadingStates(prev => ({ ...prev, [number]: true }));
@@ -98,7 +139,7 @@ const[selectedFile,setSelectedFile] = useState<any>(null)
       });
   
       if (response.data.success) {
-        setMessages(prevMessages =>
+        setMessages((prevMessages:any) =>
           prevMessages.filter(
             (msg:any) => !(msg.senderName === name && msg.senderNumber === number)
           )
@@ -406,7 +447,11 @@ const[selectedFile,setSelectedFile] = useState<any>(null)
                         );
                       })}
                   </div>
-
+                  {messages.length !== count && (
+        <div ref={loader} className="text-center mt-4">
+          {/* Loader for infinite scroll */}
+        </div>
+      )}
                   {/* Modal for larger image view */}
                   {isImageOpen && (
                    <Dialog open={isImageOpen} onOpenChange={closeImageModal}>
@@ -437,9 +482,10 @@ const[selectedFile,setSelectedFile] = useState<any>(null)
             );
           })}
         </div>
-        {messages.length === 0 && (
-          <div className="text-center text-gray-500">No messages yet.</div>
-        )}
+        <div ref={loader} className="text-center mt-4">
+          {loadingNextPage && <Loader2 className="animate-spin" />}
+        </div>
+        {messages.length === 0 && <div className="text-center text-gray-500">No messages yet.</div>}
      <Dialog open={showDialog} onOpenChange={setShowDialog}>
   <DialogContent>
     <DialogTitle>Reply message to {selectedMessageMember?.senderNumber}</DialogTitle>

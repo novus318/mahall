@@ -157,8 +157,6 @@ const loader = useRef<any>(null);
 
   useEffect(() => {
     fetchMessages()
-    const interval = setInterval(fetchMessages, 60000)
-    return () => clearInterval(interval)
   }, [])
 
   const formatDaterec = (dateString: any) => {
@@ -446,11 +444,6 @@ const loader = useRef<any>(null);
                         );
                       })}
                   </div>
-                  {messages.length !== count && (
-        <div ref={loader} className="text-center mt-4">
-          {/* Loader for infinite scroll */}
-        </div>
-      )}
                   {/* Modal for larger image view */}
                   {isImageOpen && (
                    <Dialog open={isImageOpen} onOpenChange={closeImageModal}>
@@ -481,9 +474,11 @@ const loader = useRef<any>(null);
             );
           })}
         </div>
+        {messages.length !== count && (
         <div ref={loader} className="text-center mt-4">
-          {loadingNextPage && <Loader2 className="animate-spin" />}
+        {loadingNextPage && <Loader2 className="animate-spin" />}
         </div>
+      )}
         {messages.length === 0 && <div className="text-center text-gray-500">No messages yet.</div>}
      <Dialog open={showDialog} onOpenChange={setShowDialog}>
   <DialogContent>

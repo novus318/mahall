@@ -1,6 +1,7 @@
 'use client'
 import HouseContribution from '@/components/HouseContribution'
 import ListMembers from '@/components/ListMembers'
+import ManualCollections from '@/components/ManualTutioncollections'
 import PendingTransactions from '@/components/PendingTransactions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -200,10 +201,15 @@ const PageComponent = ({ params }: PageProps) => {
             <CardDescription className='text-lg font-semibold'>Total Contributions from house</CardDescription>
             <CardTitle className="text-3xl font-bold tracking-wider text-gray-800">₹ {totalContribution}</CardTitle>
           </CardHeader>
+     <CardContent>
+     </CardContent>
         </Card>
       </div>
      <div className='my-6'>
-       <h2 className='text-lg font-extrabold text-muted-foreground mb-2'>House Collections</h2>
+   <div className='flex justify-between'>
+   <h2 className='text-lg font-extrabold text-muted-foreground mb-2'>House Collections</h2>
+   <ManualCollections houseId={pid} collectionAmount={house?.collectionAmount}/>
+   </div>
      <PendingTransactions id={house?.familyHead?._id} />
      </div>
       <ListMembers members={members} familyHead={house?.familyHead}/>

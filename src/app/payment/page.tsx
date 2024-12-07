@@ -51,7 +51,7 @@ const Page = () => {
 
   const fetchAccounts = () => {
     axios.get(`${apiUrl}/api/account/get`).then(response => {
-      setBank(response.data.accounts)
+      setBank(response.data.data)
     })
       .catch(error => {
         console.log("Error fetching accounts:", error)

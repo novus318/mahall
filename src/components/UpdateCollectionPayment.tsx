@@ -9,25 +9,15 @@ import axios from 'axios';
 import { toast } from './ui/use-toast';
 import { Input } from './ui/input';
 
-interface BankAccount {
-  _id: string;
-  accountNumber: string;
-  accountType: string;
-  balance: number;
-  createdAt: string;
-  holderName: string;
-  ifscCode: string;
-  name: string;
-  primary: boolean;
-}
 
-const UpdateCollectionPayment = ({ collection }: any) => {
+
+const UpdateCollectionPayment = ({ collection,bank,fetchAccounts }: any) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [selectedHouse, setSelectedHouse] = useState<any>(null);
   const [paymentType, setPaymentType] = useState<string>('');
-  const [bank, setBank] = useState<BankAccount[]>([]);
+
   const [targetAccount, setTargetAccount] = useState<string | null>(null);
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
@@ -36,15 +26,6 @@ const UpdateCollectionPayment = ({ collection }: any) => {
   const otpSentRef = useRef(false);
   const [rejectionReason, setRejectionReason] = useState('');
 
-  useEffect(() => {
-    fetchAccounts();
-  }, []);
-
-  const fetchAccounts = () => {
-    axios.get(`${apiUrl}/api/account/get`)
-      .then(response => setBank(response.data.accounts))
-      .catch(error => console.log("Error fetching accounts:", error));
-  };
 
   const handlePayNowClick = async (c: any) => {
     setSelectedHouse(collection);
@@ -197,7 +178,7 @@ if(!otpVerified){
                 <SelectValue placeholder="Select target account" />
               </SelectTrigger>
               <SelectContent>
-                {bank.map((acc) => (
+                {bank?.map((acc:any) => (
                   <SelectItem key={acc._id} value={acc._id}>
                     {acc.name} - {acc.holderName}
                   </SelectItem>

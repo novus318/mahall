@@ -113,7 +113,7 @@ const PageComponent = ({ params }: PageProps) => {
               {staff?.status === 'Active' &&
                 (<div className='grid grid-cols-2 gap-2 md:grid-cols-4'>
                   <EditStaff staff={staff} fetchStaffDetails={fetchStaffDetails} />
-                  <RequestAdvancePay id={pid} fetchStaffDetails={fetchStaffDetails} />
+                  <RequestAdvancePay id={pid} fetchStaffDetails={fetchStaffDetails}  />
                   <StaffResign id={pid} />
                 </div>)
               }

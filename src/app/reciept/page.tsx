@@ -67,7 +67,7 @@ const Page = () => {
   
     const fetchAccounts = () => {
       axios.get(`${apiUrl}/api/account/get`).then(response => {
-        setBank(response.data.accounts)
+        setBank(response.data.data)
       })
         .catch(error => {
           console.log("Error fetching accounts:", error)
@@ -326,7 +326,7 @@ const Page = () => {
         />
         {filteredMembers?.map((member: any) => (
           <SelectItem key={member._id} value={member._id}>
-            {member.name} - <span className="text-gray-500">{member?.house.number}</span>
+            {member.name} - <span className="text-gray-500">{member?.house?.number}</span>
           </SelectItem>
         ))}
       </SelectContent>

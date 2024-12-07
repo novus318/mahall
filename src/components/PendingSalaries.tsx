@@ -6,12 +6,31 @@ import axios from 'axios'
 import UpdateSalaryPayment from './UpdateSalaryPayment'
 import { format } from 'date-fns'
 
-
+interface BankAccount {
+  _id: string;
+  accountNumber: string;
+  accountType: string;
+  balance: number;
+  createdAt: string;
+  holderName: string;
+  ifscCode: string;
+  name: string;
+  primary: boolean;
+}
 
 const PendingSalaries = ({id,fetchStaffDetails}:any) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [pendingPaySlips, setPendingPaySlips] = useState<any>([])
+    const [bank, setBank] = useState<BankAccount[]>([]);
 
+    const fetchAccounts = () => {
+      axios.get(`${apiUrl}/api/account/get`).then(response => {
+        setBank(response.data.data);
+      })
+        .catch(error => {
+          console.log("Error fetching accounts:", error);
+        });
+    };
     const fetchPendingCollections = async () => {
         axios.get(`${apiUrl}/api/staff/pending-salary/${id}`)
           .then(response => {
@@ -26,6 +45,7 @@ const PendingSalaries = ({id,fetchStaffDetails}:any) => {
 
       useEffect(() => {
         fetchPendingCollections()
+        fetchAccounts()
       }, [id])
 
    
@@ -53,7 +73,7 @@ const PendingSalaries = ({id,fetchStaffDetails}:any) => {
               </TableCell>
               <TableCell>₹{payslip?.basicPay}</TableCell>
               <TableCell>
-              <UpdateSalaryPayment  salary={payslip} />  </TableCell>
+              <UpdateSalaryPayment  salary={payslip} bank={bank} />  </TableCell>
             </TableRow>
           ))}
           {pendingPaySlips?.length === 0 && (

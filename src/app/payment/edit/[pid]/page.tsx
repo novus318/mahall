@@ -55,9 +55,7 @@ const EditPaymentPage = ({ params }: any) => {
   const [searchQuery, setSearchQuery] = useState('');
 
 
-  const filteredMembers = members?.filter((member) =>
-    member.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+
   const fetchPayment = async () => {
     try {
       const response = await axios.get(`${apiUrl}/api/pay/get-payment/${pid}`);
@@ -81,7 +79,7 @@ const EditPaymentPage = ({ params }: any) => {
 
   const fetchAccounts = () => {
     axios.get(`${apiUrl}/api/account/get`).then(response => {
-      setBank(response.data.accounts)
+      setBank(response.data.data)
     })
       .catch(error => {
         console.log("Error fetching accounts:", error)

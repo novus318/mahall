@@ -13,23 +13,12 @@ import React, { useEffect, useRef, useState } from 'react'
 import DatePicker from './DatePicker';
 
 
-interface BankAccount {
-    _id: string;
-    accountNumber: string;
-    accountType: string;
-    balance: number;
-    createdAt: string;
-    holderName: string;
-    ifscCode: string;
-    name: string;
-    primary: boolean;
-}
-const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections }: any) => {
+
+const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections,bank }: any) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [loading, setLoading] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const [paymentType, setPaymentType] = useState<string>('');
-    const [bank, setBank] = useState<BankAccount[]>([])
     const [targetAccount, setTargetAccount] = useState<string | null>(null);
     const [otpSent, setOtpSent] = useState(false);
     const [otpVerified, setOtpVerified] = useState(false);
@@ -42,19 +31,7 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections }: a
     const [leaveDays, setLeaveDays] = useState(null);
     const [advanceRepayment, setAdvanceRepayment] = useState(null);
 
-
-    useEffect(() => {
-        fetchAccounts()
-    }, []);
-
-    const fetchAccounts = () => {
-        axios.get(`${apiUrl}/api/account/get`).then(response => {
-            setBank(response.data.accounts)
-        })
-            .catch(error => {
-                console.log("Error fetching accounts:", error)
-            })
-    }
+  
 
     const handleOpenDialog = (collection: any) => {
         setIsDialogOpen(true);
@@ -233,7 +210,13 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections }: a
                     {!otpSent && (<div>
                         <div>
                             <p className='text-sm font-medium'>Date of Pay</p>
-                            <DatePicker date={payDate} setDate={setPayDate} />
+                            <input
+        type="date"
+        className="border border-gray-300 rounded-md p-2 text-sm w-full"
+        value={payDate || ''}
+        onChange={(e:any) => setPayDate(e.target.value)}
+        />
+                            {/* <DatePicker date={payDate} setDate={setPayDate} /> */}
                         </div>
                         <div className='space-y-2 mb-3'>
                             {bank.length > 0 ? (
@@ -246,7 +229,7 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections }: a
                                             <SelectValue placeholder="Select account" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {bank.map((acc) => (
+                                            {bank?.map((acc:any) => (
                                                 <SelectItem key={acc._id} value={acc._id}>
                                                     {acc.name} - {acc.holderName}
                                                 </SelectItem>

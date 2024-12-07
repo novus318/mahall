@@ -92,6 +92,7 @@ const TransactionPage = () => {
         description: error.response?.data?.message || error.message || 'something went wrong',
         variant: "destructive",
       })
+      setLoading(false)
     } finally {
       setBtLoading(false);
     }
@@ -154,6 +155,15 @@ const TransactionPage = () => {
   };
   const formatDate = (dateString: any) => {
     const date = new Date(dateString);
+  
+    if (isNaN(date.getTime())) {
+      return {
+        dayMonthYear: 'N/A',
+        time: 'N/A',
+        day: 'N/A',
+      };
+    }
+  
     return {
       dayMonthYear: format(date, 'dd MMM yyyy'),
       time: format(date, 'hh:mm a'),

@@ -17,13 +17,32 @@ import { withAuth } from '@/components/withAuth';
 import UpdateSalaryPayment from '@/components/UpdateSalaryPayment';
 import { toast } from '@/components/ui/use-toast';
 
-
+interface BankAccount {
+  _id: string;
+  accountNumber: string;
+  accountType: string;
+  balance: number;
+  createdAt: string;
+  holderName: string;
+  ifscCode: string;
+  name: string;
+  primary: boolean;
+}
 
 const Page = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [salaries, setSalaries] = useState<any[]>([]);
+    const [bank, setBank] = useState<BankAccount[]>([]);
     const [loading,setLoading] = useState(true)
 
+    const fetchAccounts = () => {
+      axios.get(`${apiUrl}/api/account/get`).then(response => {
+        setBank(response.data.data);
+      })
+        .catch(error => {
+          console.log("Error fetching accounts:", error);
+        });
+    };
       const fetchSalary = async () => {
         try {
           const response = await axios.get(`${apiUrl}/api/staff/pending-salaries`);
@@ -43,6 +62,7 @@ const Page = () => {
 
       useEffect(() => {
         fetchSalary();
+        fetchAccounts();
       },[]);
 
       function formatMonth(dateString:any) {
@@ -85,7 +105,7 @@ const Page = () => {
                   <TableCell>{salary?.staffId?.name}</TableCell>
                   <TableCell>₹{(salary?.basicPay).toFixed(2)}</TableCell>
                   <TableCell>
-                   <UpdateSalaryPayment fetchSalary={fetchSalary} salary={salary} />
+                   <UpdateSalaryPayment fetchSalary={fetchSalary} salary={salary} bank={bank} />
                   </TableCell>
                 </TableRow>
               );

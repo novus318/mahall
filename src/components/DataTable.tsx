@@ -17,6 +17,18 @@ import { Button } from './ui/button';
 import { Loader2 } from 'lucide-react'; // Import Loader component for loading state
 import { format } from 'date-fns';
 
+
+interface BankAccount {
+  _id: string;
+  accountNumber: string;
+  accountType: string;
+  balance: number;
+  createdAt: string;
+  holderName: string;
+  ifscCode: string;
+  name: string;
+  primary: boolean;
+}
 const DataTable = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const WHATSAPP_API_URL: any = process.env.NEXT_PUBLIC_WHATSAPP_API_URL; 
@@ -24,11 +36,19 @@ const DataTable = () => {
 
   const [houses, setHouses] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [loadingStates, setLoadingStates] = useState<{ [key: string]: boolean }>({}); // State for loading
+  const [loadingStates, setLoadingStates] = useState<{ [key: string]: boolean }>({});
+  const [bank, setBank] = useState<BankAccount[]>([]); // State for loading
 
   useEffect(() => {
     fetchHouses();
+    fetchAccounts();
   }, []);
+
+  const fetchAccounts = () => {
+    axios.get(`${apiUrl}/api/account/get`)
+      .then(response => setBank(response.data.data))
+      .catch(error => console.log("Error fetching accounts:", error));
+  };
 
   const fetchHouses = async () => {
     try {
@@ -164,7 +184,7 @@ const DataTable = () => {
                 <TableCell>{house?.memberId?.name}</TableCell>
                 <TableCell>{house?.memberId?.whatsappNumber}</TableCell>
                 <TableCell>
-                  <UpdateCollectionPayment collection={house} />
+                  <UpdateCollectionPayment collection={house} bank={bank} />
                 </TableCell>
                 <TableCell>
                   <Button size='sm' onClick={() => handleRemind(house)} disabled={isLoading}>

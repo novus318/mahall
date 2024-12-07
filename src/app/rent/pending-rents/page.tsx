@@ -23,12 +23,23 @@ interface RentCollection {
     roomId:string;
     buildingId:string;
 }
+interface BankAccount {
+    _id: string;
+    accountNumber: string;
+    accountType: string;
+    balance: number;
+    createdAt: string;
+    holderName: string;
+    ifscCode: string;
+    name: string;
+    primary: boolean;
+  }
 
 const Page = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const WHATSAPP_API_URL: any = process.env.NEXT_PUBLIC_WHATSAPP_API_URL; 
   const ACCESS_TOKEN = process.env.NEXT_PUBLIC_WHATSAPP_TOKEN; 
-
+  const [bank, setBank] = useState<BankAccount[]>([])
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [collections, setCollections] = useState<RentCollection[]>([]);
     const [loading, setLoading] = useState(true);
@@ -36,8 +47,17 @@ const Page = () => {
 
     useEffect(() => {
         fetchPendingCollections();
+        fetchAccounts();
     }, []);
 
+    const fetchAccounts = () => {
+        axios.get(`${apiUrl}/api/account/get`).then(response => {
+            setBank(response.data.data)
+        })
+            .catch(error => {
+                console.log("Error fetching accounts:", error)
+            })
+    }
     const fetchPendingCollections = async () => {
         try {
             const response = await axios.get(`${apiUrl}/api/rent/rent-collections/pending`);
@@ -179,7 +199,7 @@ const Page = () => {
                                         <TableCell>{collection.amount}</TableCell>
                                         <TableCell>{new Date(collection.dueDate).toLocaleDateString()}</TableCell>
                                         <TableCell className='space-x-2'>
-                                            <UpdateRentCollection selectedCollection={collection} fetchPendingCollections={fetchPendingCollections}/>
+                                            <UpdateRentCollection selectedCollection={collection} fetchPendingCollections={fetchPendingCollections} bank={bank}/>
                                             <Button
                                                 onClick={() => handleSendReminder(collection, index)}
                                                 size='sm'

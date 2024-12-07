@@ -17,15 +17,32 @@ import { format } from 'date-fns'
 import UpdateCollectionPayment from './UpdateCollectionPayment';
 
 
-
+interface BankAccount {
+  _id: string;
+  accountNumber: string;
+  accountType: string;
+  balance: number;
+  createdAt: string;
+  holderName: string;
+  ifscCode: string;
+  name: string;
+  primary: boolean;
+}
 const PendingTransactions = ({ id }: any) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL
     const [collections,setCollections]=useState<any>([])
+    const [bank, setBank] = useState<BankAccount[]>([]);
 
     useEffect(() => {
         fetchCollection(id);
+        fetchAccounts();
     }, [id]);
 
+    const fetchAccounts = () => {
+      axios.get(`${apiUrl}/api/account/get`)
+        .then(response => setBank(response.data.data))
+        .catch(error => console.log("Error fetching accounts:", error));
+    };
     const fetchCollection=async (pid:any)=>{
         try {
           const response = await axios.get(`${apiUrl}/api/house/kudi-collections/${pid}`)
@@ -254,7 +271,7 @@ const PendingTransactions = ({ id }: any) => {
                     Receipt
                    </Button>
                 ): collection?.status === 'Unpaid' ? (
-                  <UpdateCollectionPayment collection={collection}/>
+                  <UpdateCollectionPayment collection={collection} bank={bank}/>
                 ):(
                    <div
                    className="bg-red-200 text-red-500 px-2 py-1 rounded-md">

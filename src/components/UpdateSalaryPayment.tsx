@@ -2,36 +2,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
 import { toast } from '@/components/ui/use-toast';
 import { Dialog, DialogContent, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, PlusCircle, Trash } from 'lucide-react';
+import { CheckCircle} from 'lucide-react';
 import DatePicker from '@/components/DatePicker';
 import axios from 'axios';
 import { sendOtp } from '@/utils/sendOtp';
 
-interface BankAccount {
-  _id: string;
-  accountNumber: string;
-  accountType: string;
-  balance: number;
-  createdAt: string;
-  holderName: string;
-  ifscCode: string;
-  name: string;
-  primary: boolean;
-}
 
-const UpdateSalaryPayment = ({  salary }: any) => {
+
+const UpdateSalaryPayment = ({  salary,bank }: any) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [selectedSalary, setSelectedSalary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [btLoading, setBtLoading] = useState(false);
-  const [bank, setBank] = useState<BankAccount[]>([]);
   const [targetAccount, setTargetAccount] = useState<any>(null);
   const [payDate, setPayDate] = useState(null);
   const [leaveDays, setLeaveDays] = useState(null);
@@ -43,18 +30,8 @@ const UpdateSalaryPayment = ({  salary }: any) => {
   const otpSentRef = useRef(false);
   const [rejectionReason, setRejectionReason] = useState('');
   
-  const fetchAccounts = () => {
-    axios.get(`${apiUrl}/api/account/get`).then(response => {
-      setBank(response.data.accounts);
-    })
-      .catch(error => {
-        console.log("Error fetching accounts:", error);
-      });
-  };
 
-  useEffect(() => {
-    fetchAccounts();
-  }, []);
+
 
   const handleOpenDialog = (salary: any) => {
     setSelectedSalary(salary);
@@ -131,7 +108,7 @@ const UpdateSalaryPayment = ({  salary }: any) => {
   };
 
   const handleSubmitPayment = async () => {
-    const balance: any = bank.find(acc => acc._id === targetAccount);
+    const balance: any = bank.find((acc:any) => acc._id === targetAccount);
     if (!targetAccount) {
       toast({
         title: 'Please select an account',
@@ -234,7 +211,13 @@ const UpdateSalaryPayment = ({  salary }: any) => {
 
             <div>
               <p className='text-sm font-medium'>Date of Pay</p>
-              <DatePicker date={payDate} setDate={setPayDate} />
+              <input
+        type="date"
+        className="border border-gray-300 rounded-md p-2 text-sm w-full"
+        value={payDate || ''}
+        onChange={(e: any) => setPayDate(e.target.value)}
+        />
+              {/* <DatePicker date={payDate} setDate={setPayDate} /> */}
             </div>
 
             <div>
@@ -244,7 +227,7 @@ const UpdateSalaryPayment = ({  salary }: any) => {
                   <SelectValue placeholder="Select debit account" />
                 </SelectTrigger>
                 <SelectContent>
-                  {bank?.map((acc) => (
+                  {bank?.map((acc:any) => (
                     <SelectItem key={acc._id} value={acc._id}>
                       {acc.name} - {acc.holderName}
                     </SelectItem>

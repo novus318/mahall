@@ -102,10 +102,20 @@ const PageComponent = ({ params }: any) => {
                 },
                 prefill: {
                     name: collection.memberId?.name || 'Anonymous',
-                    contact: '',
+                    contact: collection.memberId?.whatsappNumber || 'Anonymous',
                 },
                 theme: {
                     color: '#3399cc',
+                },
+                modal: {
+                    ondismiss: () => {
+                        setPaying(false);
+                        toast({
+                            title: 'Payment Cancelled try again.',
+                            description: 'You closed the payment window without completing the payment.',
+                            variant: 'destructive',
+                        });
+                    },
                 },
             };
 

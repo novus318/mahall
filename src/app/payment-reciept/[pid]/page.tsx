@@ -87,7 +87,7 @@ const PageComponent = ({ params }: PageProps) => {
     };
 
     const handlePayNowClick =async(c:any)=>{
-      router.push(`/pay/${c.houseId.number}/${c.amount}/${c.memberId.name}`)
+      router.push(`/pay/${c?.receiptNumber}`)
     }
   
     const handleReceiptClick = async (collection: any) => {
@@ -254,6 +254,7 @@ const PageComponent = ({ params }: PageProps) => {
       <TableHead className="font-medium">Amount</TableHead>
       <TableHead className="font-medium">Status</TableHead>
       <TableHead className="font-medium">Reciept</TableHead>
+      <TableHead className="font-medium">Month</TableHead>
     </TableRow>
   </TableHeader>
   <TableBody>
@@ -287,7 +288,9 @@ const PageComponent = ({ params }: PageProps) => {
     {collection?.status === 'Rejected' && 'Rejected'}
   </Button>
 </TableCell>
-
+          <TableCell>
+            {collection?.collectionMonth}
+          </TableCell>
         </TableRow>
       );
     })}

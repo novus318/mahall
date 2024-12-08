@@ -3,16 +3,24 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { Table, TableHead, TableBody, TableRow, TableCell,TableHeader } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
-import { useHouseContext } from '@/context/HouseContext';
 import Link from 'next/link';
 import { withAuth } from '@/components/withAuth';
+import axios from 'axios';
 
 
 const Page = () => {
-  const { houses, fetchHouses } = useHouseContext();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const [houses, setHouses] = useState<any>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-
+const fetchHouses = async () => {
+  const response = await axios.get(`${apiUrl}/api/house/get`);
+  if (response.data.success) {
+    setHouses(response.data.houses);
+  } else {
+    console.error('Error fetching houses');
+  }
+}
   useEffect(() => {
     fetchHouses()
   }, [])

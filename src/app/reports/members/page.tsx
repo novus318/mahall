@@ -327,7 +327,17 @@ const Page = () => {
   }}>
   Clear all
 </Button>
-<MembersReport data={filteredData}/>
+<MembersReport data={filteredData}
+search={search}
+dobFilter={dobFilter}
+genderFilter={genderFilter}
+maritalStatusFilter={maritalStatusFilter}
+bloodGroupFilter={bloodGroupFilter}
+educationFilter={educationFilter}
+madrassaFilter={madrassaFilter}
+placeFilter={placeFilter}
+relationFilter={relationFilter}
+/>
 {selectedMembers.length > 0 && 
   <BulkMessage members={selectedMembers}/>}
 </div>

@@ -120,7 +120,7 @@ const RecentTransactions = () => {
             <div className="text-xs text-gray-500">{time}</div>
           </TableCell>
           <TableCell className='text-xs'>{transaction?.accountId?.name}</TableCell>  {/* replace with actual account details */}  {/* Example: "Savings" */}  {/* replace with actual account details */}  {/* Example: "Savings" */}  {/* replace with actual account details */}  {/* Example: "Savings" */}   {/* replace with actual account details */}  {/* Example: "Savings" */}   {/* replace with actual account details */}  {/* Example: "Savings" */}
-          <TableCell className='text-xs'>{transaction?.description} {transaction?.reference && (<span className='text-blue-700 underline'>reference</span>)}</TableCell>
+          <TableCell className='text-xs'>{transaction?.description} {transaction?.reference && (<span className='text-blue-700 underline cursor-pointer'>reference</span>)}</TableCell>
           <TableCell className={transaction?.type === 'Credit' ? 'text-green-700 font-bold' : 'text-red-600 font-bold'}>
             {formattedAmount}
           </TableCell>

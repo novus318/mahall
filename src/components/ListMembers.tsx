@@ -49,8 +49,8 @@ const ListMembers = ({ members, familyHead }: any) => {
             <div className="flex items-center space-x-1 md:space-x-4">
               {member.relation.relationType === 'husband' ? (
                 <>
-                  <ArrowLeftIcon className="w-6 h-6 md:w-8 md:h-8 text-muted-foreground animate-pulse" />
                   <span className="text-muted-foreground font-medium text-sm md:text-base">Husband</span>
+                  <ArrowRightIcon className="w-6 h-6 md:w-8 md:h-8 text-muted-foreground animate-pulse" />
                 </>
               ) : (
                 <>

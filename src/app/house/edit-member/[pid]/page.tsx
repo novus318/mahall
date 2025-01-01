@@ -13,7 +13,6 @@ import { toast } from '@/components/ui/use-toast'
 import Spinner from '@/components/Spinner'
 import { RadioGroup,RadioGroupItem } from '@/components/ui/radio-group'
 import { Loader2 } from 'lucide-react'
-import { places } from '@/data/data'
 import DeleteMember from '@/components/DeleteMember'
 
 
@@ -52,6 +51,7 @@ const PageComponent = ({ params }: any) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(false);
+  const [places, setPlaces] = useState([]); 
   const [newMember, setNewMember] = useState<Member>({
     _id: '',
     name: '',
@@ -92,6 +92,24 @@ const PageComponent = ({ params }: any) => {
       [field]: value
     }))
   }
+
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/admin/get-places`);
+      setPlaces(response.data);
+    } catch (error) {
+      toast({
+        title: 'Error fetching places',
+        description: 'Could not retrieve places from the server.',
+        variant: 'destructive',
+      });
+    }
+  }
+  useEffect(() => {
+  fetchData()
+  }, [])
+  
   // Fetch members on component mount
   useEffect(() => {
     axios.get(`${apiUrl}/api/member/get-byId/${pid}`)

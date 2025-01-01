@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import MembersReport from '@/components/reports/MembersReport';
 import { Checkbox } from '@/components/ui/checkbox';
 import BulkMessage from '@/components/reports/BulkMessage';
-import { places } from '@/data/data';
+import { toast } from '@/components/ui/use-toast';
+
 
 interface Member {
   _id: string;
@@ -56,7 +57,7 @@ const Page = () => {
   const [relationFilter, setRelationFilter] = useState('');
   const [selectedMembers, setSelectedMembers] = useState<any>([]);
   const [selectAll, setSelectAll] = useState(false);
-
+  const [places, setPlaces] = useState([]); 
   // Helper function to calculate age
   const calculateAge = (dob:any) => {
     const birthDate = new Date(dob);
@@ -104,6 +105,19 @@ const Page = () => {
     setSelectAll(!selectAll);
   };
   
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/admin/get-places`);
+      setPlaces(response.data);
+    } catch (error) {
+      toast({
+        title: 'Error fetching places',
+        description: 'Could not retrieve places from the server.',
+        variant: 'destructive',
+      });
+    }
+  }
+
   // Fetch member data on component mount
   useEffect(() => {
     const fetchMembers = async () => {
@@ -118,7 +132,7 @@ const Page = () => {
         setLoading(false);
       }
     };
-
+    fetchData()
     fetchMembers();
   }, []);
 

@@ -298,7 +298,7 @@ const UpdateSalaryPayment = ({  salary,bank }: any) => {
               )}
             </div>
           )}
-          <DialogFooter>
+          <DialogFooter className='mt-12 gap-2'>
             <Button
               variant="outline"
               onClick={handleDialogClose}>

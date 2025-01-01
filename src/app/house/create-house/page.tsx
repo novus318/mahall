@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -14,7 +14,6 @@ import { useRouter } from 'next/navigation'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { withAuth } from '@/components/withAuth'
-import { places } from '@/data/data'
 
 
 interface Member {
@@ -57,6 +56,7 @@ const Page = () => {
     const [collection, setCollection] = useState<number>();
     const [loading, setloading] = useState(false);
     const router = useRouter();
+     const [places, setPlaces] = useState([]); 
     const [newMember, setNewMember] = useState<Member>({
         name: '',
         status: '',
@@ -83,6 +83,23 @@ const Page = () => {
           HealthCard:false
         },
       })
+
+
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(`${apiUrl}/api/admin/get-places`);
+          setPlaces(response.data);
+        } catch (error) {
+          toast({
+            title: 'Error fetching places',
+            description: 'Could not retrieve places from the server.',
+            variant: 'destructive',
+          });
+        }
+      }
+      useEffect(() => {
+      fetchData()
+      }, [])
 
     const handleChange = (e: any) => {
         const { name, value } = e.target;

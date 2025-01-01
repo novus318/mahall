@@ -12,7 +12,6 @@ import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/use-toast'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Loader2 } from 'lucide-react'
-import { places } from '@/data/data'
 
 interface PageProps {
   params: {
@@ -54,6 +53,7 @@ const PageComponent = ({ params }: PageProps) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(false);
+  const [places, setPlaces] = useState([]); 
   const [newMember, setNewMember] = useState<Member>({
     name: '',
     status: '',
@@ -101,6 +101,21 @@ const PageComponent = ({ params }: PageProps) => {
       })
   }, [pid])
 
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/admin/get-places`);
+      setPlaces(response.data);
+    } catch (error) {
+      toast({
+        title: 'Error fetching places',
+        description: 'Could not retrieve places from the server.',
+        variant: 'destructive',
+      });
+    }
+  }
+  useEffect(() => {
+  fetchData()
+  }, [])
 
   const validate = () => {
     const currentYear = new Date().getFullYear();

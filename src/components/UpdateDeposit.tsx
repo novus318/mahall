@@ -94,7 +94,7 @@ const handleUpdateDeposit = async () => {
                 </SelectContent>
               </Select>
           </div>
-          <DialogFooter>
+          <DialogFooter className='mt-12 gap-2'>
             <Button size='sm' variant="outline" onClick={() => setShowDialog(false)}>Cancel</Button>
             {loading ? (
               <Button size='sm' disabled>

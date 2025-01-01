@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { Banknote, BookIcon,  BookOpen,  Building2, Home, LayoutDashboard, LogOut,  MenuIcon, MessageCircle, ReceiptIndianRupeeIcon, SendIcon, Settings, User2Icon, X } from 'lucide-react';
+import { Banknote, BookIcon,  BookOpen,  Building2, CheckCircle2, Home, LayoutDashboard, LogOut,  MenuIcon, MessageCircle, ReceiptIndianRupeeIcon, SendIcon, Settings, User2Icon, X } from 'lucide-react';
 import { useRouter,usePathname } from 'next/navigation';
 
 const Sidebar: React.FC = () => {
@@ -28,7 +28,7 @@ const Sidebar: React.FC = () => {
     fetchMessageCount();
     const interval = setInterval(() => {
       fetchMessageCount();
-    }, 30000);
+    }, 60000);
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
@@ -205,6 +205,18 @@ const Sidebar: React.FC = () => {
               >
                 <Settings className="mr-3" />
                 <span className="text-lg">Settings</span>
+              </div>
+            </Link>
+          </li>
+          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
+            <Link href="/payment-online">
+              <div
+                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
+                  CurrentPage('/payment-online') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
+                }`}
+              >
+                <CheckCircle2 className="mr-3" />
+                <span className="text-lg">Verify and payment</span>
               </div>
             </Link>
           </li>

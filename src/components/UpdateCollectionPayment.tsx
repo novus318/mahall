@@ -233,7 +233,7 @@ if(!otpVerified){
             </div>
           )}
 
-          <DialogFooter>
+          <DialogFooter className='mt-14 gap-2'>
             <Button variant="outline" onClick={handleDialogClose}>
               Cancel
             </Button>

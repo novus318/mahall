@@ -1,15 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { places as initialPlaces } from '@/data/data'; 
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Loader2 } from 'lucide-react';
+import axios from 'axios';
+import { toast } from '../ui/use-toast';
 
 const AddPlaces = () => {
-  const [places, setPlaces] = useState(initialPlaces); 
+  const [places, setPlaces] = useState([]); 
   const [newPlace, setNewPlace] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/admin/get-places`);
+        setPlaces(response.data);
+      } catch (error) {
+        toast({
+          title: 'Error fetching places',
+          description: 'Could not retrieve places from the server.',
+          variant: 'destructive',
+        });
+      }
+    };
+
+    fetchData();
+  }, [])
+  
   // Handle adding a new place
   const handleAddPlace = async (e:any) => {
     e.preventDefault();
@@ -18,7 +38,7 @@ const AddPlaces = () => {
       setIsLoading(true);
 
       try {
-        const response = await fetch('/api/places', {
+        const response = await fetch(`${apiUrl}/api/admin/add-place`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -51,7 +71,7 @@ const AddPlaces = () => {
         </CardHeader>
         <CardContent>
           <div>
-            {places.map((place, i) => (
+            {places?.map((place, i) => (
               <div key={i} className="flex items-center space-x-4">
                 <p>{place}</p>
               </div>

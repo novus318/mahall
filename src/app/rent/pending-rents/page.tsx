@@ -85,7 +85,7 @@ const Page = () => {
                     to: `${collection.tenantNumber}`,
                     type: 'template',
                     template: {
-                        name: 'rent_collection',
+                        name: 'rent_reminder',
                         language: {
                             code: 'ml'
                         },
@@ -94,8 +94,8 @@ const Page = () => {
                                 type: 'body',
                                 parameters: [
                                     { type: 'text', text: collection.tenantName },
-                                    { type: 'text', text: collection.roomNumber },
                                     { type: 'text', text: collection.period },
+                                    { type: 'text', text: collection.roomNumber },
                                     { type: 'text', text: rent.toString() }
                                 ]
                             },

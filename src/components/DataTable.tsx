@@ -85,7 +85,7 @@ const DataTable = () => {
           to: `${house.memberId.whatsappNumber}`,
           type: 'template',
           template: {
-            name: 'collection',
+            name: 'collection_reminder',
             language: {
               code: 'ml' 
             },
@@ -94,7 +94,8 @@ const DataTable = () => {
                 type: 'body',
                 parameters: [
                   { type: 'text', text: house.memberId.name }, 
-                  { type: 'text', text: month },   
+                  { type: 'text', text: month },
+                  { type: 'text', text: house.number },
                   { type: 'text', text: house.amount },
                 ]
               },

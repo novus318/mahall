@@ -93,10 +93,10 @@ const DataTable = () => {
               {
                 type: 'body',
                 parameters: [
-                  { type: 'text', text: house.memberId.name }, 
-                  { type: 'text', text: month },
-                  { type: 'text', text: house.number },
-                  { type: 'text', text: house.amount },
+                  { type: 'text', text: `${house.memberId.name}` }, 
+                  { type: 'text', text: `${month}` },
+                  { type: 'text', text: `${house?.houseId?.number}` },
+                  { type: 'text', text: `${house.amount}` },
                 ]
               },
               {

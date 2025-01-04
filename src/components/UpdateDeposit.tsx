@@ -4,40 +4,44 @@ import { Badge } from './ui/badge'
 import axios from 'axios';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Label } from './ui/label';
 import { Loader2 } from 'lucide-react';
 import { toast } from './ui/use-toast';
 
 
-interface BankAccount {
-  _id: string;
-  accountNumber: string;
-  accountType: string;
-  balance: number;
-  createdAt: string;
-  holderName: string;
-  ifscCode: string;
-  name: string;
-  primary: boolean;
-}
 
-
-const UpdateDeposit = ({ contractDetails, roomId, buildingId,fetchRoomDetails }: any) => {
+const UpdateDeposit = ({ contractDetails, roomId, buildingId, fetchRoomDetails, bank }: any) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [showDialog, setShowDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('');
+  const [targetAccount, setTargetAccount] = useState<string | null>(null);
 
 
 
-const handleUpdateDeposit = async () => {
+  const handleUpdateDeposit = async () => {
+         if (!paymentMethod) {
+                toast({
+                    title: 'Please select a payment type',
+                    description: 'You must select a payment type before submitting',
+                    variant: 'destructive',
+                });
+                return;
+            }
+            if (!targetAccount) {
+                toast({
+                    title: 'Please select a bank account',
+                    variant: 'destructive',
+                });
+                return;
+            }
     setLoading(true);
     try {
       await axios.post(`${apiUrl}/api/rent/pay-deposit/${buildingId}/${roomId}/${contractDetails._id}`, {
-        status:'Paid',
-        paymentMethod:paymentMethod,
+        status: 'Paid',
+        paymentMethod: paymentMethod,
+        accountId: targetAccount,
       });
       toast({
         title: 'Deposit status updated successfully',
@@ -46,7 +50,7 @@ const handleUpdateDeposit = async () => {
       fetchRoomDetails()
       setShowDialog(false);
       setPaymentMethod('')
-    } catch (error:any) {
+    } catch (error: any) {
       toast({
         title: 'Error updating deposit status',
         description: error.response?.data?.message || error.message || 'something went wrong',
@@ -76,23 +80,44 @@ const handleUpdateDeposit = async () => {
           <DialogHeader>
             <DialogTitle>Update deposit status</DialogTitle>
           </DialogHeader>
-          <div>
+          <div className='space-y-2'>
+            {bank.length > 0 ? (
+              <>
+                <Label>
+                  Select bank
+                </Label>
+                <Select onValueChange={setTargetAccount}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select account" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {bank?.map((acc: any) => (
+                      <SelectItem key={acc._id} value={acc._id}>
+                        {acc.name} - {acc.holderName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </>
+            ) : (
+              <p>Please close and open again.</p>
+            )}
             <Label>
               Select payment type
             </Label>
             <Select onValueChange={setPaymentMethod}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem  value='Cash'>
-                      Cash
-                    </SelectItem>
-                    <SelectItem  value='Online'>
-                      Online
-                    </SelectItem>
-                </SelectContent>
-              </Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value='Cash'>
+                  Cash
+                </SelectItem>
+                <SelectItem value='Online'>
+                  Online
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <DialogFooter className='mt-12 gap-2'>
             <Button size='sm' variant="outline" onClick={() => setShowDialog(false)}>Cancel</Button>
@@ -102,7 +127,7 @@ const handleUpdateDeposit = async () => {
               </Button>
             ) : (
               <Button size='sm' disabled={!paymentMethod || loading}
-              onClick={handleUpdateDeposit}>
+                onClick={handleUpdateDeposit}>
                 Update
               </Button>
             )}

@@ -46,6 +46,18 @@ interface PageProps {
   };
 }
 
+interface BankAccount {
+  _id: string;
+  accountNumber: string;
+  accountType: string;
+  balance: number;
+  createdAt: string;
+  holderName: string;
+  ifscCode: string;
+  name: string;
+  primary: boolean;
+}
+
 const PageComponent = ({ params }: PageProps) => {
   const { pid, roomId,contractId } = params;
   const [room, setRoom] = useState<any>(null);
@@ -53,6 +65,7 @@ const PageComponent = ({ params }: PageProps) => {
   const [buildingID, setBuildingID] = useState<any>(null)
   const [contractDetails, setContractDetails] = useState<any>({});
   const [loading, setLoading] = useState(true);
+  const [bank, setBank] = useState<BankAccount[]>([])
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 
@@ -73,9 +86,19 @@ const PageComponent = ({ params }: PageProps) => {
       setLoading(false);
     }
   };
-  useEffect(() => {
 
+  const fetchAccounts = () => {
+    axios.get(`${apiUrl}/api/account/get`).then(response => {
+        setBank(response.data.data)
+    })
+        .catch(error => {
+            console.log("Error fetching accounts:", error)
+        })
+}
+
+  useEffect(() => {
     fetchRoomDetails();
+    fetchAccounts();
   }, [apiUrl, pid, roomId]);
 
   if (loading) {
@@ -127,7 +150,7 @@ const PageComponent = ({ params }: PageProps) => {
                     {contractDetails?.to && isBefore(new Date(contractDetails.to), new Date()) ? (
                       <>
                         {contractDetails?.depositStatus === 'Paid' ? (
-                          <ReturnDeposit contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} />
+                          <ReturnDeposit contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} bank={bank} />
                         ) : null}
                         <span className="text-red-600">Your contract has been expired </span>
                       </>
@@ -135,7 +158,7 @@ const PageComponent = ({ params }: PageProps) => {
                       <div className='flex justify-between items-center'>
                         <span className={contractDetails?.status ==='inactive' ? 'text-yellow-600': 'text-green-700'}>Contract {contractDetails?.status}</span>
                         {contractDetails?.depositStatus === 'Paid' &&
-                          <ReturnDeposit contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} />
+                          <ReturnDeposit contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} bank={bank} />
                         }
                       </div>
                     )}
@@ -170,7 +193,7 @@ const PageComponent = ({ params }: PageProps) => {
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-medium">Deposit status</div>
                       <div>
-                        <UpdateDeposit contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} />
+                        <UpdateDeposit contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} bank={bank}/>
                       </div>
                     </div>
                     {contractDetails?.depositStatus === 'Returned' && (

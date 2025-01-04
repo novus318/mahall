@@ -131,7 +131,7 @@ const ManualTutioncollections = ({ houseId, collectionAmount }: { houseId: strin
                 <SelectTrigger id="from-year">
                   <SelectValue placeholder="Year" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className='max-h-60'>
                   {years.map((year) => (
                     <SelectItem key={year} value={year.toString()}>
                       {year}
@@ -146,7 +146,7 @@ const ManualTutioncollections = ({ houseId, collectionAmount }: { houseId: strin
                 <SelectTrigger id="from-month">
                   <SelectValue placeholder="Month" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className='max-h-44'>
                   {months.map((month, index) => (
                     <SelectItem
                       key={month}
@@ -169,7 +169,7 @@ const ManualTutioncollections = ({ houseId, collectionAmount }: { houseId: strin
                 <SelectTrigger id="to-year">
                   <SelectValue placeholder="Year" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className='max-h-60'>
                   {years.map((year) => (
                     <SelectItem
                       key={year}
@@ -188,7 +188,7 @@ const ManualTutioncollections = ({ houseId, collectionAmount }: { houseId: strin
                 <SelectTrigger id="to-month">
                   <SelectValue placeholder="Month" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className='max-h-44'>
                   {months.map((month, index) => (
                     <SelectItem
                       key={month}
@@ -206,7 +206,8 @@ const ManualTutioncollections = ({ houseId, collectionAmount }: { houseId: strin
             </div>
           </div>
         </div>
-        <p className="text-sm mt-4">Total Amount: ₹{totalAmount}</p>
+     <div className='mt-32'>
+     <p className="text-sm mt-4">Total Amount: ₹{totalAmount}</p>
         <DialogFooter className="flex gap-2">
           <DialogClose asChild>
             <Button type="button" variant="secondary">
@@ -217,6 +218,7 @@ const ManualTutioncollections = ({ houseId, collectionAmount }: { houseId: strin
           {loading ? <Loader2 className='animate-spin'/> : 'Generate'}
           </Button>
         </DialogFooter>
+     </div>
       </DialogContent>
     </Dialog>
     </>

@@ -14,8 +14,8 @@ import axios from 'axios';
 import { toast } from '@/components/ui/use-toast';
 
 Font.register({
-  family: 'Roboto',
-  src: 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf',
+  family: 'AnekMalayalam',
+  src: '/AnekMalayalam.ttf',
 });
 
 const RecentrecieptSkeleton: React.FC = () => (
@@ -220,7 +220,7 @@ const TutionPage = () => {
   const styles = StyleSheet.create({
     page: {
         padding: 30, // Padding for A4 layout
-        fontFamily: 'Roboto',
+        fontFamily: 'AnekMalayalam',
         fontSize: 11,
         color: '#333',
         lineHeight: 1.5,

@@ -66,7 +66,7 @@ const DataTable = () => {
   };
 
   const handleRemind = async (house: any) => {
-    const originalDate = new Date(house.date);
+    const originalDate = new Date(house.collectionMonth);
   
     // Set the month to one month before the original date
     originalDate.setMonth(originalDate.getMonth() - 1);
@@ -162,7 +162,7 @@ const DataTable = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Date</TableHead>
+            <TableHead>Month</TableHead>
             <TableHead>House</TableHead>
             <TableHead>Collection Amount</TableHead>
             <TableHead>Family Head</TableHead>
@@ -173,12 +173,10 @@ const DataTable = () => {
         </TableHeader>
         <TableBody>
         {filteredHouses.map((house, index) => {
-             const { dayMonthYear, time } = formatDate(house?.date);
             const isLoading = loadingStates[house._id]; // Check if this house is loading
             return (
               <TableRow key={index}>
-                <TableCell>   <div className='text-sm'>{dayMonthYear}</div>
-                <div className="text-xs text-gray-500">{time}</div>
+                <TableCell>   <div className='text-sm'>{house?.collectionMonth}</div>
                 </TableCell>
                 <TableCell>{house?.houseId?.number}</TableCell>
                 <TableCell>₹{(house?.amount).toFixed(2)}</TableCell>

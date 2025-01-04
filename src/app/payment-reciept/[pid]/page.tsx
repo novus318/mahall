@@ -35,9 +35,12 @@ interface PageProps {
   };
 
   Font.register({
-    family: 'Roboto',
-    src: 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf'
+    family: 'AnekMalayalam',
+    src: '/AnekMalayalam.ttf', // Standard weight
+    fontWeight: 'normal',
   });
+
+  
 const PageComponent = ({ params }: PageProps) => {
   const router = useRouter()
     const { pid } = params  
@@ -148,7 +151,7 @@ const PageComponent = ({ params }: PageProps) => {
     const styles = StyleSheet.create({
       page: {
         padding: 20,
-        fontFamily: 'Roboto',
+        fontFamily: 'AnekMalayalam',
         fontSize: 10, // Ensure smaller size for A5
       },
       header: {

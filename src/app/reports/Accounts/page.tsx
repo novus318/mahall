@@ -17,8 +17,9 @@ import { useRouter } from 'next/navigation';
 
 
 Font.register({
-  family: 'Roboto',
-  src: 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf'
+  family: 'AnekMalayalam',
+  src: '/AnekMalayalam.ttf', // Standard weight
+  fontWeight: 'normal',
 });
 const TransactionsSkeleton: React.FC = () => {
   return (
@@ -47,10 +48,8 @@ const TransactionPage = () => {
   const [toDate, setToDate] = useState<any>(null);
   const [selectedAccount, setSelectedAccount] = useState('');
   const [accounts, setAccounts] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
 
-  const filteredTransactions = selectedAccount
-  ? transactions?.transactions?.filter((transaction:any) => transaction?.accountName === selectedAccount)
-  : transactions?.transactions;
 
   const fetchAccounts = () => {
     axios.get(`${apiUrl}/api/account/get-all`).then(response => {
@@ -128,15 +127,13 @@ const TransactionPage = () => {
       const data: any = {
         fromDate,
         toDate,
-        accountName:selectedAccount
+        accountName: selectedAccount,
+        category: selectedCategory
       }
       const response = await axios.get(`${apiUrl}/api/transactions/recent/transactions/byDate`, { params: data });
       if (response.data.success) {
         setTransactions(response.data.statement)
         setBtLoading(false);
-        setFromDate(null)
-        setToDate(null)
-        setSelectedAccount('')
         setLoading(false)
         toast({
           title: "Transactions fetched successfully.",
@@ -155,7 +152,7 @@ const TransactionPage = () => {
   };
   const formatDate = (dateString: any) => {
     const date = new Date(dateString);
-  
+
     if (isNaN(date.getTime())) {
       return {
         dayMonthYear: 'N/A',
@@ -163,7 +160,7 @@ const TransactionPage = () => {
         day: 'N/A',
       };
     }
-  
+
     return {
       dayMonthYear: format(date, 'dd MMM yyyy'),
       time: format(date, 'hh:mm a'),
@@ -234,6 +231,9 @@ const TransactionPage = () => {
               </View>
             </View>
           </View>
+          <View style={styles.accountSection}>
+              <Text style={styles.sectionTitle}>Filtered by : {selectedAccount === '' ? 'All accounts' : `account: ${selectedAccount}`} and {selectedCategory === '' ? 'All categories' : `category: ${selectedCategory}`}</Text>
+            </View>
 
           {/* Transaction List */}
           <View style={styles.transactionsHeader}>
@@ -277,7 +277,7 @@ const TransactionPage = () => {
   const styles = StyleSheet.create({
     page: {
       padding: 30,
-      fontFamily: 'Roboto',
+      fontFamily: 'AnekMalayalam',
       fontSize: 12,
       lineHeight: 1.6,
       color: '#333',
@@ -410,6 +410,10 @@ const TransactionPage = () => {
     router.push(reference)
   };
 
+  // Extract unique categories
+  const uniqueCategories = Array.from(
+    new Set(transactions?.transactions?.map((transaction: any) => transaction?.category))
+  );
 
   if (loading) return <TransactionsSkeleton />;
   return (
@@ -420,19 +424,19 @@ const TransactionPage = () => {
         <div>
           <h2 className="text-2xl font-semibold mb-4">Transactions From {formatDate(transactions?.from).dayMonthYear ? formatDate(transactions?.from).dayMonthYear : 'Invalid date'} - To {formatDate(transactions?.to).dayMonthYear ? formatDate(transactions?.to).dayMonthYear : 'Invalid date'}</h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-8 gap-1 md:gap-2 mb-2 items-center">
-          <div className='md:col-span-2'>
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-1 md:gap-2 mb-2 items-center">
+          <div>
             <p className="text-sm font-medium">From Date</p>
             <DatePicker date={fromDate} setDate={setFromDate} />
           </div>
-          <div className='md:col-span-2'>
+          <div>
             <p className="text-sm font-medium">To Date</p>
             <DatePicker date={toDate} setDate={setToDate} />
           </div>
-          <div className='md:col-span-2'>
+          <div>
             <p className="text-sm font-medium">Account</p>
             <select
-              className='border border-gray-300 rounded-sm p-1 bg-white'
+              className='border border-gray-300 rounded-sm p-1 bg-white w-full'
               value={selectedAccount}
               onChange={(e) => setSelectedAccount(e.target.value)}
             >
@@ -443,6 +447,22 @@ const TransactionPage = () => {
                 </option>
               ))}
             </select>
+          </div>
+          <div>
+            <p className="text-sm font-medium">Category</p>
+            <select
+              className='border border-gray-300 rounded-sm p-1 bg-white w-full'
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value=''>All Categories</option>
+              {uniqueCategories.map((category: any, index) => (
+                <option key={index} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+
           </div>
           <div className='md:pt-4'>
             <Button

@@ -14,8 +14,8 @@ import { Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 Font.register({
-  family: 'Roboto',
-  src: 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf'
+  family: 'AnekMalayalam',
+  src: '/AnekMalayalam.ttf'
 });
 const RecentrecieptSkeleton: React.FC = () => {
 
@@ -211,7 +211,7 @@ const fetchInitialPayments = async () => {
   const styles = StyleSheet.create({
     page: {
       padding: 20, // Extra padding for A4 size
-      fontFamily: "Roboto",
+      fontFamily: "AnekMalayalam",
       fontSize: 11,
       color: "#333",
       lineHeight: 1.5,

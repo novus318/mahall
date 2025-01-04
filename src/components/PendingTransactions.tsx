@@ -8,7 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, pdf, Image, Font } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import { Button } from './ui/button';
 import axios from 'axios'
@@ -28,6 +28,12 @@ interface BankAccount {
   name: string;
   primary: boolean;
 }
+
+  Font.register({
+    family: 'AnekMalayalam',
+    src: '/AnekMalayalam.ttf'
+  });
+
 const PendingTransactions = ({ id }: any) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL
     const [collections,setCollections]=useState<any>([])
@@ -143,7 +149,7 @@ const PendingTransactions = ({ id }: any) => {
       const styles = StyleSheet.create({
         page: {
           padding: 20,
-          fontFamily: 'Roboto',
+          fontFamily: 'AnekMalayalam',
           fontSize: 10, // Ensure smaller size for A5
         },
         header: {

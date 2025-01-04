@@ -14,8 +14,9 @@ const DownloadPayslip = ({ payslip, staff }: any) => {
   };
 
   Font.register({
-    family: 'Roboto',
-    src: 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf'
+    family: 'AnekMalayalam',
+    src: '/AnekMalayalam.ttf', // Standard weight
+    fontWeight: 'normal',
   });
 
   const handlePayslipClick = async () => {
@@ -123,7 +124,7 @@ const DownloadPayslip = ({ payslip, staff }: any) => {
   const styles = StyleSheet.create({
     page: {
       padding: 10,  // Reduced padding for less spacing
-      fontFamily: 'Roboto',
+      fontFamily: 'AnekMalayalam',
       fontSize: 12,
       lineHeight: 1.5,  // Adjusted line height for more compact text
       backgroundColor: '#F3F4F6',

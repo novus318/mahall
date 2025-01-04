@@ -14,8 +14,8 @@ import axios from 'axios';
 import { toast } from '@/components/ui/use-toast';
 
 Font.register({
-  family: 'Roboto',
-  src: 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf',
+  family: 'AnekMalayalam',
+  src: '/AnekMalayalam.ttf',
 });
 
 const RecentrecieptSkeleton: React.FC = () => (
@@ -42,7 +42,8 @@ const StaffPage = () => {
   const [toDate, setToDate] = useState<any>(null);
   const [collections, setCollections] = useState<any[]>([]);
   const [filteredCollections, setFilteredCollections] = useState<any[]>([]); // Filtered collections state
-  const [statusFilter, setStatusFilter] = useState<string>(''); // Status filter
+  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const fetchInitialcollection = async () => {
     const now = new Date();
@@ -55,7 +56,7 @@ const StaffPage = () => {
       const response = await axios.get(`${apiUrl}/api/reports/get/salary/byDate`, { params: data });
       if (response.data.success) {
         setCollections(response.data.payslips);
-        setFilteredCollections(response.data.payslips); 
+        setFilteredCollections(response.data.payslips);
         setFromDate(firstDayOfMonth);
         setToDate(now);
         setLoading(false);
@@ -135,13 +136,23 @@ const StaffPage = () => {
       if (statusFilter) {
         data = data.filter((collection: any) => collection.status === statusFilter);
       }
+
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        data = data.filter((collection: any) =>
+          collection?.staffId?.employeeId?.toLowerCase().includes(query) ||
+          collection?.staffId?.name?.toLowerCase().includes(query)
+        );
+      }
+
       setFilteredCollections(data);
     };
-  
+
     applyFilters();
-  }, [collections, statusFilter]); 
-  
-  const formatCurrency = (amount:any) => {
+  }, [collections, statusFilter, searchQuery]);
+
+
+  const formatCurrency = (amount: any) => {
     return `₹${amount.toLocaleString('en-IN', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -149,7 +160,7 @@ const StaffPage = () => {
   };
 
   const formatDate = (dateString: any) => {
-    const date = new Date(dateString ||new Date());
+    const date = new Date(dateString || new Date());
     return {
       dayMonthYear: format(date, 'dd MMM yyyy'),
       time: format(date, 'hh:mm a'),
@@ -159,7 +170,7 @@ const StaffPage = () => {
   const handleReceiptClick = async (data: any) => {
     const totalCollections = data.length;
     let totalNetPay = 0; // Initialize total net pay
-  let Salary =0
+    let Salary = 0
     data.forEach((collection: any) => {
       // Accumulate net pay if it exists; otherwise, you can decide how to handle missing values
       if (collection?.netPay) {
@@ -169,7 +180,7 @@ const StaffPage = () => {
         Salary += collection.salary;
       }
     });
-  
+
     const totalAmount = totalNetPay;
     const totalAmountSalary = Salary
     const doc = (
@@ -183,16 +194,16 @@ const StaffPage = () => {
             <Text style={styles.headerText}>Phone: +91 9876543210</Text>
             <View style={styles.separator} />
           </View>
-  
+
           {/* Date Range Section */}
           <Text style={styles.sectionTitle}>
             Collections From: {formatDate(fromDate).dayMonthYear} - To: {formatDate(toDate).dayMonthYear}
           </Text>
           <View style={styles.summaryContainer}>
-          <Text style={styles.summaryText}>Total Salary Amount: {formatCurrency(totalAmountSalary)}</Text>
-    <Text style={styles.summaryText}>Total NetPayAmount: {formatCurrency(totalAmount)}</Text>
-    <Text style={styles.summaryText}>Total Collections: {totalCollections}</Text>
-</View>
+            <Text style={styles.summaryText}>Total Salary Amount: {formatCurrency(totalAmountSalary)}</Text>
+            <Text style={styles.summaryText}>Total NetPayAmount: {formatCurrency(totalAmount)}</Text>
+            <Text style={styles.summaryText}>Total Collections: {totalCollections}</Text>
+          </View>
           {/* Table Section */}
           <View style={styles.tableContainer}>
             {/* Table Header */}
@@ -206,7 +217,7 @@ const StaffPage = () => {
               <Text style={[styles.tableCell, styles.headerCell]}>Pay Date</Text>
               <Text style={[styles.tableCell, styles.headerCell]}>Status</Text>
             </View>
-  
+
             {/* Table Data */}
             {data.map((collection: any, index: number) => (
               <View key={index} style={styles.tableRow}>
@@ -216,11 +227,11 @@ const StaffPage = () => {
                 <Text style={styles.tableCell}>{formatCurrency(collection?.basicPay)}</Text>
                 <Text style={styles.tableCell}>{collection?.netPay ? `${formatCurrency(collection?.netPay)}` : 'pending'}</Text>
                 <Text style={styles.tableCell}>{new Date(collection?.createdAt).toLocaleDateString()}</Text>
-                <Text style={styles.tableCell}>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString(): 'Pending'}</Text>
+                <Text style={styles.tableCell}>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString() : 'Pending'}</Text>
                 <Text style={styles.tableCell}>{collection?.status}</Text>
               </View>
             ))}
-             {data?.length === 0 && (
+            {data?.length === 0 && (
               <View style={styles.tableRow}>
                 <Text style={styles.tableCell}>No collections</Text>
               </View>
@@ -229,15 +240,15 @@ const StaffPage = () => {
         </Page>
       </Document>
     );
-  
+
     const blob = await pdf(doc).toBlob();
     saveAs(blob, `Salaries-From ${formatDate(fromDate).dayMonthYear || 'Invalid date'} - To ${formatDate(toDate).dayMonthYear || 'Invalid date'}.pdf`);
   };
-  
+
   const styles = StyleSheet.create({
     page: {
       padding: 10, // Padding for A4 layout
-      fontFamily: 'Roboto',
+      fontFamily: 'AnekMalayalam',
       fontSize: 11,
       color: '#333',
       lineHeight: 1.5,
@@ -249,13 +260,13 @@ const StaffPage = () => {
       borderWidth: 1,
       borderColor: '#E5E7EB',
       backgroundColor: '#F9F9F9', // Light background for summary
-  },
-  summaryText: {
+    },
+    summaryText: {
       fontSize: 11,
       fontWeight: 'bold',
       color: '#333',
       textAlign: 'right', // Right align for a neat summary look
-  },
+    },
     header: {
       textAlign: 'center',
       marginBottom: 15,
@@ -312,8 +323,8 @@ const StaffPage = () => {
       fontWeight: 'bold',
     },
   });
-  
-  function formatMonth(dateString:any) {
+
+  function formatMonth(dateString: any) {
     const date = new Date(dateString);
     return date.toLocaleString('default', { month: 'long' }); // e.g., "June"
   }
@@ -331,27 +342,38 @@ const StaffPage = () => {
             {formatDate(toDate).dayMonthYear || 'Invalid date'}
           </h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-8 gap-3 md:gap-5 mb-2 items-center">
-          <div className="md:col-span-2">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-3 md:gap-5 mb-2 items-center">
+          <div>
             <p className="text-sm font-medium">From Date</p>
             <DatePicker date={fromDate} setDate={setFromDate} />
           </div>
-          <div className="md:col-span-2">
+          <div>
             <p className="text-sm font-medium">To Date</p>
             <DatePicker date={toDate} setDate={setToDate} />
           </div>
-          <div className="md:col-span-2">
+
+          <div>
             <p className="text-sm font-medium">Filter by Status</p>
             <select
-    value={statusFilter}
-    onChange={(e) => setStatusFilter(e.target.value)}
-    className='p-2 border border-gray-300 bg-white rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-  >
-    <option value=''>All</option>
-    <option value='Paid'>Paid</option>
-    <option value='Pending'>Pending</option>
-    <option value='Rejected'>Rejected</option>
-  </select>
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className='p-2 border border-gray-300 bg-white rounded-sm text-sm w-full'
+            >
+              <option value=''>All</option>
+              <option value='Paid'>Paid</option>
+              <option value='Pending'>Pending</option>
+              <option value='Rejected'>Rejected</option>
+            </select>
+          </div>
+          <div>
+            <p className="text-sm font-medium">Search by ID or Name</p>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Enter ID or Name"
+              className="p-2 border border-gray-300 bg-white rounded-sm text-sm w-full"
+            />
           </div>
           <div className="md:pt-4">
             <Button size="sm" onClick={fetchCollections} disabled={loading} className="w-full md:w-auto">
@@ -364,6 +386,7 @@ const StaffPage = () => {
             </Button>
           </div>
         </div>
+
         <div className="rounded-t-md bg-gray-100 p-1">
           <Table className="bg-white">
             <TableHeader className="bg-gray-100">
@@ -380,14 +403,14 @@ const StaffPage = () => {
             </TableHeader>
             <TableBody>
               {filteredCollections?.map((collection: any, index: number) => (
-                <TableRow key={collection?._id} className={collection?.status === 'Rejected' ? 'bg-red-200 hover:bg-red-300': ''}>
-                     <TableCell>{collection?.staffId?.employeeId}</TableCell>
-                <TableCell>{collection?.staffId?.name}</TableCell>
-                <TableCell>{formatMonth(collection?.salaryPeriod?.startDate)}</TableCell>
-                <TableCell>{formatCurrency(collection?.basicPay)}</TableCell>
-                <TableCell>{collection?.netPay ? `${formatCurrency(collection?.netPay)}` : 'pending'}</TableCell>
-                <TableCell>{new Date(collection?.createdAt).toLocaleDateString()}</TableCell>
-                <TableCell>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString(): 'Pending'}</TableCell>
+                <TableRow key={collection?._id} className={collection?.status === 'Rejected' ? 'bg-red-200 hover:bg-red-300' : ''}>
+                  <TableCell>{collection?.staffId?.employeeId}</TableCell>
+                  <TableCell>{collection?.staffId?.name}</TableCell>
+                  <TableCell>{formatMonth(collection?.salaryPeriod?.startDate)}</TableCell>
+                  <TableCell>{formatCurrency(collection?.basicPay)}</TableCell>
+                  <TableCell>{collection?.netPay ? `${formatCurrency(collection?.netPay)}` : 'pending'}</TableCell>
+                  <TableCell>{new Date(collection?.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString() : 'Pending'}</TableCell>
                   <TableCell>{collection?.status}</TableCell>
                 </TableRow>
               ))}

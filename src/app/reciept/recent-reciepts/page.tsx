@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, pdf, Image, Font } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import { withAuth } from '@/components/withAuth'
 import axios from 'axios';
@@ -31,6 +31,12 @@ const RecentrecieptSkeleton: React.FC = () => {
     </div>
   );
 };
+
+  Font.register({
+    family: 'AnekMalayalam',
+    src: '/AnekMalayalam.ttf', // Standard weight
+    fontWeight: 'normal',
+  });
 const RecieptPage = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [reciepts, setreciepts] = useState<any[]>([]);
@@ -121,7 +127,7 @@ const handleReceiptClick = async (collection: any) => {
   const styles = StyleSheet.create({
     page: {
       padding: 20,
-      fontFamily: 'Roboto',
+      fontFamily: 'AnekMalayalam',
       fontSize: 10, // Ensure smaller size for A5
     },
     header: {

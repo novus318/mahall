@@ -5,8 +5,8 @@ import { Document, Page, Text, View, StyleSheet, pdf, Font } from '@react-pdf/re
 import { saveAs } from 'file-saver';
 
 Font.register({
-  family: 'Roboto',
-  src: 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf'
+  family: 'AnekMalayalam',
+  src: '/AnekMalayalam.ttf'
 });
 const SingleReciept = ({reciept}:any) => {
 
@@ -70,7 +70,7 @@ const SingleReciept = ({reciept}:any) => {
       const styles = StyleSheet.create({
         page: {
           padding: 30,
-          fontFamily: 'Roboto',
+          fontFamily: 'AnekMalayalam',
         },
         header: {
           marginBottom: 20,

@@ -186,7 +186,8 @@ const CreateAccount = ({fetchAccounts}:any) => {
                         </div>
                     </>
                 )}
-                {loading ? (
+              <div className='mt-12'>
+              {loading ? (
                     <Button disabled>
                         <Loader2 className='animate-spin' />
                     </Button>
@@ -195,6 +196,7 @@ const CreateAccount = ({fetchAccounts}:any) => {
                         Create
                     </Button>
                 )}
+              </div>
             </DialogContent>
         </Dialog>
     );

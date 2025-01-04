@@ -28,8 +28,8 @@ interface Transaction {
 }
 
 Font.register({
-  family: 'Roboto',
-  src: 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf'
+  family: 'AnekMalayalam',
+  src: '/AnekMalayalam.ttf'
 });
 const TransactionsSkeleton: React.FC = () => {
   return (
@@ -239,7 +239,7 @@ const TransactionPage = () => {
   const styles = StyleSheet.create({
     page: {
       padding: 30,
-      fontFamily: 'Roboto',
+      fontFamily: 'AnekMalayalam',
       fontSize: 12,
       lineHeight: 1.6,
       color: '#333',

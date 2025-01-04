@@ -14,8 +14,8 @@ import axios from 'axios';
 import { toast } from '@/components/ui/use-toast';
 
 Font.register({
-  family: 'Roboto',
-  src: 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf',
+  family: 'AnekMalayalam',
+  src: '/AnekMalayalam.ttf',
 });
 
 const RecentrecieptSkeleton: React.FC = () => (
@@ -42,7 +42,9 @@ const RentPage = () => {
   const [toDate, setToDate] = useState<any>(null);
   const [collections, setCollections] = useState<any[]>([]);
   const [filteredCollections, setFilteredCollections] = useState<any[]>([]); // Filtered collections state
-  const [statusFilter, setStatusFilter] = useState<string>(''); // Status filter
+  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [buildingFilter, setBuildingFilter] = useState<any>('');
+  const [roomFilter, setRoomFilter] = useState<any>('');
 
   const fetchInitialcollection = async () => {
     const now = new Date();
@@ -127,19 +129,28 @@ const RentPage = () => {
     fetchInitialcollection();
   }, []);
 
-
   useEffect(() => {
     const applyFilters = () => {
       let data: any = collections;
-
+  
       if (statusFilter) {
         data = data.filter((collection: any) => collection.status === statusFilter);
       }
+  
+      if (buildingFilter) {
+        data = data.filter((collection: any) => collection.buildingName === buildingFilter);
+      }
+  
+      if (roomFilter) {
+        data = data.filter((collection: any) => collection.roomNumber === roomFilter);
+      }
+  
       setFilteredCollections(data);
     };
   
     applyFilters();
-  }, [collections, statusFilter]); 
+  }, [collections, statusFilter, buildingFilter, roomFilter]);
+  
   
 
 
@@ -223,7 +234,7 @@ const RentPage = () => {
   const styles = StyleSheet.create({
     page: {
       padding: 10, // Padding for A4 layout
-      fontFamily: 'Roboto',
+      fontFamily: 'AnekMalayalam',
       fontSize: 11,
       color: '#333',
       lineHeight: 1.5,
@@ -299,6 +310,7 @@ const RentPage = () => {
     },
   });
   
+  
 
   if (loading) return <RecentrecieptSkeleton />;
 
@@ -315,38 +327,73 @@ const RentPage = () => {
           </h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-8 gap-3 md:gap-5 mb-2 items-center">
-          <div className="md:col-span-2">
+          <div>
             <p className="text-sm font-medium">From Date</p>
             <DatePicker date={fromDate} setDate={setFromDate} />
           </div>
-          <div className="md:col-span-2">
+          <div>
             <p className="text-sm font-medium">To Date</p>
             <DatePicker date={toDate} setDate={setToDate} />
           </div>
-          <div className="md:col-span-2">
-            <p className="text-sm font-medium">Filter by Status</p>
-            <select
+
+          <div>
+  <p className="text-sm font-medium">Filter by Status</p>
+  <select
     value={statusFilter}
     onChange={(e) => setStatusFilter(e.target.value)}
-    className='p-2 border border-gray-300 bg-white rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+    className="p-2 border border-gray-300 bg-white rounded-sm text-sm w-full"
   >
-    <option value=''>All</option>
-    <option value='Paid'>Paid</option>
-    <option value='Pending'>Pending</option>
-    <option value='Rejected'>Rejected</option>
+    <option value="">All</option>
+    <option value="Paid">Paid</option>
+    <option value="Pending">Pending</option>
+    <option value="Rejected">Rejected</option>
   </select>
-          </div>
-          <div className="md:pt-4">
+</div>
+
+<div>
+  <p className="text-sm font-medium">Filter by Building</p>
+  <select
+    value={buildingFilter}
+    onChange={(e) => setBuildingFilter(e.target.value)}
+    className="p-2 border border-gray-300 bg-white rounded-sm text-sm w-full"
+  >
+    <option value="">All</option>
+    {Array.from(new Set(collections.map((collection: any) => collection.buildingName))).map((building: string) => (
+      <option key={building} value={building}>
+        {building}
+      </option>
+    ))}
+  </select>
+</div>
+
+<div>
+  <p className="text-sm font-medium">Filter by Room No</p>
+  <select
+    value={roomFilter}
+    onChange={(e) => setRoomFilter(e.target.value)}
+    className="p-2 border border-gray-300 bg-white rounded-sm text-sm w-full"
+  >
+    <option value="">All</option>
+    {Array.from(new Set(collections.map((collection: any) => collection.roomNumber))).map((room: string) => (
+      <option key={room} value={room}>
+        {room}
+      </option>
+    ))}
+  </select>
+</div>
+
+          <div className="md:pt-4 col-span-2 md:col-span-1">
             <Button size="sm" onClick={fetchCollections} disabled={loading} className="w-full md:w-auto">
               {btloading ? <Loader2 className="animate-spin h-5" /> : 'Get collections'}
             </Button>
           </div>
-          <div className="md:pt-4">
+          <div className="md:pt-4 col-span-2 md:col-span-1">
             <Button size="sm" onClick={() => handleReceiptClick(filteredCollections)} className="w-full md:w-auto">
               Print
             </Button>
           </div>
         </div>
+
         <div className="rounded-t-md bg-gray-100 p-1">
           <Table className="bg-white">
             <TableHeader className="bg-gray-100">

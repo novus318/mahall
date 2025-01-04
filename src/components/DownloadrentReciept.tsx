@@ -15,8 +15,8 @@ const DownloadrentReciept = ({ collection, contractDetails, room }: any) => {
   };
 
   Font.register({
-    family: 'Roboto',
-    src: 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf'
+    family: 'AnekMalayalam',
+    src: '/AnekMalayalam.ttf'
   });
 
   const handleReceiptClick = async () => {
@@ -95,8 +95,6 @@ const DownloadrentReciept = ({ collection, contractDetails, room }: any) => {
 
           {/* Payment Calculation */}
           <View style={styles.totalSection}>
-            <Text style={styles.totalText}>Total Rent: {formatCurrency(contractDetails?.rent)}</Text>
-            <Text style={styles.totalText}>Leave Deduction: {formatCurrency(leaveDeductAmount)}</Text>
             <Text style={styles.totalText}>Total Paid: {formatCurrency(collection?.PaymentAmount)}</Text>
           </View>
 
@@ -116,7 +114,7 @@ const DownloadrentReciept = ({ collection, contractDetails, room }: any) => {
   const styles = StyleSheet.create({
     page: {
       padding: 10, // Reduced padding
-      fontFamily: 'Roboto',
+      fontFamily: 'AnekMalayalam',
       fontSize: 10, // Reduced font size
       lineHeight: 1.4, // Reduced line height
     },

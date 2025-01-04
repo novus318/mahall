@@ -16,8 +16,8 @@ import { toast } from './ui/use-toast'
 import { format } from 'date-fns'
 
 Font.register({
-  family: 'Roboto',
-  src: 'https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf'
+  family: 'AnekMalayalam',
+  src: '/AnekMalayalam.ttf'
 });
 
 
@@ -125,7 +125,7 @@ const HouseContribution = ({id,contribution}:any) => {
       const styles = StyleSheet.create({
         page: {
           padding: 20,
-          fontFamily: 'Roboto',
+          fontFamily: 'AnekMalayalam',
           fontSize: 10, // Ensure smaller size for A5
         },
         header: {

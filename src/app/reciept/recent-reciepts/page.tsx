@@ -103,7 +103,7 @@ const handleReceiptClick = async (collection: any) => {
             <Text style={[styles.tableCell, styles.amountCell]}>Amount</Text>
           </View>
           <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, styles.descriptionCell]}>{collection?.description}</Text>
+            <Text style={[styles.tableCell, styles.descriptionCell]}>{collection?.description} - {collection?.categoryId.name}</Text>
             <Text style={[styles.tableCell, styles.amountCell]}>{collection?.amount.toFixed(2)}</Text>
           </View>
           <View style={styles.tableRow}>
@@ -112,6 +112,11 @@ const handleReceiptClick = async (collection: any) => {
           </View>
         </View>
       </View>
+      <View style={styles.paymentDetails}>
+          <Text style={styles.detailsHeading}>Receipt for:</Text>
+          <Text style={styles.paymentText}>Name: {collection?.memberId ? collection?.memberId?.name : collection?.otherRecipient?.name}</Text>
+          <Text style={styles.paymentText}>Contact Number: {collection?.memberId ? collection?.memberId?.mobile : collection?.otherRecipient?.number}</Text>
+        </View>
 
         <View style={styles.regards}>
           <Text>Regards,</Text>
@@ -216,6 +221,14 @@ const handleReceiptClick = async (collection: any) => {
     regards: {
       marginTop: 15,
       fontSize: 10,
+    },
+    paymentDetails: {
+      marginTop: 12,
+      marginBottom: 8,
+    },
+    paymentText: {
+      fontSize: 10,
+      marginBottom: 4,
     },
   });
 

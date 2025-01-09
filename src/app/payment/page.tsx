@@ -31,7 +31,7 @@ interface Member {
 }
 interface Item {
   description: string;
-  amount: number;
+  amount: any;
 }
 
 const Page = () => {
@@ -42,8 +42,8 @@ const Page = () => {
   const [targetAccount, setTargetAccount] = useState<string | null>(null);
   const [otherName, setOtherName] = useState<string>(''); // Added state for other name// Added state for other number
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const [items, setItems] = useState<Item[]>([{ description: '', amount: 0 }]); // Initial item
-  const [total, setTotal] = useState<number>(0);
+  const [items, setItems] = useState<Item[]>([{ description: '', amount: '' }]); // Initial item
+  const [total, setTotal] = useState<any>(0);
   const [date, setdate] = useState(new Date())
   const [targetCategory, setTargetCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -88,7 +88,7 @@ const Page = () => {
   }, [])
   useEffect(() => {
     // Calculate the total whenever items change
-    const newTotal = items.reduce((acc, item) => acc + item.amount, 0);
+    const newTotal = items.reduce((acc, item) => acc + Number(item.amount), 0);
     setTotal(newTotal);
   }, [items]);
 
@@ -177,7 +177,7 @@ const Page = () => {
       }
       const response = await axios.post(`${apiUrl}/api/pay/create-payment`, data)
       if (response.data.success) {
-        setItems([{ description: '', amount: 0 }])
+        setItems([{ description: '', amount: '' }])
         setTargetAccount(null)
         setOtherName('')
         setTotal(0)
@@ -280,7 +280,7 @@ const Page = () => {
                   />
                   <Input
                     className="w-full md:w-32"
-                    type="text"
+                    type="number"
                     placeholder="Amount"
                     value={item.amount === 0 ? '' : item.amount}
                     onChange={(e) => handleItemChange(index, 'amount', e.target.value)}
@@ -300,7 +300,7 @@ const Page = () => {
             </div>
 
             <div className="mt-4">
-              <h3 className="text-lg font-bold">Total: ₹{total.toFixed(2)}</h3>
+              <h3 className="text-lg font-bold">Total: ₹{total?.toFixed(2)}</h3>
             </div>
 
             <div className="flex justify-end mt-4">

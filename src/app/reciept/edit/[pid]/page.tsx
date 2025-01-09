@@ -52,7 +52,7 @@ const EditRecieptPage = ({ params }: any) => {
   const [otherName, setOtherName] = useState<string>(''); // Added state for other name
   const [otherNumber, setOtherNumber] = useState<string>(''); // Added state for other number
   const [description,setDescription] =useState('')
- const [amount, setAmount] = useState<number>(0); 
+ const [amount, setAmount] = useState<any>(''); 
   const [date, setdate] = useState(new Date());
   const [targetCategory, setTargetCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -140,7 +140,7 @@ try{
     number:otherNumber
   }
   const data = {
-    amount,
+    amount:Number(amount),
     date, 
     description,
     accountId:targetAccount, 
@@ -293,7 +293,7 @@ try{
           <div className="w-full">
             <Label>Amount</Label>
             <Input
-              type="text"
+              type="number"
               value={amount === 0 ? '': amount}
               onChange={(e) => setAmount(Number(e.target.value))}
               placeholder="Enter amount"

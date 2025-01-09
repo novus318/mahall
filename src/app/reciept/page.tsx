@@ -48,7 +48,7 @@ const Page = () => {
   const [otherNumber, setOtherNumber] = useState<string>(''); // Added state for other number
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [description,setDescription] =useState('')
- const [amount, setAmount] = useState<number>(0); 
+ const [amount, setAmount] = useState<any>(''); 
   const [date, setdate] = useState(new Date());
   const [targetCategory, setTargetCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -192,7 +192,7 @@ const Page = () => {
       number:otherNumber
     }
     const data = {
-      amount,
+      amount:Number(amount),
       date, 
       description,
       accountId:targetAccount, 
@@ -367,7 +367,7 @@ const Page = () => {
           <div className="w-full">
             <Label>Amount</Label>
             <Input
-              type="text"
+              type="number"
               value={amount === 0 ? '': amount}
               onChange={(e) => setAmount(Number(e.target.value))}
               placeholder="Enter amount"

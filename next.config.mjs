@@ -1,9 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    reactStrictMode: true,
-    images: {
-      domains: ['upload.wikimedia.org','localhost','server.nizamudheen.com','server.vellapmahal.in','vellapmahal.in','www.vellapmahal.in'],
-    },
-  };
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', // Allow all domains over HTTPS
+      },
+      {
+        protocol: 'http',
+        hostname: '**', // Allow all domains over HTTP
+      },
+    ],
+  },
+};
 
 export default nextConfig;

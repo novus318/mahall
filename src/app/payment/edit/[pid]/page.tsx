@@ -33,7 +33,7 @@ interface Member {
 
 interface Item {
   description: string;
-  amount: number;
+  amount: any;
 }
 
 const EditPaymentPage = ({ params }: any) => {
@@ -48,10 +48,10 @@ const EditPaymentPage = ({ params }: any) => {
   const [targetAccount, setTargetAccount] = useState<string | null>(null);
   const [targetCategory, setTargetCategory] = useState<string | null>(null);
   const [otherName, setOtherName] = useState<string>('');
-  const [items, setItems] = useState<Item[]>([{ description: '', amount: 0 }]);
+  const [items, setItems] = useState<Item[]>([{ description: '', amount: '' }]);
   const [date, setDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
-  const [total, setTotal] = useState<number>(0);
+  const [total, setTotal] = useState<any>(0);
   const [searchQuery, setSearchQuery] = useState('');
 
 
@@ -121,6 +121,9 @@ const EditPaymentPage = ({ params }: any) => {
   // Handle form updates
   const handleItemChange = (index: number, field: string, value: string) => {
     const updatedItems = [...items];
+    if (field === 'amount') {
+      updatedItems[index].amount = parseFloat(value as string) || 0;
+    }
     updatedItems[index] = { ...updatedItems[index], [field]: value };
     setItems(updatedItems);
     calculateTotal(updatedItems);
@@ -240,7 +243,7 @@ const EditPaymentPage = ({ params }: any) => {
               />
               <Input
                 className="w-full md:w-32"
-                type="text"
+                type="number"
                 placeholder="Amount"
                 value={item.amount === 0 ? '' : item.amount}
                 onChange={(e) => handleItemChange(index, 'amount', e.target.value)}

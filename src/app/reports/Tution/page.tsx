@@ -195,7 +195,7 @@ const TutionPage = () => {
             {/* Table Data */}
             {data.map((collection: any, index: number) => (
               <View key={index} style={styles.tableRow}>
-                <Text style={styles.tableCell}>{formatDate(collection?.date).dayMonthYear}</Text>
+                <Text style={styles.tableCell}>{collection?.collectionMonth}</Text>
                 <Text style={styles.tableCell}>{collection?.receiptNumber}</Text>
                 <Text style={styles.tableCell}>{collection?.houseId?.number}</Text>
                 <Text style={styles.tableCell}>{formatCurrency(collection?.amount)}</Text>
@@ -360,7 +360,7 @@ const TutionPage = () => {
             <TableBody>
               {filteredCollections?.map((collection: any, index: number) => (
                 <TableRow key={collection?._id}>
-                  <TableCell>{formatDate(collection?.date).dayMonthYear}</TableCell>
+                  <TableCell>{collection?.collectionMonth}</TableCell>
                   <TableCell>{collection?.receiptNumber}</TableCell>
                   <TableCell>{collection?.houseId?.number}</TableCell>
                   <TableCell>{formatCurrency(collection?.amount)}</TableCell>

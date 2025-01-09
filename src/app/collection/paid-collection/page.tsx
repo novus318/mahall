@@ -31,6 +31,7 @@ interface Collection {
   status: string
   PaymentDate: string;
   kudiCollectionType:string
+  collectionMonth:string
 category:{
 name: string;
 description:string;
@@ -111,8 +112,7 @@ const CollectionsPage: React.FC = () => {
       return (
         <TableRow key={collection._id}>
           <TableCell>
-            <div className='text-sm'>{dayMonthYear}</div>
-            <div className="text-xs text-gray-500">{time}</div>
+            <div className='text-sm'>{collection?.collectionMonth}</div>
           </TableCell>
           <TableCell >{collection?.houseId?.number}</TableCell>
           <TableCell>

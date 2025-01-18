@@ -35,7 +35,7 @@ const HouseContribution = ({id,contribution}:any) => {
           const response = await axios.get(`${apiUrl}/api/house/kudi-contribution/${pid}`)
           if(response.data.success){
             setCollections(response.data.receipts)
-            contribution(response.data.totalContributions)
+            contribution((response.data.totalContributions).toFixed(2))
             setLoading(false)
           }
         } catch (error:any) {

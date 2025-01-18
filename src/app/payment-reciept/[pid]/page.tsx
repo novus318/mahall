@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Document, Page, Text, View, StyleSheet, pdf, Font,Image } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
 import { useRouter } from 'next/navigation';
+import { Progress } from '@/components/ui/progress';
 
 interface PageProps {
     params: {
@@ -19,14 +20,37 @@ interface PageProps {
   const CollectionsSkeleton: React.FC = () => {
     return (
       <div className="container mx-auto p-4">
-        <h2 className="text-2xl font-semibold mb-4">Collections</h2>
-        <div className="space-y-2">
+        {/* Header Skeleton */}
+        <div className="mb-6">
+          <Skeleton className="h-8 w-1/4 mb-2" /> {/* Title Skeleton */}
+        </div>
+  
+        {/* Table Header Skeleton */}
+        <div className="hidden md:flex mb-4 space-x-4">
+          <Skeleton className="h-6 w-1/4" /> {/* Date Header */}
+          <Skeleton className="h-6 w-1/4" /> {/* Amount Header */}
+          <Skeleton className="h-6 w-1/4" /> {/* Status Header */}
+          <Skeleton className="h-6 w-1/4" /> {/* Receipt Header */}
+        </div>
+  
+        {/* Table Rows Skeleton */}
+        <div className="space-y-4">
           {[...Array(5)].map((_, index) => (
-            <div key={index} className="flex space-x-4">
+            <div key={index} className="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-2 md:space-y-0">
+              {/* Date Skeleton */}
               <Skeleton className="h-6 w-1/4" />
-              <Skeleton className="h-6 w-1/4" />
-              <Skeleton className="h-6 w-1/4" />
-              <Skeleton className="h-6 w-1/4" />
+  
+              {/* Amount Skeleton */}
+              <div className="w-1/4">
+                <Skeleton className="h-6 w-full mb-1" /> {/* Amount Value */}
+                <Skeleton className="h-2 w-3/4" /> {/* Progress Bar */}
+              </div>
+  
+              {/* Status Skeleton */}
+              <Skeleton className="h-6 w-1/4 rounded-full" />
+  
+              {/* Receipt Button Skeleton */}
+              <Skeleton className="h-10 w-24 rounded-md" /> {/* Button */}
             </div>
           ))}
         </div>
@@ -245,68 +269,95 @@ const PageComponent = ({ params }: PageProps) => {
 
     if (loading) return <CollectionsSkeleton />;
   return (
-    <div className="container mx-auto p-4">
-       <div className="mb-4 flex justify-between items-center">
-        <h2 className="text-lg md:text-2xl font-semibold mb-4">Tution Fees of {(collections ? collections[0]?.memberId?.name : '')}</h2>
-      </div>
-   <div className='rounded-t-md bg-gray-100 p-1'>
-   <Table className="bg-white">
-  <TableHeader className='bg-gray-100'>
-    <TableRow>
-      <TableHead className="font-medium">Date</TableHead>
-      <TableHead className="font-medium">Amount</TableHead>
-      <TableHead className="font-medium">Status</TableHead>
-      <TableHead className="font-medium">Reciept</TableHead>
-      <TableHead className="font-medium">Month</TableHead>
-    </TableRow>
-  </TableHeader>
-  <TableBody>
-  {collections?.map((collection:any) => {
-      const { dayMonthYear, time } = formatDate(collection);
-      return (
-        <TableRow key={collection._id}>
-          <TableCell>
-             <div className='text-sm'>{dayMonthYear}</div>
-             <div className="text-xs text-gray-500">{time}</div>
-          </TableCell>
-          <TableCell>
-          ₹{collection?.amount.toFixed(2)}
-          </TableCell>
-          <TableCell>{collection?.status}</TableCell>
-          <TableCell>
-  <Button
-  className={`${collection?.status === 'Unpaid' ? 'bg-gray-200 text-gray-950': ''} ${collection?.status === 'Rejected' ? 'bg-red-500': ''}`}
-    size="sm"
-    disabled={collection?.status === 'Rejected'}
-    onClick={() => {
-      if (collection?.status === 'Paid') {
-        handleReceiptClick(collection);
-      } else if (collection?.status === 'Unpaid') {
-        handlePayNowClick(collection); // Assume this is your function to handle payment
-      }
-    }}
-  >
-    {collection?.status === 'Unpaid' && 'Pay Now'}
-    {collection?.status === 'Paid' && 'Receipt'}
-    {collection?.status === 'Rejected' && 'Rejected'}
-  </Button>
-</TableCell>
-          <TableCell>
-            {collection?.collectionMonth}
-          </TableCell>
+<div className="container mx-auto p-4">
+  <div className="mb-6 flex justify-between items-center">
+    <h2 className="text-xl md:text-3xl font-semibold text-gray-800">
+      Tuition Fees of {collections ? collections[0]?.memberId?.name : ''}
+    </h2>
+  </div>
+
+  <div className="rounded-lg bg-white shadow-sm border border-gray-100 overflow-hidden">
+    <Table className="w-full">
+      <TableHeader className="bg-gray-50">
+        <TableRow>
+          <TableHead className="font-medium text-gray-600 py-3">Date</TableHead>
+          <TableHead className="font-medium text-gray-600 py-3">Amount</TableHead>
+          <TableHead className="font-medium text-gray-600 py-3">Status</TableHead>
+          <TableHead className="font-medium text-gray-600 py-3">Receipt</TableHead>
         </TableRow>
-      );
-    })}
-    {collections?.length === 0 && (
-        <TableCell colSpan={3} className="text-center text-gray-600 text-sm">
-          <h4 className="text-lg font-bold">No Collections...</h4>
-        </TableCell>
-      ) 
-    }
-  </TableBody>
-</Table>
-   </div>
-    </div>
+      </TableHeader>
+      <TableBody>
+        {collections?.map((collection: any) => (
+          <TableRow key={collection._id} className="hover:bg-gray-50 transition-colors">
+            <TableCell className="py-3 text-gray-700">
+              {collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}
+            </TableCell>
+            <TableCell className="py-3">
+              <div className="space-y-1">
+                <div className="font-medium text-gray-800">₹{collection.amount.toFixed(2)}</div>
+                {collection.status === 'Partial' && (
+                  <>
+                    <Progress
+                      value={(collection.paidAmount! / collection.amount) * 100}
+                      className="h-2 bg-gray-200"
+                    />
+                    <div className="text-xs text-gray-500">
+                      Paid: ₹{collection.paidAmount!.toFixed(2)}
+                    </div>
+                  </>
+                )}
+              </div>
+            </TableCell>
+            <TableCell className="py-3">
+              <span
+                className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
+                  collection.status === 'Paid'
+                    ? 'bg-green-100 text-green-700'
+                    : collection.status === 'Partial'
+                    ? 'bg-yellow-100 text-yellow-700'
+                    : 'bg-red-100 text-red-700'
+                }`}
+              >
+                {collection.status}
+              </span>
+            </TableCell>
+            <TableCell className="py-3">
+              <Button
+                className={`w-24 text-sm font-medium ${
+                  collection?.status === 'Unpaid'
+                    ? 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    : collection?.status === 'Rejected'
+                    ? 'bg-red-100 text-red-700 cursor-not-allowed'
+                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                } rounded-md transition-colors`}
+                size="sm"
+                disabled={collection?.status === 'Rejected'}
+                onClick={() => {
+                  if (collection?.status === 'Paid') {
+                    handleReceiptClick(collection);
+                  } else if (collection?.status === 'Unpaid') {
+                    handlePayNowClick(collection);
+                  }
+                }}
+              >
+                {collection?.status === 'Unpaid' && 'Pay Now'}
+                {collection?.status === 'Paid' && 'Receipt'}
+                {collection?.status === 'Rejected' && 'Rejected'}
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))}
+        {collections?.length === 0 && (
+          <TableRow>
+            <TableCell colSpan={4} className="py-6 text-center text-gray-500">
+              <h4 className="text-lg font-semibold">No Collections Found</h4>
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+  </div>
+</div>
   )
 }
 

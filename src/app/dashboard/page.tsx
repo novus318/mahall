@@ -4,7 +4,6 @@ import LinechartChart from "@/components/LinechartChart";
 import PiechartcustomChart from "@/components/PiechartcustomChart";
 import RecentTransactions from "@/components/RecentTransactions";
 import Sidebar from "@/components/Sidebar";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { withAuth } from "@/components/withAuth";
 import axios from "axios";
@@ -79,74 +78,71 @@ const Page = () => {
         <Sidebar />
       </div>
       <div className="w-full md:w-5/6 p-4 space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Card>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <Card className="hover:shadow-lg transition-shadow duration-300">
             <CardHeader>
-              <CardTitle>Total Accounts</CardTitle>
-              <CardDescription>The total number of assets managed by the accounts</CardDescription>
+              <CardTitle className="text-lg font-semibold text-gray-700">Total Accounts</CardTitle>
+              <CardDescription className="text-sm text-gray-500">The total number of assets managed by the accounts</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-bold">
-              {asset ? (
-                 <>
-                  ₹{new Intl.NumberFormat('en-IN', {
+              <div className="text-3xl font-bold text-gray-900">
+                {asset ? (
+                  `₹${new Intl.NumberFormat('en-IN', {
                     style: 'decimal',
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
-                  }).format(asset || 0)}
-                  </>
-              ):(
-                <Loader2 className="animate-spin"/>
-              )}
-              </div>
-
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Total Income</CardTitle>
-              <CardDescription>The total amount of Income received this month</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold">
-                {income ? (<>
-                  ₹{new Intl.NumberFormat('en-IN', {
-                  style: 'decimal',
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }).format(income || 0)}</>):(
-                  <Loader2 className="animate-spin"/>
+                  }).format(asset)}`
+                ) : (
+                  <Loader2 className="animate-spin h-8 w-8 text-gray-500" />
                 )}
               </div>
-
+            </CardContent>
+          </Card>
+          <Card className="hover:shadow-lg transition-shadow duration-300">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-700">Total Income</CardTitle>
+              <CardDescription className="text-sm text-gray-500">The total amount of Income received this month</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-gray-900">
+                {income ? (
+                  `₹${new Intl.NumberFormat('en-IN', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }).format(income)}`
+                ) : (
+                  <Loader2 className="animate-spin h-8 w-8 text-gray-500" />
+                )}
+              </div>
             </CardContent>
             <CardFooter>
-              <div className="text-sm text-gray-600">
-                {expensePercentage > 0 ? '+' : ''}{expensePercentage}%  from last month
+              <div className={`text-xs ${incomePercentage > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                {incomePercentage > 0 ? '+' : ''}{incomePercentage?.toFixed(2)}% from last month
               </div>
             </CardFooter>
           </Card>
-          <Card>
+          <Card className="hover:shadow-lg transition-shadow duration-300">
             <CardHeader>
-              <CardTitle>Total Expenses</CardTitle>
-              <CardDescription>The total Expenses of the month.</CardDescription>
+              <CardTitle className="text-lg font-semibold text-gray-700">Total Expenses</CardTitle>
+              <CardDescription className="text-sm text-gray-500">The total Expenses of the month.</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-bold">
-                {expense ? (<>
-                  ₹{new Intl.NumberFormat('en-IN', {
-                  style: 'decimal',
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }).format(expense || 0)}</>):(
-                  <Loader2 className="animate-spin"/>
+              <div className="text-3xl font-bold text-gray-900">
+                {expense ? (
+                  `₹${new Intl.NumberFormat('en-IN', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }).format(expense)}`
+                ) : (
+                  <Loader2 className="animate-spin h-8 w-8 text-gray-500" />
                 )}
               </div>
-
             </CardContent>
             <CardFooter>
-              <div className="text-sm text-gray-600">
-                {expensePercentage > 0 ? '+' : ''}{expensePercentage}%  from last month
+              <div className={`text-xs ${expensePercentage > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                {expensePercentage > 0 ? '+' : ''}{expensePercentage?.toFixed(2)}% from last month
               </div>
             </CardFooter>
           </Card>
@@ -161,15 +157,7 @@ const Page = () => {
               <PiechartcustomChart data={pieChartData} />
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Income & Expense Trends</CardTitle>
-              <CardDescription>A line chart showing the trend of income & expenses over time.</CardDescription>
-            </CardHeader>
-            <CardContent>
               <LinechartChart data={lineData} />
-            </CardContent>
-          </Card>
         </div>
         <RecentTransactions />
       </div>

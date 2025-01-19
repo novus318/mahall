@@ -172,7 +172,7 @@ const DataTable = () => {
       <div className="mx-auto max-w-7xl space-y-6">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold tracking-tight">Welcome back!</h1>
-          <p className="text-gray-500">Here's a list of your Unpaid Collections!</p>
+          <p className="text-gray-500">Here&apos;s a list of your Unpaid Collections!</p>
         </div>
 
         <div className="flex items-center justify-between gap-4">

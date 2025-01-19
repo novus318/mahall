@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
 import { withAuth } from '@/components/withAuth';
@@ -63,6 +64,34 @@ const PageComponent = ({ params }: PageProps) => {
   const [totalHouseCollections, setTotalHouseCollections] = useState(<Loader2 className="animate-spin" />);
   const [familyHead, setFamilyHead] = useState({ memberId: '', amount: 0 });
   const [editHouse, setEditHouse] = useState<any>({});
+  const [collectionType, setCollectionType] = useState('monthly');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleCollectionTypeChange = async (newType:any) => {
+    setIsLoading(true);
+    try{
+      const data = {
+        houseId: pid,
+        newPaymentType: newType,
+      };
+      const response = await axios.post(`${apiUrl}/api/house/change-paymentType`,data)
+      if (response.data.success) {
+        setCollectionType(newType);
+        setHouse((prevHouse:any) => ({
+          ...prevHouse,
+          paymentType: newType
+        }));
+        setIsLoading(false);
+      }
+    }catch(error: any){
+      setIsLoading(false);
+      toast({
+        variant: 'destructive',
+        title: 'Failed to change collection type',
+        description: error.response?.data?.message || error.message || 'Something went wrong',
+      });
+  };
+}
 
   useEffect(() => {
     fetchHouse(pid);
@@ -90,6 +119,7 @@ const PageComponent = ({ params }: PageProps) => {
         memberId: response.data.house?.familyHead,
         amount: response.data.house?.collectionAmount || 0,
       });
+      setCollectionType(response.data.house?.paymentType)
     } catch (error) {
       console.error('Error fetching house:', error);
     }
@@ -159,52 +189,64 @@ const PageComponent = ({ params }: PageProps) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <Card className="col-span-1 lg:col-span-2">
-          <CardHeader className="bg-gray-50 rounded-t-lg p-4">
-            <CardTitle className="text-xl font-semibold">House {house?.number}</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 space-y-3">
-            <div className="grid grid-cols-3 text-sm">
-              <p className="font-medium text-gray-600">Name:</p>
-              <p className="col-span-2 text-gray-900">{house?.name}</p>
-            </div>
-            <div className="grid grid-cols-3 text-sm">
-              <p className="font-medium text-gray-600">Address:</p>
-              <p className="col-span-2 text-gray-900 truncate">{house?.address}</p>
-            </div>
-          </CardContent>
-          {house?.familyHead ? (
-            <CardFooter className="flex justify-between items-center p-4 bg-gray-50 rounded-b-lg">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-800">Family Head: {house?.familyHead.name}</p>
-                <p className="text-xs text-gray-600">Collection: ₹{house?.collectionAmount}</p>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setIsOpen(true);
-                  setEditHouse(house);
-                  handleFamilyHeadChange('memberId', house?.familyHead?._id);
-                }}
-              >
-                Edit
-              </Button>
-            </CardFooter>
-          ) : (
-            <CardFooter className="flex justify-end p-4 bg-gray-50 rounded-b-lg">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setIsOpen(true);
-                }}
-              >
-                Set Family Head
-              </Button>
-            </CardFooter>
-          )}
-        </Card>
+      <Card className="col-span-1 lg:col-span-2">
+      <CardHeader className="bg-gray-50 rounded-t-lg p-4">
+        <CardTitle className="text-xl font-semibold">House {house?.number}</CardTitle>
+      </CardHeader>
+      <CardContent className="p-4 space-y-3">
+        <div className="grid grid-cols-3 text-sm">
+          <p className="font-medium text-gray-600">Name:</p>
+          <p className="col-span-2 text-gray-900">{house?.name}</p>
+        </div>
+        <div className="grid grid-cols-3 text-sm">
+          <p className="font-medium text-gray-600">Address:</p>
+          <p className="col-span-2 text-gray-900 truncate">{house?.address}</p>
+        </div>
+        <div className="grid grid-cols-3 text-sm items-center">
+          <p className="font-medium text-gray-600">Collection Type:</p>
+          <div className="col-span-2 flex items-center space-x-2">
+            <Switch
+              checked={collectionType === 'yearly'}
+              onCheckedChange={(checked) => handleCollectionTypeChange(checked ? 'yearly' : 'monthly')}
+              disabled={isLoading}
+            />
+            <span className="text-gray-900">{collectionType === 'yearly' ? 'Yearly' : 'Monthly'}</span>
+            {isLoading && <Loader2 className="ml-2 animate-spin" />}
+          </div>
+        </div>
+      </CardContent>
+      {house?.familyHead ? (
+        <CardFooter className="flex justify-between items-center p-4 bg-gray-50 rounded-b-lg">
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-gray-800">Family Head: {house?.familyHead.name}</p>
+            <p className="text-xs text-gray-600">Collection: ₹{house?.collectionAmount}</p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setIsOpen(true);
+              setEditHouse(house);
+              handleFamilyHeadChange('memberId', house?.familyHead?._id);
+            }}
+          >
+            Edit
+          </Button>
+        </CardFooter>
+      ) : (
+        <CardFooter className="flex justify-end p-4 bg-gray-50 rounded-b-lg">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setIsOpen(true);
+            }}
+          >
+            Set Family Head
+          </Button>
+        </CardFooter>
+      )}
+    </Card>
         <Card className="rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200">
   <div className="p-6">
     <div className="text-sm font-medium text-gray-500">Total Contributions</div>
@@ -220,7 +262,8 @@ const PageComponent = ({ params }: PageProps) => {
       <div className="my-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-800">House Collections</h2>
-          <ManualCollections houseId={pid} collectionAmount={house?.collectionAmount} />
+          {house?.paymentType == 'monthly' && 
+          <ManualCollections houseId={pid} collectionAmount={house?.collectionAmount} />}
         </div>
         <PendingTransactions id={house?.familyHead?._id} totalCollections={setTotalHouseCollections} />
       </div>

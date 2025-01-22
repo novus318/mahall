@@ -64,6 +64,9 @@ interface Collection {
   PaymentDate: string;
   kudiCollectionType: string;
   collectionMonth: string;
+  paymentType: string;
+  paidYear: string;
+  partialPayments: any;
   category: {
     name: string;
     description: string;
@@ -103,13 +106,6 @@ const CollectionsPage: React.FC = () => {
     fetchCollections();
   }, [apiUrl]);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return {
-      dayMonthYear: format(date, 'dd MMM yyyy'),
-      time: format(date, 'hh:mm a'),
-    };
-  };
 
   const filteredCollections = collections.filter((collection) => {
     return (
@@ -171,32 +167,61 @@ const CollectionsPage: React.FC = () => {
               </TableHeader>
               <TableBody>
                 {filteredCollections.map((collection) => {
-                  const { dayMonthYear, time } = formatDate(collection.PaymentDate);
                   return (
-                    <TableRow key={collection._id}>
-                      <TableCell>
-                        <div className="text-sm">{collection.collectionMonth}</div>
-                      </TableCell>
-                      <TableCell>{collection.houseId.number}</TableCell>
-                      <TableCell>₹{collection.amount.toFixed(2)}</TableCell>
-                      <TableCell>{collection.memberId.name}</TableCell>
-                      <TableCell>{collection.memberId.whatsappNumber}</TableCell>
-                      <TableCell>
-                        <span className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-green-50 text-green-700">
-                          {collection.status}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Link
-                          target="_blank"
-                          href={`/payment-reciept/${collection.memberId._id}`}
-                          className="flex items-center gap-2 rounded-full hover:bg-gray-100"
-                        >
-                          <Receipt className="h-4 w-4" />
-                          Receipt
-                        </Link>
-                      </TableCell>
-                    </TableRow>
+                    <React.Fragment key={collection._id}>
+                      {/* Main Row */}
+                      <TableRow>
+                        <TableCell>
+                          <div className="text-sm">{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}</div>
+                        </TableCell>
+                        <TableCell>{collection.houseId.number}</TableCell>
+                        <TableCell>₹{collection.amount.toFixed(2)}</TableCell>
+                        <TableCell>{collection.memberId.name}</TableCell>
+                        <TableCell>{collection.memberId.whatsappNumber}</TableCell>
+                        <TableCell>
+                          <span className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-green-50 text-green-700">
+                            {collection.status}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Link
+                            target="_blank"
+                            href={`/payment-reciept/${collection.memberId._id}`}
+                            className="flex items-center gap-2 rounded-full hover:bg-gray-100"
+                          >
+                            <Receipt className="h-4 w-4" />
+                            Receipt
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+
+                      {/* Partial Payments Row (for yearly payments) */}
+                      {collection?.paymentType === 'yearly' && collection.partialPayments?.length > 0 && (
+                        <TableRow>
+                          <TableCell colSpan={7} className="py-3">
+                            <div className="pl-6 space-y-2">
+                              {collection.partialPayments.map((payment: any, index: number) => (
+                                <div key={index} className="flex justify-between text-sm text-gray-600">
+                                  <div>
+                                    <span className="font-medium">Paid: ₹{payment.amount.toFixed(2)}</span>
+                                    <span className="mx-2">•</span>
+                                    <span className="text-xs font-bold">
+                                      {format(new Date(payment?.PaymentDate ? payment?.PaymentDate : new Date()), 'MMM dd, yyyy')}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    {payment?.description && <span className="text-xs">{payment.description}</span>}
+                                    {payment?.receiptNumber && (
+                                      <span className="ml-2 text-gray-500 text-xs font-bold">Receipt: {payment.receiptNumber}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </React.Fragment>
                   );
                 })}
                 {filteredCollections.length === 0 && (

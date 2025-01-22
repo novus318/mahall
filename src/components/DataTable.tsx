@@ -27,6 +27,7 @@ import { toast } from './ui/use-toast';
 import UpdateCollectionPayment from './UpdateCollectionPayment';
 import { Button } from './ui/button';
 import { AlertCircle, Check, ChevronDown, Loader2, Search } from 'lucide-react';
+import { format } from 'date-fns';
 
 interface BankAccount {
   _id: string;
@@ -248,71 +249,103 @@ const DataTable = () => {
                   filteredHouses.map((collection, index) => {
                     const isLoading = loadingStates[collection?._id];
                     return (
-                      <TableRow key={index} className="group">
-                        <TableCell>{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}</TableCell>
-                        <TableCell className="font-medium">
-                          <div className="flex flex-col md:flex-row md:items-center">
-                            <span className="mb-1 md:mb-0 md:mr-2">{collection?.houseId?.number}</span>
-                            <span
-                              className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${collection?.paymentType === 'monthly'
-                                  ? 'bg-blue-50 text-blue-700'
-                                  : 'bg-purple-50 text-purple-700'
+                      <React.Fragment key={index}>
+                        {/* Main Row */}
+                        <TableRow className="group">
+                          <TableCell>{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}</TableCell>
+                          <TableCell className="font-medium">
+                            <div className="flex flex-col md:flex-row md:items-center">
+                              <span className="mb-1 md:mb-0 md:mr-2">{collection?.houseId?.number}</span>
+                              <span
+                                className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                                  collection?.paymentType === 'monthly'
+                                    ? 'bg-blue-50 text-blue-700'
+                                    : 'bg-purple-50 text-purple-700'
                                 }`}
-                            >
-                              {collection?.paymentType}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="space-y-1">
-                            <div className="font-medium">₹{collection.amount.toFixed(2)}</div>
-                            {collection.status === 'Partial' && (
-                              <>
-                                <Progress
-                                  value={(collection.paidAmount! / collection.amount) * 100}
-                                  className="h-2"
-                                />
-                                <div className="text-xs text-gray-500">
-                                  Paid: ₹{collection.paidAmount!.toFixed(2)}
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>{collection?.memberId?.name}</TableCell>
-                        <TableCell>{collection?.memberId?.whatsappNumber}</TableCell>
-                        <TableCell>
-                          <span
-                            className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${collection.status === 'Paid'
-                                ? 'bg-green-50 text-green-700'
-                                : collection.status === 'Partial'
+                              >
+                                {collection?.paymentType}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="space-y-1">
+                              <div className="font-medium">₹{collection.amount.toFixed(2)}</div>
+                              {collection.status === 'Partial' && (
+                                <>
+                                  <Progress
+                                    value={(collection.paidAmount! / collection.amount) * 100}
+                                    className="h-2"
+                                  />
+                                  <div className="text-xs text-gray-500">
+                                    Paid: ₹{collection.paidAmount!.toFixed(2)}
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>{collection?.memberId?.name}</TableCell>
+                          <TableCell>{collection?.memberId?.whatsappNumber}</TableCell>
+                          <TableCell>
+                            <span
+                              className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                                collection.status === 'Paid'
+                                  ? 'bg-green-50 text-green-700'
+                                  : collection.status === 'Partial'
                                   ? 'bg-yellow-50 text-yellow-700'
                                   : 'bg-red-50 text-red-700'
                               }`}
-                          >
-                            {collection.status}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <UpdateCollectionPayment collection={collection} bank={bank} />
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="rounded-full"
-                              onClick={() => handleRemind(collection)}
-                              disabled={isLoading}
                             >
-                              {isLoading ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <AlertCircle className="h-4 w-4" />
-                              )}
-                              <span className="sr-only">Remind</span>
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
+                              {collection.status}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <UpdateCollectionPayment collection={collection} bank={bank} />
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="rounded-full"
+                                onClick={() => handleRemind(collection)}
+                                disabled={isLoading}
+                              >
+                                {isLoading ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <AlertCircle className="h-4 w-4" />
+                                )}
+                                <span className="sr-only">Remind</span>
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                  
+                        {/* Partial Payments Row (for yearly payments) */}
+                        {collection?.paymentType === 'yearly' && collection.partialPayments?.length > 0 && (
+                          <TableRow>
+                            <TableCell colSpan={7} className="py-3">
+                              <div className="pl-6 space-y-2">
+                                {collection.partialPayments.map((payment: any, index: number) => (
+                                  <div key={index} className="flex justify-between text-sm text-gray-600">
+                                    <div>
+                                      <span className="font-medium">Paid: ₹{payment.amount.toFixed(2)}</span>
+                                      <span className="mx-2">•</span>
+                                      <span className="text-xs font-bold">
+                                        {format(new Date(payment?.PaymentDate ? payment?.PaymentDate : new Date()), 'MMM dd, yyyy')}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      {payment?.description && <span className="text-xs">{payment.description}</span>}
+                                      {payment?.receiptNumber && (
+                                        <span className="ml-2 text-gray-500 text-xs font-bold">Receipt: {payment.receiptNumber}</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </React.Fragment>
                     );
                   })
                 )}

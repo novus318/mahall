@@ -261,50 +261,77 @@ const PendingTransactions = ({ id, totalCollections }: any) => {
           <TableBody>
             {collections?.map((collection: any) => {
               return (
-                <TableRow key={collection._id}>
-                  <TableCell>{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}
-                    <span
-                      className={`ms-2 inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${collection?.paymentType === 'monthly'
-                        ? 'bg-blue-50 text-blue-700'
-                        : 'bg-purple-50 text-purple-700'
-                        }`}
-                    >
-                      {collection?.paymentType}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    {collection?.description} {collection?.status === 'Rejected' && `Was rejected due to ${collection?.rejectionReason}`}
-                  </TableCell>
-                  <TableCell>
-                    ₹{collection?.amount.toFixed(2)}
-                  </TableCell>
-                  <TableCell>
-                    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${collection.status === 'Paid'
+                <>
+                  <TableRow key={collection._id}>
+                    <TableCell>{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}
+                      <span
+                        className={`ms-2 inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${collection?.paymentType === 'monthly'
+                          ? 'bg-blue-50 text-blue-700'
+                          : 'bg-purple-50 text-purple-700'
+                          }`}
+                      >
+                        {collection?.paymentType}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      {collection?.description} {collection?.status === 'Rejected' && `Was rejected due to ${collection?.rejectionReason}`}
+                    </TableCell>
+                    <TableCell>
+                      ₹{collection?.amount.toFixed(2)}
+                    </TableCell>
+                    <TableCell>
+                      <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${collection.status === 'Paid'
                         ? 'bg-green-50 text-green-700'
                         : collection.status === 'Partial'
                           ? 'bg-yellow-50 text-yellow-700'
                           : 'bg-red-50 text-red-700'
-                      }`}>
-                      {collection.status}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    {collection?.status === 'Paid' ? (
-                      <Button size='sm'
-                        className="font-bold py-2 px-4 rounded-md" onClick={() => handleReceiptClick(collection)}>
-                        Receipt
-                      </Button>
-                    ) : collection?.status === 'Unpaid' ? (
-                      <UpdateCollectionPayment collection={collection} bank={bank} />
-                    ) : (
-                      <div
-                        className="bg-red-200 text-red-500 px-2 py-1 rounded-md">
-                        Rejected
-                      </div>
-                    )}
-                  </TableCell>
+                        }`}>
+                        {collection.status}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      {collection?.status === 'Paid' ? (
+                        <Button size='sm'
+                          className="font-bold py-2 px-4 rounded-md" onClick={() => handleReceiptClick(collection)}>
+                          Receipt
+                        </Button>
+                      ) : collection?.status === 'Unpaid' ? (
+                        <UpdateCollectionPayment collection={collection} bank={bank} />
+                      ) : (
+                        <div
+                          className="bg-red-200 text-red-500 px-2 py-1 rounded-md">
+                          Rejected
+                        </div>
+                      )}
+                    </TableCell>
 
-                </TableRow>
+                  </TableRow>
+                  {collection?.paymentType === 'yearly' && collection.partialPayments?.length > 0 && (
+                    <TableRow>
+                      <TableCell colSpan={7} className="py-3">
+                        <div className="pl-6 space-y-2">
+                          {collection.partialPayments.map((payment: any, index: number) => (
+                            <div key={index} className="flex justify-between text-sm text-gray-600">
+                              <div>
+                                <span className="font-medium">Paid: ₹{payment.amount.toFixed(2)}</span>
+                                <span className="mx-2">•</span>
+                                <span className="text-xs font-bold">
+                                  {format(new Date(payment?.PaymentDate ? payment?.PaymentDate : new Date()), 'MMM dd, yyyy')}
+                                </span>
+                              </div>
+                              <div>
+                                {payment?.description && <span className="text-xs">{payment.description}</span>}
+                                {payment?.receiptNumber && (
+                                  <span className="ml-2 text-gray-500 text-xs font-bold">Receipt: {payment.receiptNumber}</span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </>
               );
             })}
             {collections?.length === 0 && (

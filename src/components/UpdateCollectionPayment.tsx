@@ -9,15 +9,12 @@ import axios from 'axios';
 import { toast } from './ui/use-toast';
 import { Input } from './ui/input';
 
-
-
-const UpdateCollectionPayment = ({ collection,bank,fetchAccounts }: any) => {
+const UpdateCollectionPayment = ({ collection, bank, fetchAccounts }: any) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [selectedHouse, setSelectedHouse] = useState<any>(null);
   const [paymentType, setPaymentType] = useState<string>('');
-
   const [targetAccount, setTargetAccount] = useState<string | null>(null);
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
@@ -25,7 +22,7 @@ const UpdateCollectionPayment = ({ collection,bank,fetchAccounts }: any) => {
   const [enteredOtp, setEnteredOtp] = useState('');
   const otpSentRef = useRef(false);
   const [rejectionReason, setRejectionReason] = useState('');
-
+  const [amount, setAmount] = useState<number | ''>('');
 
   const handlePayNowClick = async (c: any) => {
     setSelectedHouse(collection);
@@ -63,11 +60,11 @@ const UpdateCollectionPayment = ({ collection,bank,fetchAccounts }: any) => {
   };
 
   const handleRejectPayment = async () => {
-if(!otpVerified){
- await handleSendOtp()
+    if (!otpVerified) {
+      await handleSendOtp();
       return;
     }
-    if(otpVerified && !rejectionReason){
+    if (otpVerified && !rejectionReason) {
       toast({
         title: 'Please enter a rejection reason',
         variant: 'destructive',
@@ -94,7 +91,6 @@ if(!otpVerified){
         setLoading(false);
         window.location.reload();
       }
-
     } catch (error: any) {
       toast({
         title: 'Failed to reject payment',
@@ -115,11 +111,19 @@ if(!otpVerified){
       });
       return;
     }
+    if (collection?.paymentType === 'yearly' && !amount) {
+      toast({
+        title: 'Please enter the amount',
+        variant: 'destructive',
+      });
+      return;
+    }
     setLoading(true);
     try {
       const response = await axios.put(`${apiUrl}/api/house/update/collection/${selectedHouse?._id}`, {
         paymentType,
         targetAccount,
+        amount: selectedHouse.paymentType === 'yearly' ? amount : selectedHouse?.amount,
       });
       if (response.data.success) {
         toast({
@@ -149,6 +153,7 @@ if(!otpVerified){
     setOtp('');
     otpSentRef.current = false;
     setRejectionReason('');
+    setAmount('');
   };
 
   return (
@@ -163,54 +168,62 @@ if(!otpVerified){
           </DialogTitle>
           <DialogDescription className='text-muted-foreground font-semibold text-sm'>
             House: {selectedHouse?.houseId?.name}
-            <br/>
+            <br />
             Collection Amount: ₹{(selectedHouse?.amount ?? 0).toFixed(2)}
             <br />
             Family Head: {selectedHouse?.memberId?.name}
           </DialogDescription>
-    {!otpSent && (
-         <div>
-         <Label>
-              Select account
-            </Label>
-            <Select onValueChange={setTargetAccount}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select target account" />
-              </SelectTrigger>
-              <SelectContent>
-                {bank?.map((acc:any) => (
-                  <SelectItem key={acc._id} value={acc._id}>
-                    {acc.name} - {acc.holderName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Label>
-              Select type
-            </Label>
-            <Select onValueChange={(value) => setPaymentType(value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Payment Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Online">Online</SelectItem>
-                <SelectItem value="Cash">Cash</SelectItem>
-              </SelectContent>
-            </Select>
-         </div>
-    )}
+          {!otpSent && (
+            <div>
+              <Label>Select account</Label>
+              <Select onValueChange={setTargetAccount}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select target account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {bank?.map((acc: any) => (
+                    <SelectItem key={acc._id} value={acc._id}>
+                      {acc.name} - {acc.holderName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Label>Select type</Label>
+              <Select onValueChange={(value) => setPaymentType(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Payment Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Online">Online</SelectItem>
+                  <SelectItem value="Cash">Cash</SelectItem>
+                </SelectContent>
+              </Select>
+              {selectedHouse?.paymentType === 'yearly' && (
+                <div>
+                  <Label>Enter Amount</Label>
+                  <Input
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(Number(e.target.value))}
+                    placeholder="Enter amount"
+                  />
+                </div>
+              )}
+            </div>
+          )}
           {otpSent && (
             <div className='grid grid-cols-5 items-center gap-2'>
               <div className='col-span-3'>
                 {!otpVerified ? (
                   <>
-                   <Label className="mt-4">Enter OTP</Label>
-                  <Input
-                    type="number"
-                    value={enteredOtp}
-                    onChange={(e) => setEnteredOtp(e.target.value)}
-                    placeholder="Enter OTP"
-                  /></>
+                    <Label className="mt-4">Enter OTP</Label>
+                    <Input
+                      type="number"
+                      value={enteredOtp}
+                      onChange={(e) => setEnteredOtp(e.target.value)}
+                      placeholder="Enter OTP"
+                    />
+                  </>
                 ) : (
                   <>
                     <Label className="mt-4">Rejection Reason</Label>
@@ -247,7 +260,7 @@ if(!otpVerified){
             {!otpSent && (
               <Button
                 onClick={handleSubmitPayment}
-                disabled={!paymentType || !targetAccount || loading}
+                disabled={!paymentType || !targetAccount || loading || selectedHouse?.paymentType === 'yearly' && !amount}
               >
                 {loading ? <Loader2 className='animate-spin' /> : 'Update Payment'}
               </Button>

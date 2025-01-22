@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
@@ -10,6 +10,7 @@ const PageComponent = ({ params }: any) => {
     const [collection, setCollection] = useState<any>({});
     const [loading, setLoading] = useState(true);
     const [paying, setPaying] = useState(false);
+    const [amountToPay, setAmountToPay] = useState<number>(0);
     const { recieptNo } = params;
 
     useEffect(() => {
@@ -19,6 +20,11 @@ const PageComponent = ({ params }: any) => {
                 const response = await axios.get(`${apiUrl}/api/razorpay/house-collection/${recieptNo}`);
                 if (response.data.success) {
                     setCollection(response.data.houseCollection);
+                    if (response.data.houseCollection.paymentType === 'yearly') {
+                        setAmountToPay(response.data.houseCollection.amount - response.data.houseCollection.paidAmount);
+                    } else {
+                        setAmountToPay(response.data.houseCollection.amount);
+                    }
                 } else {
                     toast({
                         title: 'Data Fetch Error',
@@ -56,12 +62,21 @@ const PageComponent = ({ params }: any) => {
     };
 
     const handlePayment = async () => {
+        if (collection.paymentType === 'yearly' && (collection.paidAmount + amountToPay) > collection.totalAmount) {
+            setPaying(false);
+            toast({
+                title: 'Payment Error',
+                description: 'The payment amount exceeds the total amount due.',
+                variant: 'destructive',
+            });
+            return; // Stop further execution
+        }
         setPaying(true);
         try {
             await loadRazorpayScript();
 
             const { data } = await axios.post(`${apiUrl}/api/razorpay/create-order`, {
-                amount: collection.amount * 100, // Convert to paisa
+                amount: amountToPay * 100,
                 receipt: collection.receiptNumber,
             });
 
@@ -69,7 +84,7 @@ const PageComponent = ({ params }: any) => {
 
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                amount: collection.amount * 100,
+                amount: amountToPay * 100,
                 currency,
                 name: 'Tution fees',
                 description: collection.description,
@@ -80,7 +95,8 @@ const PageComponent = ({ params }: any) => {
                             order_id: response.razorpay_order_id,
                             payment_id: response.razorpay_payment_id,
                             signature: response.razorpay_signature,
-                            recieptNumber:recieptNo
+                            receiptNumber: recieptNo,
+                            amount: amountToPay
                         });
 
                         if (verifyResponse.data.success) {
@@ -166,16 +182,37 @@ const PageComponent = ({ params }: any) => {
                             <span className="font-semibold">Description:</span> {collection.description}
                         </p>
                         <p className="text-sm text-gray-600">
-                            <span className="font-semibold">Amount:</span> ₹{collection.amount}
+                            <span className="font-semibold">Total Amount:</span> ₹{collection.amount}
                         </p>
+                        {collection.paymentType === 'yearly' && (
+                            <>
+                                <p className="text-sm text-gray-600">
+                                    <span className="font-semibold">Paid Amount:</span> ₹{collection.paidAmount}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                    <span className="font-semibold">Amount Due:</span> ₹{collection.amount - collection.paidAmount}
+                                </p>
+                                <div className="mt-4">
+                                    <label className="block text-sm font-medium text-gray-700">Amount to Pay</label>
+                                    <input
+                                        type="number"
+                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        value={amountToPay}
+                                        onChange={(e) => setAmountToPay(Number(e.target.value))}
+                                        min="0"
+                                        max={collection.amount - collection.paidAmount}
+                                    />
+                                </div>
+                            </>
+                        )}
                     </div>
                     <div className="mt-6">
                         <Button
                             className="w-full"
                             onClick={handlePayment}
-                            disabled={paying}
+                            disabled={paying || (collection.paymentType === 'yearly' && amountToPay <= 0)}
                         >
-                            {paying ? <Loader2 className='animate-spin'/> : 'Pay Now'}
+                            {paying ? <Loader2 className='animate-spin' /> : 'Pay Now'}
                         </Button>
                     </div>
                 </div>

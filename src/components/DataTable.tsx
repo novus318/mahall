@@ -98,6 +98,54 @@ const DataTable = () => {
     setLoadingStates((prev) => ({ ...prev, [houseId]: true }));
 
     try {
+     if(house?.paymentType === 'yearly'){
+      const response = await axios.post(
+        WHATSAPP_API_URL,
+        {
+          messaging_product: 'whatsapp',
+          to: `${house.memberId.whatsappNumber}`,
+          type: 'template',
+          template: {
+            name: 'yearly_collection_reminder',
+            language: {
+              code: 'ml'
+            },
+            components: [
+              {
+                type: 'body',
+                parameters: [
+                  { type: 'text', text: `${house.memberId.name}` },
+                  { type: 'text', text: `${house?.paidYear}` },
+                  { type: 'text', text: `${house?.houseId?.number}` },
+                  { type: 'text', text: `${house?.totalAmount}` },
+                  { type: 'text', text: `${house?.totalAmount - house?.paidAmount}` },
+                ]
+              },
+              {
+                type: 'button',
+                sub_type: 'url',
+                index: '0',
+                parameters: [
+                  { type: 'text', text: `${house.memberId._id}` }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${ACCESS_TOKEN}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      if (response.data.success) {
+        toast({
+          title: 'Reminder sent successfully',
+          variant: 'default',
+        });
+      }
+     }else{
       const response = await axios.post(
         WHATSAPP_API_URL,
         {
@@ -143,6 +191,7 @@ const DataTable = () => {
           variant: 'default',
         });
       }
+     }
     } catch (error: any) {
       toast({
         title: 'Failed to send reminder',

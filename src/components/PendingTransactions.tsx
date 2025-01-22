@@ -96,6 +96,28 @@ const PendingTransactions = ({ id, totalCollections }: any) => {
 
   const handleReceiptClick = async (collection: any) => {
     const { dayMonthYear, day } = formatDaterec(collection?.PaymentDate);
+  
+    const renderPartialPayments = () => {
+      if (collection?.paymentType === 'yearly' && collection.partialPayments?.length > 0) {
+        return (
+          <View style={styles.partialPaymentsSection}>
+            <Text style={styles.partialPaymentsHeading}>Partial Payments:</Text>
+            {collection.partialPayments.map((payment: any, index: number) => (
+              <View key={index} style={styles.partialPaymentRow}>
+                <Text style={styles.partialPaymentText}>
+                  Paid: ₹{payment.amount.toFixed(2)} on {format(new Date(payment?.PaymentDate ? payment?.PaymentDate : new Date), 'dd MMM yyyy')}
+                </Text>
+                {payment?.receiptNumber && (
+                  <Text style={styles.partialPaymentReceipt}>Receipt No: {payment.receiptNumber}</Text>
+                )}
+              </View>
+            ))}
+          </View>
+        );
+      }
+      return null;
+    };
+  
     const doc = (
       <Document>
         <Page size="A5" style={styles.page}>
@@ -106,8 +128,7 @@ const PendingTransactions = ({ id, totalCollections }: any) => {
             <Text style={styles.headerText}>Phone: +91 9876543210</Text>
             <View style={styles.separator} />
           </View>
-
-
+  
           <View style={styles.dateSection}>
             <View>
               <Text style={styles.dateText}>Date: {dayMonthYear}</Text>
@@ -115,14 +136,16 @@ const PendingTransactions = ({ id, totalCollections }: any) => {
             </View>
             <Text style={styles.receiptNumber}>Receipt No: {collection?.receiptNumber}</Text>
           </View>
+  
           <View style={styles.fromSection}>
             <Text style={styles.fromText}>From: {collection?.memberId?.name}</Text>
             <Text style={styles.fromText}>House: {collection?.houseId?.number}</Text>
           </View>
+  
           <View style={styles.details}>
             <Text style={styles.detailsHeading}>Details:</Text>
           </View>
-
+  
           <View style={styles.table}>
             <View style={styles.tableRow}>
               <Text style={[styles.tableCell, styles.descriptionCell]}>Description</Text>
@@ -137,7 +160,9 @@ const PendingTransactions = ({ id, totalCollections }: any) => {
               <Text style={[styles.tableCell, styles.amountCell, styles.total]}>₹{collection?.amount.toFixed(2)}</Text>
             </View>
           </View>
-
+  
+          {renderPartialPayments()}
+  
           <View style={styles.regards}>
             <Text>Regards,</Text>
             <Text>VKJ</Text>
@@ -145,7 +170,7 @@ const PendingTransactions = ({ id, totalCollections }: any) => {
         </Page>
       </Document>
     );
-
+  
     const blob = await pdf(doc).toBlob();
     saveAs(blob, `Receipt-${collection?.receiptNumber}-${dayMonthYear} for ${collection?.houseId?.number}.pdf`);
   };
@@ -242,6 +267,31 @@ const PendingTransactions = ({ id, totalCollections }: any) => {
       marginTop: 15,
       fontSize: 10,
     },
+     partialPaymentsSection: {
+    marginTop: 10,
+  },
+  partialPaymentsHeading: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    marginBottom: 6,
+  },
+  partialPaymentRow: {
+    marginBottom: 4,
+  },
+  partialPaymentText: {
+    fontSize: 9,
+    color: '#333',
+  },
+  partialPaymentDescription: {
+    fontSize: 8,
+    color: '#555',
+    marginLeft: 10,
+  },
+  partialPaymentReceipt: {
+    fontSize: 8,
+    color: '#555',
+    marginLeft: 10,
+  }
   });
 
 
@@ -295,7 +345,7 @@ const PendingTransactions = ({ id, totalCollections }: any) => {
                           className="font-bold py-2 px-4 rounded-md" onClick={() => handleReceiptClick(collection)}>
                           Receipt
                         </Button>
-                      ) : collection?.status === 'Unpaid' ? (
+                      ) : collection?.status === 'Unpaid' || 'Partial' ? (
                         <UpdateCollectionPayment collection={collection} bank={bank} />
                       ) : (
                         <div

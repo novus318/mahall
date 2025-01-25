@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useEffect, useMemo, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { Table, TableHead, TableBody, TableRow, TableCell, TableHeader } from '@/components/ui/table';
@@ -7,7 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import { withAuth } from '@/components/withAuth';
 import axios from 'axios';
@@ -16,21 +16,27 @@ import HousesReport from '@/components/reports/HousesReport';
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  const [houses, setHouses] = useState<any>([]);
-  const [totalHouses, setTotalHouses] = useState<any>(0);
+  const [houses, setHouses] = useState<any[]>([]);
+  const [totalHouses, setTotalHouses] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState('');
-  const [paymentFilter, setPaymentFilter] = useState<'all' | 'monthly' | 'yearly'>('all'); // Filter state
+  const [paymentFilter, setPaymentFilter] = useState<'all' | 'monthly' | 'yearly'>('all');
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
+  // Fetch houses from the API
   const fetchHouses = async () => {
-    setIsLoading(true)
-    const response = await axios.get(`${apiUrl}/api/house/get`);
-    if (response.data.success) {
-      setHouses(response.data.houses);
-      setTotalHouses(response.data.total);
-    } else {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${apiUrl}/api/house/get`);
+      if (response.data.success) {
+        setHouses(response.data.houses);
+        setTotalHouses(response.data.total);
+      } else {
+        console.error('Error fetching houses');
+      }
+    } catch (error) {
+      console.error('Error fetching houses:', error);
+    } finally {
       setIsLoading(false);
-      console.error('Error fetching houses');
     }
   };
 
@@ -38,12 +44,14 @@ const Page = () => {
     fetchHouses();
   }, []);
 
+  // Filter and sort houses based on search term and payment filter
   const filteredHouses = useMemo(() => {
-    return houses.filter((house: any) => {
+    return houses.filter((house) => {
       const matchesSearchTerm =
         house?.number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         house?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        house?.familyHead?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+        house?.familyHead?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        house?.familyHead?.whatsappNumber?.toLowerCase().includes(searchTerm.toLowerCase()); // Include WhatsApp number in search
 
       const matchesPaymentFilter =
         paymentFilter === 'all' || house?.paymentType === paymentFilter;
@@ -52,8 +60,9 @@ const Page = () => {
     });
   }, [houses, searchTerm, paymentFilter]);
 
+  // Sort houses by house number
   const sortedHouses = useMemo(() => {
-    return [...filteredHouses].sort((a: any, b: any) => {
+    return [...filteredHouses].sort((a, b) => {
       const numA = a.number.toString().toLowerCase();
       const numB = b.number.toString().toLowerCase();
       return numA.localeCompare(numB, undefined, { numeric: true, sensitivity: 'base' });
@@ -114,23 +123,33 @@ const Page = () => {
         <div className="rounded-2xl border border-gray-200 bg-white shadow-sm mt-6">
           <div className="p-4 flex items-center justify-between border-b border-gray-200">
             <h2 className="text-lg font-medium">Total Houses: {totalHouses || 0}</h2>
-            <HousesReport data={sortedHouses} />
+            <HousesReport data={sortedHouses} filter={paymentFilter} />
           </div>
           <div className="overflow-x-auto capitalize">
             <Table>
               <TableHeader>
                 <TableRow>
+                <TableHead>Serial No.</TableHead>
                   <TableHead>House Number</TableHead>
                   <TableHead>Head</TableHead>
-                  <TableHead>Number</TableHead>
+                  <TableHead>WhatsApp Number</TableHead>
                   <TableHead>Address</TableHead>
                   <TableHead>House Name</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sortedHouses.length > 0 ? (
-                  sortedHouses.map((house) => (
-                    <TableRow key={house.id} className="group hover:bg-gray-50">
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-8">
+                      <Loader2 className="h-8 w-8 animate-spin mx-auto text-gray-500" />
+                    </TableCell>
+                  </TableRow>
+                ) : sortedHouses.length > 0 ? (
+                  sortedHouses.map((house,i) => (
+                    <TableRow key={house._id} className="group hover:bg-gray-50">
+                      <TableCell className="font-medium text-gray-600">
+                        {i +1}
+                      </TableCell>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
                           <Link href={`/house/house-details/${house?._id}`}>
@@ -146,16 +165,16 @@ const Page = () => {
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="px-4 py-2">{house?.familyHead?.name || 'NIL'}</TableCell>
-                      <TableCell className="px-4 py-2">{house?.familyHead?.whatsappNumber || 'NIL'}</TableCell>
-                      <TableCell className="px-4 py-2">{house?.address || 'NIL'}</TableCell>
-                      <TableCell className="px-4 py-2">{house?.name || 'NIL'}</TableCell>
+                      <TableCell>{house?.familyHead?.name || 'NIL'}</TableCell>
+                      <TableCell>{house?.familyHead?.whatsappNumber || 'NIL'}</TableCell>
+                      <TableCell>{house?.address || 'NIL'}</TableCell>
+                      <TableCell>{house?.name || 'NIL'}</TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                     {isLoading ? <Loader2 className='animate-spin'/> : "No houses found."}
+                      No houses found.
                     </TableCell>
                   </TableRow>
                 )}

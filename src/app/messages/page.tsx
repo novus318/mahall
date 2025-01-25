@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { FileText, ImageDown, Loader2, Music, Paperclip, Trash, Trash2 } from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
-
+import Link from 'next/link'
 
 interface Member {
   senderNumber: string;
@@ -20,54 +20,53 @@ interface Member {
 interface MessageData {
   messaging_product: 'whatsapp';
   to: string;
-  type: 'text' | 'audio' | 'document' | 'image' | 'video'; // Added 'image' and 'video' types
+  type: 'text' | 'audio' | 'document' | 'image' | 'video';
   text?: {
     body: string;
   };
   audio?: {
     id: string;
-    caption?: string; // Optional caption for audio
+    caption?: string;
   };
   document?: {
     id: string;
     filename: string;
-    caption?: string; // Optional caption for document
+    caption?: string;
   };
   image?: {
     id: string;
-    caption?: string; // Optional caption for image
+    caption?: string;
   };
   video?: {
     id: string;
-    caption?: string; // Optional caption for video
+    caption?: string;
   };
 }
 
 interface File {
-  type: string; // MIME type of the file
-  name: string; // Name of the file
-  size: number; // Size of the file in bytes
+  type: string;
+  name: string;
+  size: number;
 }
 
-
 const Page = () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const WHATSAPP_API_URL: any = process.env.NEXT_PUBLIC_WHATSAPP_API_URL;
-  const WHATSAPP_MEDIA_UPLOAD_URL:any = process.env.NEXT_PUBLIC_WHATSAPP_MEDIA_UPLOAD_URL
+  const WHATSAPP_MEDIA_UPLOAD_URL: any = process.env.NEXT_PUBLIC_WHATSAPP_MEDIA_UPLOAD_URL;
   const ACCESS_TOKEN = process.env.NEXT_PUBLIC_WHATSAPP_TOKEN;
-  const [messages, setMessages] = useState<any>([])
-  const [newMessage, setNewMessage] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [messages, setMessages] = useState<any>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [loading, setLoading] = useState(false);
   const [deleteLoadingStates, setDeleteLoadingStates] = useState<{ [key: string]: boolean }>({});
   const [showDialog, setShowDialog] = useState(false);
   const [selectedMessageMember, setSelectedMessageMember] = useState<any>(null);
   const [isImageOpen, setIsImageOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
-const[selectedFile,setSelectedFile] = useState<any>(null)
-const [count, setCount] = useState(0);
-const [loadingNextPage, setLoadingNextPage] = useState(false);
-const [currentPage, setCurrentPage] = useState(1);
-const loader = useRef<any>(null);
+  const [selectedFile, setSelectedFile] = useState<any>(null);
+  const [count, setCount] = useState(0);
+  const [loadingNextPage, setLoadingNextPage] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const loader = useRef<any>(null);
 
   const openImageModal = (imageUrl: any) => {
     setSelectedImage(imageUrl);
@@ -85,14 +84,13 @@ const loader = useRef<any>(null);
       if (response.data.success) {
         setMessages(response.data.messages);
         setCount(response.data.totalCount);
-        setCurrentPage(1); // Reset to the first page
+        setCurrentPage(1);
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
   }, [apiUrl]);
 
-  // Fetch next page of messages
   const fetchNextMessages = useCallback(async () => {
     if (loadingNextPage || messages.length >= count) return;
 
@@ -125,10 +123,8 @@ const loader = useRef<any>(null);
     };
   }, [loader, fetchNextMessages]);
 
-
   const deleteMessages = async (number: string, name: string) => {
     setDeleteLoadingStates(prev => ({ ...prev, [number]: true }));
-  
     try {
       const response = await axios.delete(`${apiUrl}/api/message/messages/delete`, {
         data: {
@@ -136,45 +132,41 @@ const loader = useRef<any>(null);
           senderNumber: number,
         },
       });
-  
       if (response.data.success) {
-        setMessages((prevMessages:any) =>
+        setMessages((prevMessages: any) =>
           prevMessages.filter(
-            (msg:any) => !(msg.senderName === name && msg.senderNumber === number)
+            (msg: any) => !(msg.senderName === name && msg.senderNumber === number)
           )
         );
-        fetchMessages(); // Wait for fetchMessages to complete
+        fetchMessages();
       }
     } catch (error) {
       console.log('Error deleting message:', error);
     } finally {
-      // Reset the loading state for the specific sender after fetchMessages completes
       setDeleteLoadingStates(prev => ({ ...prev, [number]: false }));
     }
   };
-  
-  
 
   useEffect(() => {
-    fetchMessages()
-  }, [])
+    fetchMessages();
+  }, []);
 
   const formatDaterec = (dateString: any) => {
     return {
       dayMonthYear: format(new Date(dateString), 'dd MMM yyyy'),
       day: format(new Date(dateString), 'EEEE'),
       time: format(new Date(dateString), 'hh:mm a'),
-    }
-  }
+    };
+  };
 
   const groupedMessages = messages.reduce((acc: any, message: any) => {
-    const key = `${message.senderName}-${message.senderNumber}`
+    const key = `${message.senderName}-${message.senderNumber}`;
     if (!acc[key]) {
-      acc[key] = []
+      acc[key] = [];
     }
-    acc[key].push(message)
-    return acc
-  }, {})
+    acc[key].push(message);
+    return acc;
+  }, {});
 
   const allowedFileTypes = [
     'audio/aac', 'audio/mp4', 'audio/mpeg', 'audio/amr', 'audio/ogg', 'audio/opus',
@@ -198,7 +190,7 @@ const loader = useRef<any>(null);
           body: newMessage,
         },
       };
-  
+
       if (selectedFile) {
         if (!allowedFileTypes.includes(selectedFile.type)) {
           toast({
@@ -209,12 +201,11 @@ const loader = useRef<any>(null);
           setLoading(false);
           return;
         }
-      
-        // Upload file to get the media_id
+
         const formData = new FormData();
         formData.append('messaging_product', 'whatsapp');
         formData.append('file', selectedFile as Blob);
-      
+
         const uploadResponse = await axios.post<{ id: string }>(
           WHATSAPP_MEDIA_UPLOAD_URL,
           formData,
@@ -225,10 +216,9 @@ const loader = useRef<any>(null);
             },
           }
         );
-      
+
         const { id: mediaId } = uploadResponse.data;
-      
-        // Modify the message data based on the file type
+
         if (selectedFile.type.startsWith('audio')) {
           messageData = {
             messaging_product: 'whatsapp',
@@ -236,7 +226,7 @@ const loader = useRef<any>(null);
             type: 'audio',
             audio: {
               id: mediaId,
-              caption: newMessage || '', // Include caption if message is present
+              caption: newMessage || '',
             },
           };
         } else if (selectedFile.type.startsWith('image')) {
@@ -246,7 +236,7 @@ const loader = useRef<any>(null);
             type: 'image',
             image: {
               id: mediaId,
-              caption: newMessage || '', // Include caption if message is present
+              caption: newMessage || '',
             },
           };
         } else if (selectedFile.type.startsWith('video')) {
@@ -256,7 +246,7 @@ const loader = useRef<any>(null);
             type: 'video',
             video: {
               id: mediaId,
-              caption: newMessage || '', // Include caption if message is present
+              caption: newMessage || '',
             },
           };
         } else {
@@ -267,20 +257,19 @@ const loader = useRef<any>(null);
             document: {
               id: mediaId,
               filename: selectedFile.name,
-              caption: newMessage || '', // Include caption if message is present
+              caption: newMessage || '',
             },
           };
         }
       }
-      
-  
+
       const response = await axios.post(WHATSAPP_API_URL, messageData, {
         headers: {
           Authorization: `Bearer ${ACCESS_TOKEN}`,
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.status === 200) {
         setShowDialog(false);
         setNewMessage('');
@@ -292,7 +281,7 @@ const loader = useRef<any>(null);
         });
       }
     } catch (error: any) {
-      console.log(error)
+      console.log(error);
       toast({
         title: 'Failed to send message',
         description: error.response?.data?.error?.message || error.message || 'Something went wrong',
@@ -318,7 +307,7 @@ const loader = useRef<any>(null);
               <div key={key} className="flex flex-col gap-2 p-4 border rounded-lg">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                 <Avatar className="w-8 h-8 border">
+                    <Avatar className="w-8 h-8 border">
                       <AvatarFallback>
                         {(firstMessage?.senderName || 'No name').substring(0, 1)}
                         {(firstMessage?.senderName || 'No name').substring(1, 2)}
@@ -327,24 +316,29 @@ const loader = useRef<any>(null);
                     <div>
                       <div className="font-medium">{firstMessage?.senderName || 'No name'}</div>
                       <div className="text-xs text-muted-foreground">+{firstMessage?.senderNumber}</div>
+                      {firstMessage?.reference && (
+                        <div className="text-xs text-gray-500">
+                          Member: {firstMessage?.referenceData?.name}, <Link href={`/house/house-details/${firstMessage?.referenceData?.house}`} className='text-blue-600 hover:underline uppercase font-semibold'> House</Link>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div>
-                  <Button
-            variant="destructive"
-            size="icon"
-            disabled={deleteLoadingStates[firstMessage.senderNumber] || false}
-            onClick={() => {
-              deleteMessages(firstMessage.senderNumber, firstMessage.senderName);
-            }}
-          >
-            {deleteLoadingStates[firstMessage.senderNumber] ? (
-              <Loader2 className="animate-spin h-4" />
-            ) : (
-              <Trash2 className="h-4 w-4" />
-            )}
-          </Button>
-                 </div>
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      disabled={deleteLoadingStates[firstMessage.senderNumber] || false}
+                      onClick={() => {
+                        deleteMessages(firstMessage.senderNumber, firstMessage.senderName);
+                      }}
+                    >
+                      {deleteLoadingStates[firstMessage.senderNumber] ? (
+                        <Loader2 className="animate-spin h-4" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
                 <div className="text-sm leading-relaxed bg-white p-4 rounded-lg shadow-md border">
                   <div className="font-semibold text-gray-700 mb-3">Messages:</div>
@@ -444,19 +438,18 @@ const loader = useRef<any>(null);
                         );
                       })}
                   </div>
-                  {/* Modal for larger image view */}
                   {isImageOpen && (
-                   <Dialog open={isImageOpen} onOpenChange={closeImageModal}>
-                   <DialogContent className='pt-9 pb-2 px-2'>
-                                <img
-                                  className="w-full h-auto rounded-md"
-                                  width={900}
-                                  height={900}
-                                  src={selectedImage}
-                                   alt="Zoomed Image"
-                                />
-                   </DialogContent>
-                 </Dialog>
+                    <Dialog open={isImageOpen} onOpenChange={closeImageModal}>
+                      <DialogContent className='pt-9 pb-2 px-2'>
+                        <img
+                          className="w-full h-auto rounded-md"
+                          width={900}
+                          height={900}
+                          src={selectedImage}
+                          alt="Zoomed Image"
+                        />
+                      </DialogContent>
+                    </Dialog>
                   )}
                 </div>
                 <Button
@@ -475,80 +468,76 @@ const loader = useRef<any>(null);
           })}
         </div>
         {messages.length !== count && (
-        <div ref={loader} className="text-center mt-4">
-        {loadingNextPage && <Loader2 className="animate-spin" />}
-        </div>
-      )}
+          <div ref={loader} className="text-center mt-4">
+            {loadingNextPage && <Loader2 className="animate-spin" />}
+          </div>
+        )}
         {messages.length === 0 && <div className="text-center text-gray-500">No messages yet.</div>}
-     <Dialog open={showDialog} onOpenChange={setShowDialog}>
-  <DialogContent>
-    <DialogTitle>Reply message to {selectedMessageMember?.senderNumber}</DialogTitle>
-    <div className="text-base text-gray-500 font-semibold">
-      {selectedMessageMember?.senderName || 'No name'}
-    </div>
-    <Textarea
-      rows={3}
-      placeholder="Type your message here..."
-      value={newMessage}
-      onChange={(e) => setNewMessage(e.target.value)}
-      className="w-full p-2 border rounded-lg"
-      disabled={loading}
-    />
-    
-    {/* Attachment Section */}
-    <div className="flex items-center gap-2">
-      <label htmlFor="file-input" className="flex items-center gap-1 cursor-pointer text-slate-900 hover:text-slate-600">
-        <Paperclip size={20} />
-        <span>Attach</span>
-      </label>
-      <input
-        id="file-input"
-        type="file"
-        className="hidden"
-        onChange={(e: any) => setSelectedFile(e.target.files[0])}
-        disabled={loading}
-      />
-
-      {/* Preview selected file */}
-      {selectedFile && (
-        <div className="flex items-center gap-2 border p-2 rounded-lg bg-gray-100">
-          {selectedFile.type.startsWith('image') && <ImageDown size={20} className="text-slate-800" />}
-          {selectedFile.type.startsWith('audio') && <Music size={20} className="text-slate-900" />}
-          {selectedFile.type.startsWith('application') && (
-            <FileText size={20} className="text-slate-700" />
-          )}
-          <span className="text-sm truncate max-w-xs">{selectedFile.name}</span>
-          <button onClick={() => setSelectedFile(null)} className="text-red-600">
-            <Trash size={16} />
-          </button>
-        </div>
-      )}
-    </div>
-    
-    <DialogFooter >
-      <div className='space-x-2'>
-        <Button size="sm" variant="outline" onClick={() => setShowDialog(false)}>
-        Cancel
-      </Button>
-      {loading ? (
-        <Button size="sm" disabled>
-          <Loader2 className="animate-spin" />
-        </Button>
-      ) : (
-        <Button
-          disabled={loading || (!newMessage && !selectedFile)}
-          onClick={() => handleSendMessage(selectedMessageMember)}
-          size="sm"
-        >
-          Send
-        </Button>
-      )}</div>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
+        <Dialog open={showDialog} onOpenChange={setShowDialog}>
+          <DialogContent>
+            <DialogTitle>Reply message to {selectedMessageMember?.senderNumber}</DialogTitle>
+            <div className="text-base text-gray-500 font-semibold">
+              {selectedMessageMember?.senderName || 'No name'}
+            </div>
+            <Textarea
+              rows={3}
+              placeholder="Type your message here..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              className="w-full p-2 border rounded-lg"
+              disabled={loading}
+            />
+            <div className="flex items-center gap-2">
+              <label htmlFor="file-input" className="flex items-center gap-1 cursor-pointer text-slate-900 hover:text-slate-600">
+                <Paperclip size={20} />
+                <span>Attach</span>
+              </label>
+              <input
+                id="file-input"
+                type="file"
+                className="hidden"
+                onChange={(e: any) => setSelectedFile(e.target.files[0])}
+                disabled={loading}
+              />
+              {selectedFile && (
+                <div className="flex items-center gap-2 border p-2 rounded-lg bg-gray-100">
+                  {selectedFile.type.startsWith('image') && <ImageDown size={20} className="text-slate-800" />}
+                  {selectedFile.type.startsWith('audio') && <Music size={20} className="text-slate-900" />}
+                  {selectedFile.type.startsWith('application') && (
+                    <FileText size={20} className="text-slate-700" />
+                  )}
+                  <span className="text-sm truncate max-w-xs">{selectedFile.name}</span>
+                  <button onClick={() => setSelectedFile(null)} className="text-red-600">
+                    <Trash size={16} />
+                  </button>
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <div className='space-x-2'>
+                <Button size="sm" variant="outline" onClick={() => setShowDialog(false)}>
+                  Cancel
+                </Button>
+                {loading ? (
+                  <Button size="sm" disabled>
+                    <Loader2 className="animate-spin" />
+                  </Button>
+                ) : (
+                  <Button
+                    disabled={loading || (!newMessage && !selectedFile)}
+                    onClick={() => handleSendMessage(selectedMessageMember)}
+                    size="sm"
+                  >
+                    Send
+                  </Button>
+                )}
+              </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default withAuth(Page);

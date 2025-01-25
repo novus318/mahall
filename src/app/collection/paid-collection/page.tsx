@@ -162,6 +162,7 @@ const CollectionsPage: React.FC = () => {
                   <TableHead>Family Head</TableHead>
                   <TableHead>Number</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Payment Date</TableHead>
                   <TableHead className="text-right">Receipt</TableHead>
                 </TableRow>
               </TableHeader>
@@ -174,7 +175,11 @@ const CollectionsPage: React.FC = () => {
                         <TableCell>
                           <div className="text-sm">{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}</div>
                         </TableCell>
-                        <TableCell>{collection.houseId.number}</TableCell>
+                        <TableCell>
+                          <Link className="text-blue-600 hover:underline" href={`/house/house-details/${collection.houseId?._id}`}>
+                            {collection.houseId.number}
+                          </Link>
+                        </TableCell>
                         <TableCell>₹{collection.amount.toFixed(2)}</TableCell>
                         <TableCell>{collection.memberId.name}</TableCell>
                         <TableCell>{collection.memberId.whatsappNumber}</TableCell>
@@ -182,6 +187,9 @@ const CollectionsPage: React.FC = () => {
                           <span className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-green-50 text-green-700">
                             {collection.status}
                           </span>
+                        </TableCell>
+                        <TableCell>
+                          {collection?.PaymentDate ? format(new Date(collection.PaymentDate), 'MMM dd, yyyy'): 'NIL'}
                         </TableCell>
                         <TableCell className="text-right">
                           <Link

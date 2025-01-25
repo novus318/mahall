@@ -8,7 +8,7 @@ Font.register({
   src: '/AnekMalayalam.ttf',
 });
 
-const HousesReport = ({ data }: any) => {
+const HousesReport = ({ data, filter }: any) => {
   const handleReceiptClick = async () => {
     const doc = (
       <Document>
@@ -25,8 +25,13 @@ const HousesReport = ({ data }: any) => {
             <View style={styles.separator} />
           </View>
 
+          <View>
+            <Text style={styles.headerText}>Filtered by: {filter}</Text>
+          </View>
+
           {/* Table Header */}
           <View style={styles.tableHeader}>
+            <Text style={styles.serialNoHeaderCell}>Sl. No.</Text> {/* Smaller width for Serial No. */}
             <Text style={styles.tableHeaderCell}>House Number</Text>
             <Text style={styles.tableHeaderCell}>Head</Text>
             <Text style={styles.tableHeaderCell}>Number</Text>
@@ -37,6 +42,7 @@ const HousesReport = ({ data }: any) => {
           {/* Table Rows */}
           {data.map((house: any, index: number) => (
             <View key={index} style={styles.tableRow}>
+              <Text style={styles.serialNoCell}>{index + 1}</Text> {/* Smaller width for Serial No. */}
               <Text style={styles.tableCell}>{house.number}</Text>
               <Text style={styles.tableCell}>{house.familyHead?.name || 'NIL'}</Text>
               <Text style={styles.tableCell}>{house.familyHead?.whatsappNumber || 'NIL'}</Text>
@@ -90,7 +96,12 @@ const HousesReport = ({ data }: any) => {
       marginBottom: 5,
     },
     tableHeaderCell: {
-      flex: 1,
+      flex: 1, // Equal width for other columns
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    serialNoHeaderCell: {
+      flex: 0.5, // Smaller width for Serial No. column
       fontWeight: 'bold',
       textAlign: 'center',
     },
@@ -102,7 +113,11 @@ const HousesReport = ({ data }: any) => {
       marginBottom: 5,
     },
     tableCell: {
-      flex: 1,
+      flex: 1, // Equal width for other columns
+      textAlign: 'center',
+    },
+    serialNoCell: {
+      flex: 0.5, // Smaller width for Serial No. column
       textAlign: 'center',
     },
   });

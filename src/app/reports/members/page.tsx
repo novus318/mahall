@@ -31,6 +31,7 @@ interface Member {
 }
 
 interface House {
+  houseId: string;
   house: string;
   familyHead: string;
   houseNumber: string;
@@ -385,7 +386,7 @@ data = data
             house.members.length > 0 && (
               <div key={index} className='mb-8 p-4 border border-gray-300 rounded-lg shadow-md'>
                 <h2 className='text-xl font-bold mb-3'>{house?.familyHead} - {house?.house}</h2>
-                <p className='text-gray-700 mb-2'>House Number: <span className='font-semibold'>{house.houseNumber}</span></p>
+                <p className='text-gray-700 mb-2'>House Number: <Link className="text-blue-600 hover:underline" href={`/house/house-details/${house?.houseId}`}><span className='font-semibold'>{house.houseNumber}</span></Link> </p>
                 <p className='text-gray-700 mb-4'>Total Members: <span className='font-semibold'>{house.totalMembers}</span></p>
                 <div className='overflow-x-auto'>
                   <table className='min-w-full divide-y divide-gray-200'>

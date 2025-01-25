@@ -28,6 +28,7 @@ import UpdateCollectionPayment from './UpdateCollectionPayment';
 import { Button } from './ui/button';
 import { AlertCircle, Check, ChevronDown, Loader2, Search } from 'lucide-react';
 import { format } from 'date-fns';
+import Link from 'next/link';
 
 interface BankAccount {
   _id: string;
@@ -303,6 +304,7 @@ const DataTable = () => {
                         <TableRow className="group">
                           <TableCell>{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}</TableCell>
                           <TableCell className="font-medium">
+                          <Link className="text-blue-600 hover:underline" href={`/house/house-details/${collection.houseId?._id}`}>
                             <div className="flex flex-col md:flex-row md:items-center">
                               <span className="mb-1 md:mb-0 md:mr-2">{collection?.houseId?.number}</span>
                               <span
@@ -315,6 +317,7 @@ const DataTable = () => {
                                 {collection?.paymentType}
                               </span>
                             </div>
+                            </Link>
                           </TableCell>
                           <TableCell>
                             <div className="space-y-1">

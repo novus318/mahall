@@ -360,7 +360,7 @@ const TutionPage = () => {
             <TableBody>
               {filteredCollections?.map((collection: any, index: number) => (
                 <TableRow key={collection?._id}>
-                  <TableCell>{collection?.collectionMonth}</TableCell>
+                  <TableCell>{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}</TableCell>
                   <TableCell>{collection?.receiptNumber}</TableCell>
                   <TableCell>{collection?.houseId?.number}</TableCell>
                   <TableCell>{formatCurrency(collection?.amount)}</TableCell>

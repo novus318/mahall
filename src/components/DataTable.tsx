@@ -162,7 +162,7 @@ const DataTable = () => {
                 type: 'body',
                 parameters: [
                   { type: 'text', text: `${house.memberId.name}` },
-                  { type: 'text', text: `${month}` },
+                  { type: 'text', text: `${house.collectionMonth}` },
                   { type: 'text', text: `${house?.houseId?.number}` },
                   { type: 'text', text: `${house.amount}` },
                 ]
@@ -306,7 +306,7 @@ const DataTable = () => {
                             <div className="flex flex-col md:flex-row md:items-center">
                               <span className="mb-1 md:mb-0 md:mr-2">{collection?.houseId?.number}</span>
                               <span
-                                className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                                className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium capitalize ${
                                   collection?.paymentType === 'monthly'
                                     ? 'bg-blue-50 text-blue-700'
                                     : 'bg-purple-50 text-purple-700'
@@ -359,10 +359,7 @@ const DataTable = () => {
                               >
                                 {isLoading ? (
                                   <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <AlertCircle className="h-4 w-4" />
-                                )}
-                                <span className="sr-only">Remind</span>
+                                ) : "Reminder"}
                               </Button>
                             </div>
                           </TableCell>

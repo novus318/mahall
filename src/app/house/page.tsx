@@ -111,7 +111,7 @@ const Page = () => {
             <h2 className="text-lg font-medium">Total Houses: {houses?.length}</h2>
             <HousesReport data={sortedHouses} />
           </div>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto capitalize">
             <Table>
               <TableHeader>
                 <TableRow>

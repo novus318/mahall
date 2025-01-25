@@ -161,7 +161,7 @@ data = data
       );
     }),
   }))
-  .filter((item) => {
+  .filter((item:any) => {
     // Ensure item properties exist before calling .includes()
     const houseName = item.house ? item.house.toLowerCase() : '';
     const houseNumber = item.houseNumber ? item.houseNumber.toLowerCase() : '';

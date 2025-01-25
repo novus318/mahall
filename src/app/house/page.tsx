@@ -11,20 +11,25 @@ import {
 import Link from 'next/link';
 import { withAuth } from '@/components/withAuth';
 import axios from 'axios';
-import { ChevronDown, Plus, Search } from 'lucide-react';
+import { ChevronDown, Loader2, Plus, Search } from 'lucide-react';
 import HousesReport from '@/components/reports/HousesReport';
 
 const Page = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [houses, setHouses] = useState<any>([]);
+  const [totalHouses, setTotalHouses] = useState<any>(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [paymentFilter, setPaymentFilter] = useState<'all' | 'monthly' | 'yearly'>('all'); // Filter state
 
   const fetchHouses = async () => {
+    setIsLoading(true)
     const response = await axios.get(`${apiUrl}/api/house/get`);
     if (response.data.success) {
       setHouses(response.data.houses);
+      setTotalHouses(response.data.total);
     } else {
+      setIsLoading(false);
       console.error('Error fetching houses');
     }
   };
@@ -108,7 +113,7 @@ const Page = () => {
 
         <div className="rounded-2xl border border-gray-200 bg-white shadow-sm mt-6">
           <div className="p-4 flex items-center justify-between border-b border-gray-200">
-            <h2 className="text-lg font-medium">Total Houses: {houses?.length}</h2>
+            <h2 className="text-lg font-medium">Total Houses: {totalHouses || 0}</h2>
             <HousesReport data={sortedHouses} />
           </div>
           <div className="overflow-x-auto capitalize">
@@ -150,7 +155,7 @@ const Page = () => {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                      No houses found.
+                     {isLoading ? <Loader2 className='animate-spin'/> : "No houses found."}
                     </TableCell>
                   </TableRow>
                 )}

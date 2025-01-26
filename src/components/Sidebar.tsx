@@ -44,8 +44,8 @@ const Sidebar: React.FC = () => {
         <Link href="/">
         <img src='/VKJ.png' height={100} width={100} alt='' className='w-11'/>
         </Link>
-        <Button variant='secondary' onClick={() => setIsOpen(!isOpen)}
-            size='icon'>
+        <Button variant='secondary' className='rounded-sm p-2' onClick={() => setIsOpen(!isOpen)}
+            size='sm'>
          {isOpen ?  <X /> :  <MenuIcon />}
         </Button>
       </div>
@@ -71,156 +71,156 @@ const Sidebar: React.FC = () => {
           </Button>
         </div>
         <ul>
-          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/dashboard">
-              <div
-                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/dashboard') ? 'bg-gray-900 text-gray-50': 'bg-gray-950 text-gray-400'
-                }`}
-              >
-                <LayoutDashboard className="mr-3" />
-                <span className="text-lg">Dashboard</span>
-              </div>
-            </Link>
-          </li>
-          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/account">
-              <div
-                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/account') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
-                }`}
-              >
-                <Banknote className="mr-3" />
-                <span className="text-lg">Account</span>
-              </div>
-            </Link>
-          </li>
-          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/house">
-              <div
-                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/house') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
-                }`}
-              >
-                <Home className="mr-3" />
-                <span className="text-lg">House</span>
-              </div>
-            </Link>
-          </li>
-          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/collection">
-              <div
-                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/collection') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
-                }`}
-              >
-                <BookOpen className="mr-3" />
-                <span className="text-lg">Tution Fees</span>
-              </div>
-            </Link>
-          </li>
-          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/staff">
-              <div
-                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/staff') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
-                }`}
-              >
-                <User2Icon className="mr-3" />
-                <span className="text-lg">Staff</span>
-              </div>
-            </Link>
-          </li>
-          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/rent">
-              <div
-                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/rent') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
-                }`}
-              >
-                <Building2 className="mr-3" />
-                <span className="text-lg">Rent</span>
-              </div>
-            </Link>
-          </li>
-          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/payment">
-              <div
-                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/payment') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
-                }`}
-              >
-                <SendIcon className="mr-3" />
-                <span className="text-lg">Payment</span>
-              </div>
-            </Link>
-          </li>
-          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/reciept">
-              <div
-                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/reciept') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
-                }`}
-              >
-                <ReceiptIndianRupeeIcon className="mr-3" />
-                <span className="text-lg">Reciept</span>
-              </div>
-            </Link>
-          </li>
-          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/reports">
-              <div
-                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/reports') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
-                }`}
-              >
-                <BookIcon className="mr-3"/>
-                <span className="text-lg">Reports</span>
-              </div>
-            </Link>
-          </li>
-          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-          <Link href="/messages">
-              <div
-                className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
-                  CurrentPage('/messages') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
-                }`}
-              >
-                <MessageCircle className="mr-3" />
-                <span className="text-lg">Message</span>
-                {messageCount > 0 && (
-                  <span className="ml-2 bg-slate-700 text-white rounded-sm text-xs px-2 py-0.5">
-                    {messageCount}
-                  </span>
-                )}
-              </div>
-            </Link>
-          </li>
-          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/settings">
-              <div
-                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/settings') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
-                }`}
-              >
-                <Settings className="mr-3" />
-                <span className="text-lg">Settings</span>
-              </div>
-            </Link>
-          </li>
-          <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105">
-            <Link href="/payment-online">
-              <div
-                className={`flex items-center py-1 px-2 rounded-md  hover:bg-white hover:text-gray-950  ${
-                  CurrentPage('/payment-online') ?'bg-gray-900 text-gray-50' :'bg-gray-950 text-gray-400'
-                }`}
-              >
-                <CheckCircle2 className="mr-3" />
-                <span className="text-lg">Verify and payment</span>
-              </div>
-            </Link>
-          </li>
-        </ul>
+  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
+    <Link href="/dashboard">
+      <div
+        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+          CurrentPage('/dashboard') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
+        }`}
+      >
+        <LayoutDashboard className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-lg">Dashboard</span>
+      </div>
+    </Link>
+  </li>
+  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
+    <Link href="/account">
+      <div
+        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+          CurrentPage('/account') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
+        }`}
+      >
+        <Banknote className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-lg">Account</span>
+      </div>
+    </Link>
+  </li>
+  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
+    <Link href="/house">
+      <div
+        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+          CurrentPage('/house') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
+        }`}
+      >
+        <Home className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-lg">House</span>
+      </div>
+    </Link>
+  </li>
+  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
+    <Link href="/collection">
+      <div
+        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+          CurrentPage('/collection') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
+        }`}
+      >
+        <BookOpen className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-lg">Tution Fees</span>
+      </div>
+    </Link>
+  </li>
+  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
+    <Link href="/staff">
+      <div
+        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+          CurrentPage('/staff') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
+        }`}
+      >
+        <User2Icon className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-lg">Staff</span>
+      </div>
+    </Link>
+  </li>
+  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
+    <Link href="/rent">
+      <div
+        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+          CurrentPage('/rent') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
+        }`}
+      >
+        <Building2 className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-lg">Rent</span>
+      </div>
+    </Link>
+  </li>
+  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
+    <Link href="/payment">
+      <div
+        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+          CurrentPage('/payment') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
+        }`}
+      >
+        <SendIcon className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-lg">Payment</span>
+      </div>
+    </Link>
+  </li>
+  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
+    <Link href="/reciept">
+      <div
+        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+          CurrentPage('/reciept') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
+        }`}
+      >
+        <ReceiptIndianRupeeIcon className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-lg">Reciept</span>
+      </div>
+    </Link>
+  </li>
+  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
+    <Link href="/reports">
+      <div
+        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+          CurrentPage('/reports') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
+        }`}
+      >
+        <BookIcon className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-lg">Reports</span>
+      </div>
+    </Link>
+  </li>
+  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
+    <Link href="/messages">
+      <div
+        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+          CurrentPage('/messages') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
+        }`}
+      >
+        <MessageCircle className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-lg">Message</span>
+        {messageCount > 0 && (
+          <span className="ml-2 bg-slate-700 text-white rounded-sm text-xs px-2 py-0.5">
+            {messageCount}
+          </span>
+        )}
+      </div>
+    </Link>
+  </li>
+  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
+    <Link href="/settings">
+      <div
+        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+          CurrentPage('/settings') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
+        }`}
+      >
+        <Settings className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-lg">Settings</span>
+      </div>
+    </Link>
+  </li>
+  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
+    <Link href="/payment-online">
+      <div
+        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+          CurrentPage('/payment-online') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
+        }`}
+      >
+        <CheckCircle2 className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-lg">Verify and payment</span>
+      </div>
+    </Link>
+  </li>
+</ul>
       </div>
 
       {isOpen && <div className="fixed inset-0 bg-black opacity-50 z-30 md:hidden" onClick={() => setIsOpen(false)} />}

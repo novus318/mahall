@@ -208,7 +208,8 @@ const DataTable = () => {
     const matchesSearchQuery =
       house?.houseId?.number.toLowerCase().includes(searchQuery.toLowerCase()) ||
       house.amount.toString().includes(searchQuery) ||
-      house.memberId.name.toLowerCase().includes(searchQuery.toLowerCase());
+      house.memberId.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      house.memberId.whatsappNumber.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesFilter =
       filter === 'all' ||
@@ -226,7 +227,7 @@ const DataTable = () => {
           <p className="text-gray-500">Here&apos;s a list of your Unpaid Collections!</p>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 items-center">
           <div className="flex items-center gap-4 flex-1">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />

@@ -349,6 +349,7 @@ const TutionPage = () => {
           <Table className="bg-white">
             <TableHeader className="bg-gray-100">
               <TableRow>
+              <TableHead className="font-medium">Serial No.</TableHead>
                 <TableHead className="font-medium">Date</TableHead>
                 <TableHead className="font-medium">Receipt No.</TableHead>
                 <TableHead className="font-medium">House</TableHead>
@@ -360,6 +361,7 @@ const TutionPage = () => {
             <TableBody>
               {filteredCollections?.map((collection: any, index: number) => (
                 <TableRow key={collection?._id}>
+                  <TableCell>{index + 1}</TableCell>
                   <TableCell>{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}</TableCell>
                   <TableCell>{collection?.receiptNumber}</TableCell>
                   <TableCell>{collection?.houseId?.number}</TableCell>

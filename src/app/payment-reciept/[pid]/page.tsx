@@ -313,7 +313,7 @@ const PageComponent = ({ params }: PageProps) => {
 
   if (loading) return <CollectionsSkeleton />;
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-2">
       <div className="mb-6 flex justify-between items-center">
         <h2 className="text-xl md:text-3xl font-semibold text-gray-800">
           Tuition Fees of {collections ? collections[0]?.memberId?.name : ''}
@@ -321,7 +321,7 @@ const PageComponent = ({ params }: PageProps) => {
       </div>
 
       <div className="rounded-lg bg-white shadow-sm border border-gray-100 overflow-hidden">
-        <Table className="w-full">
+        <Table className="w-full text-xs md:text-sm">
           <TableHeader className="bg-gray-50">
             <TableRow>
               <TableHead className="font-medium text-gray-600 py-3">Date</TableHead>

@@ -61,9 +61,13 @@ const PageComponent = ({ params }: any) => {
         try {
             await loadRazorpayScript();
 
-            const { data } = await axios.post(`${apiUrl}/api/razorpay/create-order`, {
+            const { data } = await axios.post(`${apiUrl}/api/razorpay/create-rent-order`, {
                 amount: collection.amount * 100, // Convert to paisa
                 receipt: collection?.period,
+                buildingId:buildingId,
+                roomId:roomId,
+                contractId:contractId,
+                rentId:rentId
             });
 
             const { id: order_id, currency } = data;

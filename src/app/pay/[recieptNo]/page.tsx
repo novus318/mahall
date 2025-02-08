@@ -90,31 +90,12 @@ const PageComponent = ({ params }: any) => {
                 description: collection.description,
                 order_id,
                 handler: async (response: any) => {
-                    try {
-                        const verifyResponse = await axios.post(`${apiUrl}/api/razorpay/verify-payment`, {
-                            order_id: response.razorpay_order_id,
-                            payment_id: response.razorpay_payment_id,
-                            signature: response.razorpay_signature,
-                            receiptNumber: recieptNo,
-                            amount: amountToPay
-                        });
-
-                        if (verifyResponse.data.success) {
-                            toast({
-                                title: 'Payment Successful',
-                                description: 'Your payment has been processed successfully.',
-                                variant: 'default',
-                            });
-                            window.location.href = `/payment-reciept/${verifyResponse.data.updatedCollection.memberId._id}`
-                        }
-                    } catch (error: any) {
-                        setPaying(false);
-                        toast({
-                            title: 'Payment Failed',
-                            description: error.response?.data?.message || 'Verification failed',
-                            variant: 'destructive',
-                        });
-                    }
+                    toast({
+                        title: 'Payment Initiated',
+                        description: 'Your payment is being processed. You will be notified once it is completed.',
+                        variant: 'default',
+                    });
+                    window.location.href = `/payment-reciept/${collection?.memberId?._id}`
                 },
                 prefill: {
                     name: collection.memberId?.name || 'Anonymous',

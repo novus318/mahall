@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
 import { withAuth } from '@/components/withAuth';
 import axios from 'axios';
-import { Loader2, ChevronLeft, Plus } from 'lucide-react';
+import { Loader2, ChevronLeft, Plus, Lock, Unlock } from 'lucide-react';
 import Link from 'next/link';
 import React, { Suspense, useEffect, useState } from 'react';
 
@@ -60,12 +60,15 @@ const PageComponent = ({ params }: PageProps) => {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isLockModel, setIsLockModel] = useState(false);
   const [totalContribution, setTotalContribution] = useState(<Loader2 className="animate-spin" />);
   const [totalHouseCollections, setTotalHouseCollections] = useState(<Loader2 className="animate-spin" />);
   const [familyHead, setFamilyHead] = useState({ memberId: '', amount: 0 });
   const [editHouse, setEditHouse] = useState<any>({});
   const [collectionType, setCollectionType] = useState('monthly');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLocked, setIsLocked] = useState(true);
+  const [password, setPassword] = useState('');
 
   const handleCollectionTypeChange = async (newType:any) => {
     setIsLoading(true);
@@ -93,10 +96,25 @@ const PageComponent = ({ params }: PageProps) => {
   };
 }
 
+const fetchLockSetting = async () => {
+  axios
+    .get(`${apiUrl}/api/setting/house-lock/status`)
+    .then((response) => {
+      if (response.data.success) {
+        setIsLocked(response.data.isEnabled);
+      }
+    })
+    .catch((error) => {
+      console.error('Error fetching lock setting:', error);
+    });
+};
+
   useEffect(() => {
     fetchHouse(pid);
     fetchMembers();
+    fetchLockSetting();
   }, [pid]);
+
 
   const fetchMembers = async () => {
     axios
@@ -168,6 +186,35 @@ const PageComponent = ({ params }: PageProps) => {
     }
   };
 
+  const handleConfirmLock = async (event:any) => {
+    event.preventDefault();
+    setIsLoading(true);
+    try {
+      const data ={
+        pin: password,
+        user: 'admin'
+      }
+      const response = await axios.post(`${apiUrl}/api/setting/update/house-lock`, data);
+      if (response.data.success) {
+        toast({
+          title: 'House lock changed successfully',
+          variant: 'default',
+        });
+        setIsLockModel(false);
+        setIsLoading(false);
+        fetchLockSetting();
+        setPassword('')
+      }
+    } catch(error:any){
+      setIsLoading(false)
+      toast({
+        title: 'Failed to change lock',
+        description: error.response?.data?.message || error.message || 'Something went wrong',
+        variant: 'destructive',
+      });
+    }
+  }
+
   if (!house) {
     return <SkeletonLoader />;
   }
@@ -205,13 +252,26 @@ const PageComponent = ({ params }: PageProps) => {
         <div className="grid grid-cols-3 text-sm items-center">
           <p className="font-medium text-gray-600">Collection Type:</p>
           <div className="col-span-2 flex items-center space-x-2">
+          <span className="text-gray-900">{collectionType === 'monthly' && 'Monthly'}</span>
             <Switch
               checked={collectionType === 'yearly'}
               onCheckedChange={(checked) => handleCollectionTypeChange(checked ? 'yearly' : 'monthly')}
-              disabled={isLoading}
+              disabled={isLoading || isLocked}
             />
-            <span className="text-gray-900">{collectionType === 'yearly' ? 'Yearly' : 'Monthly'}</span>
+            <span className="text-gray-900">{collectionType === 'yearly' && 'Yearly'}</span>
             {isLoading && <Loader2 className="ml-2 animate-spin" />}
+            <Button size='icon'
+            onClick={()=>{
+              setIsLockModel(true);
+            }}>
+              {
+                isLocked? (
+                  <Lock className="h-5 w-5" /> 
+                ) : (
+                  <Unlock className="h-5 w-5" /> 
+                )
+              }
+            </Button>
           </div>
         </div>
       </CardContent>
@@ -414,6 +474,39 @@ const PageComponent = ({ params }: PageProps) => {
           </ScrollArea>
         </DialogContent>
       </Dialog>
+      <Dialog open={isLockModel} onOpenChange={(v) => !v && setIsLockModel(v)}>
+  <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-hidden">
+    <DialogTitle className="text-lg font-semibold">
+      Are you sure you want to change the lock?
+    </DialogTitle>
+    <div>
+      <Label className="block text-sm font-medium text-gray-700">Enter Password</Label>
+      <Input
+        type="password"
+        placeholder="Enter your password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+    </div>
+    <div className="mt-6 flex justify-end gap-3">
+      <Button
+      size='sm'
+        variant="destructive"
+        onClick={() => setIsLockModel(false)}
+      >
+        Cancel
+      </Button>
+      <Button
+      disabled={isLoading}
+        size='sm'
+        onClick={handleConfirmLock}
+      >
+        Confirm
+      </Button>
+    </div>
+  </DialogContent>
+</Dialog>
+
     </div>
   );
 };

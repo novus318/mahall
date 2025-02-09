@@ -35,7 +35,7 @@ const PageComponent: React.FC<PageComponentProps> = ({ params }) => {
     const [collection, setCollection] = useState<Collection | null>(null);
     const [loading, setLoading] = useState(true);
     const [paying, setPaying] = useState(false);
-    const [amountToPay, setAmountToPay] = useState<number>(0);
+    const [amountToPay, setAmountToPay] = useState<any>(null);
 
     const { buildingId, roomId, contractId, rentId } = params;
 
@@ -94,7 +94,7 @@ const PageComponent: React.FC<PageComponentProps> = ({ params }) => {
             await loadRazorpayScript();
 
             const { data } = await axios.post(`${apiUrl}/api/razorpay/create-rent-order`, {
-                amount: amountToPay * 100, // Convert to paisa
+                amount: Number(amountToPay) * 100, // Convert to paisa
                 receipt: collection.period,
                 buildingId,
                 roomId,
@@ -106,7 +106,7 @@ const PageComponent: React.FC<PageComponentProps> = ({ params }) => {
 
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                amount: amountToPay * 100,
+                amount: Number(amountToPay) * 100,
                 currency,
                 name: 'Rent Collection',
                 description: collection.description || 'Rent Payment',
@@ -211,7 +211,7 @@ const PageComponent: React.FC<PageComponentProps> = ({ params }) => {
                                         type="number"
                                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                         value={amountToPay}
-                                        onChange={(e) => setAmountToPay(Number(e.target.value))}
+                                        onChange={(e:any) => setAmountToPay(e.target.value)}
                                         min="0"
                                         max={collection ? collection.amount - collection.paidAmount : 0}
                                     />

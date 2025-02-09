@@ -188,7 +188,10 @@ const Page = () => {
                                     <TableHead className="font-semibold">Tenant Name</TableHead>
                                     <TableHead className="font-semibold">Number</TableHead>
                                     <TableHead className="font-semibold">Period</TableHead>
-                                    <TableHead className="font-semibold">Amount</TableHead>
+                                    <TableHead>Rent</TableHead>
+                                    <TableHead>Deductions</TableHead>
+                                     <TableHead>Amount</TableHead>
+                                    <TableHead className="font-semibold">Due Amount</TableHead>
                                     <TableHead className="font-semibold">Paid Amount</TableHead>
                                     <TableHead className="font-semibold">Status</TableHead>
                                     <TableHead className="font-semibold">Action</TableHead>
@@ -204,11 +207,14 @@ const Page = () => {
                                             <TableCell>{collection.tenantName}</TableCell>
                                             <TableCell>{collection.tenantNumber}</TableCell>
                                             <TableCell>{collection.period}</TableCell>
+                                            <TableCell>{collection.amount}</TableCell>
+                                            <TableCell>{collection?.onleave?.deductAmount || 0}</TableCell>
                                             <TableCell>
                                                 {collection.PaymentAmount && collection.PaymentAmount > 0
                                                     ? collection.PaymentAmount
                                                     : collection?.amount}
                                             </TableCell>
+                                            <TableCell>₹{(collection?.PaymentAmount || collection?.amount) - collection?.paidAmount}</TableCell>
                                             <TableCell>
                                                 {collection?.status === 'Partial' ?
                                                     (

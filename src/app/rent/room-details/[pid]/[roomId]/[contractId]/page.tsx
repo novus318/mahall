@@ -16,6 +16,7 @@ import AdvancePay from '@/components/rent/AdvancePay';
 import EditContract from '@/components/rent/EditContract';
 import EditRoomNumber from '@/components/rent/EditRoomNumber';
 import { Progress } from '@/components/ui/progress';
+import CancelContract from '@/components/CancelContract';
 
 const SkeletonLoader = () => (
   <div className="animate-pulse p-2">
@@ -154,6 +155,8 @@ const PageComponent = ({ params }: PageProps) => {
                           <ReturnDeposit contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} bank={bank} />
                         ) : null}
                         <span className="text-red-600">Your contract has been expired </span>
+                        {contractDetails?.deposit === 0 && contractDetails?.status === 'active' &&
+                        <CancelContract contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} />}
                       </>
                     ) : (
                       <div className='flex justify-between items-center'>
@@ -161,6 +164,8 @@ const PageComponent = ({ params }: PageProps) => {
                         {contractDetails?.depositStatus === 'Paid' &&
                           <ReturnDeposit contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} bank={bank} />
                         }
+                        {contractDetails?.deposit === 0 && 
+                        <CancelContract contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} />}
                       </div>
                     )}
                   </div>
@@ -243,6 +248,8 @@ const PageComponent = ({ params }: PageProps) => {
                       <TableRow>
                         <TableHead>Month</TableHead>
                         <TableHead>Rent</TableHead>
+                        <TableHead>Deductions</TableHead>
+                        <TableHead>Amount</TableHead>
                         <TableHead>Paid Amount</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Action</TableHead>
@@ -255,6 +262,8 @@ const PageComponent = ({ params }: PageProps) => {
                             <TableRow key={rent._id}>
                               <TableCell>{rent?.period}</TableCell>
                               <TableCell>₹{rent?.amount}</TableCell>
+                              <TableCell>₹{rent?.onleave?.deductAmount || 0}</TableCell>
+                              <TableCell>₹{rent.PaymentAmount || rent?.amount}</TableCell>
                               <TableCell>{rent?.status === 'Partial' ?
                                 (
                                   <>

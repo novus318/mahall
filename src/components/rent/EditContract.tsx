@@ -8,6 +8,7 @@ import { Input } from '../ui/input'
 import axios from 'axios'
 import DatePicker from '../DatePicker'
 import { Label } from '../ui/label'
+import { format } from 'date-fns'
 
 const EditContract = ({ buildingID, roomId, fetchRoomDetails, contractDetails }: any) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -102,12 +103,12 @@ const EditContract = ({ buildingID, roomId, fetchRoomDetails, contractDetails }:
                                 <DatePicker disabled date={contract.fromDate} setDate={(date: any) => handleDateChange(date, 'fromDate')} />
                             </div>
                             <div>
-                                <p className='text-sm font-medium'>To Date</p>
+                                <p className='text-sm font-medium'>To Date:</p>
                                 <input
                                     type="date"
                                     className="border border-gray-300 rounded-md p-2 text-sm w-full"
-                                    value={contract.toDate || ''}
-                                    onChange={(e: any) => handleDateChange(e.target.value, 'toDate')}
+                                    value={contract.toDate ? format(new Date(contract.toDate), 'yyyy-MM-dd') : ''}
+                                    onChange={(e) => handleDateChange(e.target.value, 'toDate')}
                                 />
                             </div>
                         </div>

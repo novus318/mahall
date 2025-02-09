@@ -64,12 +64,17 @@ const UpdateDeposit = ({ contractDetails, roomId, buildingId, fetchRoomDetails, 
   return (
     <div>
       {contractDetails?.depositStatus === 'Pending' ? (
-        <Badge
+     <>{ contractDetails?.deposit === 0 ?
+      <Badge>
+      no deposit
+    </Badge>
+     : <Badge
           onClick={() => {
             setShowDialog(true)
           }}>
           {contractDetails?.depositStatus}
-        </Badge>
+        </Badge>}
+     </>   
       ) : (
         <Badge>
           {contractDetails?.depositStatus}

@@ -10,7 +10,7 @@ const PageComponent = ({ params }: any) => {
     const [collection, setCollection] = useState<any>({});
     const [loading, setLoading] = useState(true);
     const [paying, setPaying] = useState(false);
-    const [amountToPay, setAmountToPay] = useState<number>(0);
+    const [amountToPay, setAmountToPay] = useState<any>(null);
     const { recieptNo } = params;
 
     useEffect(() => {
@@ -62,7 +62,7 @@ const PageComponent = ({ params }: any) => {
     };
 
     const handlePayment = async () => {
-        if (collection.paymentType === 'yearly' && (collection.paidAmount + amountToPay) > collection.totalAmount) {
+        if (collection.paymentType === 'yearly' && (collection.paidAmount + Number(amountToPay)) > collection.totalAmount) {
             setPaying(false);
             toast({
                 title: 'Payment Error',
@@ -76,7 +76,7 @@ const PageComponent = ({ params }: any) => {
             await loadRazorpayScript();
 
             const { data } = await axios.post(`${apiUrl}/api/razorpay/create-order`, {
-                amount: amountToPay * 100,
+                amount: Number(amountToPay) * 100,
                 receipt: collection.receiptNumber,
             });
 
@@ -84,7 +84,7 @@ const PageComponent = ({ params }: any) => {
 
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                amount: amountToPay * 100,
+                amount: Number(amountToPay) * 100,
                 currency,
                 name: 'Tution fees',
                 description: collection.description,
@@ -178,8 +178,8 @@ const PageComponent = ({ params }: any) => {
                                     <input
                                         type="number"
                                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        value={amountToPay}
-                                        onChange={(e) => setAmountToPay(Number(e.target.value))}
+                                        value={amountToPay }
+                                        onChange={(e:any) => setAmountToPay(e.target.value)}
                                         min="0"
                                         max={collection.amount - collection.paidAmount}
                                     />
@@ -188,13 +188,19 @@ const PageComponent = ({ params }: any) => {
                         )}
                     </div>
                     <div className="mt-6">
+                   {collection.status === 'Partial' || collection.status === 'Unpaid' ? 
                         <Button
-                            className="w-full"
-                            onClick={handlePayment}
-                            disabled={paying || (collection.paymentType === 'yearly' && amountToPay <= 0)}
-                        >
-                            {paying ? <Loader2 className='animate-spin' /> : 'Pay Now'}
-                        </Button>
+                        className="w-full"
+                        onClick={handlePayment}
+                        disabled={paying || (collection.paymentType === 'yearly' && amountToPay <= 0)}
+                    >
+                        {paying ? <Loader2 className='animate-spin' /> : 'Pay Now'}
+                    </Button>:
+                    <Button
+                        className="w-full"
+                        disabled
+                    >{collection?.status}</Button>
+                   }
                     </div>
                 </div>
             )}

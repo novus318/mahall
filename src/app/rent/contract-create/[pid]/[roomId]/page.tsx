@@ -95,13 +95,6 @@ const PageComponent = ({ params }: PageProps) => {
             });
             isValid = false;
         }
-        if (!contract.deposit || contract.deposit <= 0) {
-            toast({
-                title: 'Deposit should be greater than 0',
-                variant: 'destructive',
-            });
-            isValid = false;
-        }
         if (!contract.tenant.name || contract.tenant.name.trim() === '') {
             toast({
                 title: 'Tenant Name is required',

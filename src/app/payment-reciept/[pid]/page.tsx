@@ -392,21 +392,21 @@ const PageComponent = ({ params }: PageProps) => {
                 </TableRow>
                 {collection?.paymentType === 'yearly' && collection.partialPayments?.length > 0 && (
                   <TableRow>
-                    <TableCell className="py-3">
+                    <TableCell colSpan={4} className="py-3">
                       <div className="space-y-2">
                         {collection?.partialPayments?.map((payment: any, index: number) => (
-                          <div key={index} className="flex justify-between text-sm text-gray-600">
+                          <div key={index} className="flex justify-between text-sm text-gray-600 gap-4">
                             <div>
-                              <span className="font-medium">Paid: ₹{payment.amount.toFixed(2)}</span>
-                              <span className="mx-2">•</span>
-                              <span className="text-xs font-bold">
+                              <p className="font-medium">₹{payment.amount.toFixed(2)}</p>
+                              {/* <p className="mx-2">•</p> */}
+                              <p className="text-xs">
                                 {format(new Date(payment?.PaymentDate ? payment?.PaymentDate : new Date()), 'MMM dd, yyyy')}
-                              </span>
+                              </p>
                             </div>
                             <div>
-                              {payment?.description && <span className='text-xs'>{payment.description}</span>}
+                              {payment?.description && <p className='text-xs'>{payment.description}</p>}
                               {payment?.receiptNumber && (
-                                <span className="ml-2 text-gray-500 text-xs font-bold">Receipt: {payment.receiptNumber}</span>
+                                <p className="text-gray-500 text-xs font-medium">Receipt: {payment.receiptNumber}</p>
                               )}
                             </div>
                           </div>

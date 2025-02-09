@@ -14,7 +14,7 @@ import DatePicker from './DatePicker';
 
 
 
-const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections,bank }: any) => {
+const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections, bank }: any) => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const [loading, setLoading] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -30,8 +30,9 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections,bank
     const [payDate, setPayDate] = useState(null);
     const [leaveDays, setLeaveDays] = useState(null);
     const [advanceRepayment, setAdvanceRepayment] = useState(null);
+    const [paymentAmount, setPaymentAmount] = useState<any>(null);
 
-  
+
 
     const handleOpenDialog = (collection: any) => {
         setIsDialogOpen(true);
@@ -53,7 +54,7 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections,bank
             });
             return;
         }
-        if(amount<0) {
+        if (amount < 0) {
             toast({
                 title: 'Invalid amount',
                 description: 'Amount cannot be in minus',
@@ -61,7 +62,7 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections,bank
             });
             return;
         }
-        if(advanceRepayment && advanceRepayment> selectedCollection?.advancePayment) {
+        if (advanceRepayment && advanceRepayment > selectedCollection?.advancePayment) {
             toast({
                 title: 'Invalid advance repayment amount',
                 description: 'Advance repayment amount cannot be more than advance amount',
@@ -77,7 +78,8 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections,bank
                 paymentType,
                 newStatus: 'Paid',
                 accountId: targetAccount,
-                amount,
+                PaymentAmount: amount,
+                amount: paymentAmount,
                 leaveDays: leaveDays,
                 leaveDeduction,
                 advanceRepayment: advanceRepayment
@@ -184,16 +186,19 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections,bank
         // Round off to the nearest integer and then format to two decimal places
         const roundedAmount = Math.round(amount * 100) / 100; // Round to two decimal places
         return `₹${roundedAmount.toLocaleString('en-IN', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         })}`;
-      };
-      
+    };
+
+    useEffect(() => {
+        setPaymentAmount(amount);
+    }, [amount])
 
     return (
         <>
             <Button size='sm' onClick={handleOpenDialog} className="cursor-pointer">
-                Update payment
+                Update
             </Button>
             <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
                 <DialogContent>
@@ -205,17 +210,17 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections,bank
                         <br />
                         Rent Amount: ₹{(selectedCollection?.amount ?? 0).toFixed(2)}
                         <br />
-                        Name: {selectedCollection?.tenantName}<br/>
+                        Name: {selectedCollection?.tenantName}<br />
                     </DialogDescription>
                     {!otpSent && (<div>
                         <div>
                             <p className='text-sm font-medium'>Date of Pay</p>
                             <input
-        type="date"
-        className="border border-gray-300 rounded-md p-2 text-sm w-full"
-        value={payDate || ''}
-        onChange={(e:any) => setPayDate(e.target.value)}
-        />
+                                type="date"
+                                className="border border-gray-300 rounded-md p-2 text-sm w-full"
+                                value={payDate || ''}
+                                onChange={(e: any) => setPayDate(e.target.value)}
+                            />
                             {/* <DatePicker date={payDate} setDate={setPayDate} /> */}
                         </div>
                         <div className='space-y-2 mb-3'>
@@ -229,7 +234,7 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections,bank
                                             <SelectValue placeholder="Select account" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {bank?.map((acc:any) => (
+                                            {bank?.map((acc: any) => (
                                                 <SelectItem key={acc._id} value={acc._id}>
                                                     {acc.name} - {acc.holderName}
                                                 </SelectItem>
@@ -267,6 +272,13 @@ const UpdateRentCollection = ({ selectedCollection, fetchPendingCollections,bank
 
                         </div>
                         <h4 className='font-semibold text-muted-foreground'>Amount : {formatCurrency(amount)}</h4>
+                        <Input
+                            value={paymentAmount}
+                            className="border border-gray-300 rounded-md p-2 text-sm w-full"
+                            onChange={
+                                (e: any) => setPaymentAmount(e.target.value)
+                            }
+                        />
                     </div>)}
                     {otpSent && (
                         <div className='grid grid-cols-5 items-center gap-2'>

@@ -15,6 +15,7 @@ import ContractDeposit from '@/components/ContractDeposit';
 import AdvancePay from '@/components/rent/AdvancePay';
 import EditContract from '@/components/rent/EditContract';
 import EditRoomNumber from '@/components/rent/EditRoomNumber';
+import { Progress } from '@/components/ui/progress';
 
 const SkeletonLoader = () => (
   <div className="animate-pulse p-2">
@@ -59,7 +60,7 @@ interface BankAccount {
 }
 
 const PageComponent = ({ params }: PageProps) => {
-  const { pid, roomId,contractId } = params;
+  const { pid, roomId, contractId } = params;
   const [room, setRoom] = useState<any>(null);
   const [buildingName, setBuildingName] = useState<any>(null);
   const [buildingID, setBuildingID] = useState<any>(null)
@@ -89,12 +90,12 @@ const PageComponent = ({ params }: PageProps) => {
 
   const fetchAccounts = () => {
     axios.get(`${apiUrl}/api/account/get`).then(response => {
-        setBank(response.data.data)
+      setBank(response.data.data)
     })
-        .catch(error => {
-            console.log("Error fetching accounts:", error)
-        })
-}
+      .catch(error => {
+        console.log("Error fetching accounts:", error)
+      })
+  }
 
   useEffect(() => {
     fetchRoomDetails();
@@ -123,7 +124,7 @@ const PageComponent = ({ params }: PageProps) => {
             <h4 className='font-bold text-muted-foreground'>
               Building: {buildingID} - {buildingName}
             </h4>
-            <EditRoomNumber roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} room={room?.roomNumber} building={buildingName}/>
+            <EditRoomNumber roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} room={room?.roomNumber} building={buildingName} />
           </div>
         </div>
       </div>
@@ -156,22 +157,22 @@ const PageComponent = ({ params }: PageProps) => {
                       </>
                     ) : (
                       <div className='flex justify-between items-center'>
-                        <span className={contractDetails?.status ==='inactive' ? 'text-yellow-600': 'text-green-700'}>Contract {contractDetails?.status}</span>
+                        <span className={contractDetails?.status === 'inactive' ? 'text-yellow-600' : 'text-green-700'}>Contract {contractDetails?.status}</span>
                         {contractDetails?.depositStatus === 'Paid' &&
                           <ReturnDeposit contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} bank={bank} />
                         }
                       </div>
                     )}
                   </div>
-                  {contractDetails?.status === 'active' && 
-                  <div className='grid grid-cols-2 gap-2 md:grid-cols-4'>
-                  <EditContract buildingID={pid} roomId={roomId} fetchRoomDetails={fetchRoomDetails} contractDetails={contractDetails}/>
-                </div>
-                }
+                  {contractDetails?.status === 'active' &&
+                    <div className='grid grid-cols-2 gap-2 md:grid-cols-4'>
+                      <EditContract buildingID={pid} roomId={roomId} fetchRoomDetails={fetchRoomDetails} contractDetails={contractDetails} />
+                    </div>
+                  }
                 </div>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="grid gap-2">
-               
+
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-medium">From</div>
                       <div>{contractDetails?.from ? format(contractDetails?.from, 'PPP') : 'Null'}</div>
@@ -193,7 +194,7 @@ const PageComponent = ({ params }: PageProps) => {
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-medium">Deposit status</div>
                       <div>
-                        <UpdateDeposit contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} bank={bank}/>
+                        <UpdateDeposit contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} bank={bank} />
                       </div>
                     </div>
                     {contractDetails?.depositStatus === 'Returned' && (
@@ -241,34 +242,82 @@ const PageComponent = ({ params }: PageProps) => {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Month</TableHead>
-                        <TableHead>Amount</TableHead>
+                        <TableHead>Rent</TableHead>
+                        <TableHead>Paid Amount</TableHead>
                         <TableHead>Status</TableHead>
+                        <TableHead>Action</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {contractDetails?.rentCollection?.slice().reverse().map((rent: any) => {
                         return (
-                          <TableRow key={rent._id}>
-                            <TableCell>{rent?.period}</TableCell>
-                            <TableCell>₹{rent.amount}</TableCell>
-                            <TableCell>
-                              {rent?.status === 'Pending' ? (
-                                <Badge>{rent.status}</Badge>
-                              ) : rent?.status === 'Rejected' ?
+                          <>
+                            <TableRow key={rent._id}>
+                              <TableCell>{rent?.period}</TableCell>
+                              <TableCell>₹{rent?.amount}</TableCell>
+                              <TableCell>{rent?.status === 'Partial' ?
                                 (
+                                  <>
+                                    <Progress
+                                      value={(rent?.paidAmount! / rent.PaymentAmount) * 100}
+                                      className="h-2"
+                                    />
+                                    <div className="text-xs text-gray-500">
+                                      Paid: ₹{rent?.paidAmount?.toFixed(2)}
+                                    </div>
+                                  </>
+                                ) :
+                                rent?.paidAmount}</TableCell>
+                              <TableCell>
+                                {rent?.status === 'Pending' ? (
+                                  <Badge>{rent.status}</Badge>
+                                ) : rent?.status === 'Rejected' ? (
                                   <Badge color="error">{rent.status}</Badge>
+                                ) : rent?.status === 'Partial' ? (
+                                  <Badge color="warning">{rent.status}</Badge>
                                 ) : (
-                                  <DownloadrentReciept collection={rent} contractDetails={contractDetails} room={room} />
+                                  <Badge color="success">{rent.status}</Badge>
                                 )}
-                            </TableCell>
-                          </TableRow>
+                              </TableCell>
+                              <TableCell>
+                              {rent.status === 'Paid' && <DownloadrentReciept collection={rent} contractDetails={contractDetails} room={room} />}
+                              {rent.status === 'Partial' && (
+                               null)}
+                              </TableCell>
+                            </TableRow>
+                            {rent.partialPayments?.length > 0 && (
+                              <TableRow>
+                                <TableCell colSpan={7} className="py-3">
+                                  <div className="pl-6 space-y-2">
+                                    {rent.partialPayments.map((payment: any, index: number) => (
+                                      <div key={index} className="flex justify-between text-sm text-gray-600">
+                                        <div>
+                                          <span className="font-medium">Paid: ₹{payment.amount.toFixed(2)}</span>
+                                          <span className="mx-2">•</span>
+                                          <span className="text-xs font-bold">
+                                            {format(new Date(payment?.PaymentDate ? payment?.PaymentDate : new Date()), 'MMM dd, yyyy')}
+                                          </span>
+                                        </div>
+                                        <div>
+                                          {payment?.description && <span className="text-xs">{payment.description}</span>}
+                                          {payment?.receiptNumber && (
+                                            <span className="ml-2 text-gray-500 text-xs font-bold">Receipt: {payment.receiptNumber}</span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            )}
+                          </>
                         );
                       })}
-                      {contractDetails?.rentCollection?.length === 0 &&
+                      {contractDetails?.rentCollection?.length === 0 && (
                         <TableRow>
                           <TableCell colSpan={3}>No rent collection found.</TableCell>
                         </TableRow>
-                      }
+                      )}
                     </TableBody>
                   </Table>
                 </div>

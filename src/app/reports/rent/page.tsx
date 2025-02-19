@@ -199,6 +199,8 @@ const RentPage = () => {
               <Text style={[styles.tableCell, styles.headerCell]}>Tenant Name</Text>
               <Text style={[styles.tableCell, styles.headerCell]}>Period</Text>
               <Text style={[styles.tableCell, styles.headerCell]}>Amount</Text>
+              <Text style={[styles.tableCell, styles.headerCell]}>Due Amount</Text>
+              <Text style={[styles.tableCell, styles.headerCell]}>Paid Amount</Text>
               <Text style={[styles.tableCell, styles.headerCell]}>Due Date</Text>
               <Text style={[styles.tableCell, styles.headerCell]}>Pay Date</Text>
               <Text style={[styles.tableCell, styles.headerCell]}>Status</Text>
@@ -212,6 +214,10 @@ const RentPage = () => {
                 <Text style={styles.tableCell}>{collection.tenantName}</Text>
                 <Text style={styles.tableCell}>{collection.period}</Text>
                 <Text style={styles.tableCell}>{formatCurrency(collection.amount)}</Text>
+                <Text style={styles.tableCell}>{formatCurrency(collection.PaymentAmount && collection.PaymentAmount > 0
+                                                    ? collection.PaymentAmount
+                                                    : collection?.amount)}</Text>
+                <Text style={styles.tableCell}>{formatCurrency((collection?.PaymentAmount || collection?.amount) - collection?.paidAmount)}</Text>
                 <Text style={styles.tableCell}>{new Date(collection.dueDate).toLocaleDateString()}</Text>
                 <Text style={styles.tableCell}>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString(): 'Pending'}</Text>
                 <Text style={styles.tableCell}>{collection?.status}</Text>
@@ -345,6 +351,7 @@ const RentPage = () => {
   >
     <option value="">All</option>
     <option value="Paid">Paid</option>
+    <option value="Partial">Partial</option>
     <option value="Pending">Pending</option>
     <option value="Rejected">Rejected</option>
   </select>
@@ -402,7 +409,9 @@ const RentPage = () => {
                 <TableHead className="font-medium">Room No.</TableHead>
                 <TableHead className="font-medium">Tenant Name</TableHead>
                 <TableHead className="font-medium">Period</TableHead>
-                <TableHead className="font-medium">Amount</TableHead>
+               <TableHead>Amount</TableHead>
+                                          <TableHead className="font-semibold">Due Amount</TableHead>
+                                          <TableHead className="font-semibold">Paid Amount</TableHead>
                 <TableHead className="font-medium">Due Date</TableHead>
                 <TableHead className="font-medium">Pay Date</TableHead>
                 <TableHead className="font-medium">Status</TableHead>
@@ -416,6 +425,10 @@ const RentPage = () => {
                 <TableCell>{collection.tenantName}</TableCell>
                 <TableCell>{collection.period}</TableCell>
                 <TableCell>{formatCurrency(collection.amount)}</TableCell>
+                <TableCell>{formatCurrency(collection.PaymentAmount && collection.PaymentAmount > 0
+                                                    ? collection.PaymentAmount
+                                                    : collection?.amount)}</TableCell>
+                <TableCell>{formatCurrency((collection?.PaymentAmount || collection?.amount) - collection?.paidAmount)}</TableCell>
                 <TableCell>{new Date(collection.dueDate).toLocaleDateString()}</TableCell>
                 <TableCell>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString(): 'Pending'}</TableCell>
                   <TableCell>{collection?.status}</TableCell>

@@ -55,7 +55,7 @@ const TutionPage = () => {
       const response = await axios.get(`${apiUrl}/api/reports/get/collections/byDate`, { params: data });
       if (response.data.success) {
         setCollections(response.data.collections);
-        setFilteredCollections(response.data.collections); 
+        setFilteredCollections(response.data.collections);
         setFromDate(firstDayOfMonth);
         setToDate(now);
         setLoading(false);
@@ -137,10 +137,10 @@ const TutionPage = () => {
       }
       setFilteredCollections(data);
     };
-  
+
     applyFilters();
-  }, [collections, statusFilter]); 
-  
+  }, [collections, statusFilter]);
+
 
 
   const formatDate = (dateString: any) => {
@@ -150,62 +150,87 @@ const TutionPage = () => {
       time: format(date, 'hh:mm a'),
     };
   };
-  const formatCurrency = (amount:any) => {
+  const formatCurrency = (amount: any) => {
     return `₹${amount.toLocaleString('en-IN', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;
   };
-  const handleReceiptClick = async (data: any) => {
-    const totalAmount = data.reduce((sum: number, collection: any) => sum + (collection?.amount || 0), 0);
+
+
+  const handleReceiptClick = async (data:any) => {
+    const totalAmount = data.reduce((sum:any, collection:any) => sum + (collection?.amount || 0), 0);
     const totalCollections = data.length;
+  
     const doc = (
       <Document>
         <Page size="A4" style={styles.page}>
-          {/* Header Section */}
+          {/* Header */}
           <View style={styles.header}>
             <Image src="/vkgclean.png" style={styles.logo} />
-            <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA</Text>
-            <Text style={styles.headerText}>VELLAP, P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
+            <Text style={styles.headerTitle}>VKG CLEAN FOUNDATION</Text>
+            <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. | P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
             <Text style={styles.headerText}>Phone: +91 9876543210</Text>
             <View style={styles.separator} />
           </View>
   
-          {/* Date Range Section */}
-          <Text style={styles.sectionTitle}>
-            Collections From: {formatDate(fromDate).dayMonthYear} - To: {formatDate(toDate).dayMonthYear}
-          </Text>
+          {/* Summary Section */}
           <View style={styles.summaryContainer}>
-    <Text style={styles.summaryText}>Total Amount: {formatCurrency(totalAmount)}</Text>
-    <Text style={styles.summaryText}>Total Collections: {totalCollections}</Text>
-</View>
-
-          {/* Table Section */}
+            <Text style={styles.sectionTitle}>
+              Collections From: {formatDate(fromDate).dayMonthYear} - To: {formatDate(toDate).dayMonthYear}
+            </Text>
+            <Text style={styles.summaryText}>Total Amount: {formatCurrency(totalAmount)}</Text>
+            <Text style={styles.summaryText}>Total Collections: {totalCollections}</Text>
+          </View>
+  
+          {/* Table */}
           <View style={styles.tableContainer}>
             {/* Table Header */}
             <View style={[styles.tableRow, styles.tableHeader]}>
-              <Text style={[styles.tableCell, styles.headerCell]}>Date</Text>
-              <Text style={[styles.tableCell, styles.headerCell]}>Receipt No.</Text>
-              <Text style={[styles.tableCell, styles.headerCell]}>House</Text>
-              <Text style={[styles.tableCell, styles.headerCell]}>Amount</Text>
-              <Text style={[styles.tableCell, styles.headerCell]}>Family Head</Text>
-              <Text style={[styles.tableCell, styles.headerCell]}>Status</Text>
+              {['#', 'Date', 'Receipt No.', 'House', 'Amount', 'Paid Amount', 'Family Head', 'Status'].map((header, index) => (
+                <Text key={index} style={[styles.tableCell, styles.headerCell]}>{header}</Text>
+              ))}
             </View>
   
             {/* Table Data */}
-            {data.map((collection: any, index: number) => (
-              <View key={index} style={styles.tableRow}>
-                <Text style={styles.tableCell}>{collection?.collectionMonth}</Text>
-                <Text style={styles.tableCell}>{collection?.receiptNumber}</Text>
-                <Text style={styles.tableCell}>{collection?.houseId?.number}</Text>
-                <Text style={styles.tableCell}>{formatCurrency(collection?.amount)}</Text>
-                <Text style={styles.tableCell}>{collection?.memberId?.name}</Text>
-                <Text style={styles.tableCell}>{collection?.status}</Text>
-              </View>
-            ))}
-             {data?.length === 0 && (
+            {data.length > 0 ? (
+              data.map((collection:any, index:any) => (
+                <View key={index}>
+                  <View style={[styles.tableRow, index % 2 ? styles.altRow : {}]}>
+                    <Text style={styles.tableCell}>{index + 1}</Text>
+                    <Text style={styles.tableCell}>{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}</Text>
+                    <Text style={styles.tableCell}>{collection?.receiptNumber}</Text>
+                    <Text style={styles.tableCell}>{collection?.houseId?.number}</Text>
+                    <Text style={[styles.tableCell, styles.rightAlign]}>{formatCurrency(collection?.amount)}</Text>
+                    <Text style={[styles.tableCell, styles.rightAlign]}>
+                      {collection?.paymentType === 'monthly' && collection?.status === 'Paid'
+                        ? formatCurrency(collection?.amount || 0)
+                        : formatCurrency(collection?.paidAmount || 0)}
+                    </Text>
+                    <Text style={styles.tableCell}>{collection?.memberId?.name}</Text>
+                    <Text style={styles.tableCell}>{collection?.status}</Text>
+                  </View>
+  
+                  {/* Partial Payments Section */}
+                  {collection?.paymentType === 'yearly' && collection.partialPayments?.length > 0 && (
+                    <View style={styles.partialPaymentContainer}>
+                      <Text style={styles.partialTitle}>Partial Payments for {collection?.receiptNumber}</Text>
+                      {collection.partialPayments.map((payment:any, idx:any) => (
+                        <View key={idx} style={styles.partialRow}>
+                          <Text style={styles.partialCell}>
+                            {formatCurrency(payment.amount)} - {format(new Date(payment?.PaymentDate || new Date()), 'MMM dd, yyyy')}
+                            {payment?.description && ` (${payment.description})`}
+                            {payment?.receiptNumber && ` - Receipt: ${payment.receiptNumber}`}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                </View>
+              ))
+            ) : (
               <View style={styles.tableRow}>
-                <Text style={styles.tableCell}>No collections</Text>
+                <Text style={styles.noData}>No collections found.</Text>
               </View>
             )}
           </View>
@@ -214,88 +239,118 @@ const TutionPage = () => {
     );
   
     const blob = await pdf(doc).toBlob();
-    saveAs(blob, `Tution-fee-From ${formatDate(fromDate).dayMonthYear || 'Invalid date'} - To ${formatDate(toDate).dayMonthYear || 'Invalid date'}.pdf`);
+    saveAs(
+      blob,
+      `Tution-fee-From ${formatDate(fromDate).dayMonthYear || 'Invalid date'} - To ${formatDate(toDate).dayMonthYear || 'Invalid date'}.pdf`
+    );
   };
   
+  // Styles
   const styles = StyleSheet.create({
     page: {
-        padding: 30, // Padding for A4 layout
-        fontFamily: 'AnekMalayalam',
-        fontSize: 11,
-        color: '#333',
-        lineHeight: 1.5,
+      padding: 30,
+      fontFamily: 'AnekMalayalam',
+      fontSize: 11,
+      color: '#333',
+      lineHeight: 1.5,
     },
     header: {
-        textAlign: 'center',
+      textAlign: 'center',
         marginBottom: 15,
     },
     headerTitle: {
         fontSize: 14,
-        fontWeight: 'bold',
-        marginBottom: 5,
+      fontWeight: 'bold',
+      marginBottom: 5,
     },
     headerText: {
-        fontSize: 10,
-        marginBottom: 4,
+      fontSize: 10,
+      marginBottom: 4,
     },
     logo: {
         width: 80,
         height: 80,
-        marginBottom: 10,
-        alignSelf: 'center',
+      marginBottom: 10,
+      alignSelf: 'center',
     },
     separator: {
-        borderBottomWidth: 2,
-        borderBottomColor: '#E5E7EB',
-        marginVertical: 15,
+      borderBottomWidth: 2,
+      borderBottomColor: '#E5E7EB',
+      marginVertical: 15,
+    },
+    summaryContainer: {
+      padding: 10,
+      borderWidth: 1,
+      borderColor: '#E5E7EB',
+      backgroundColor: '#F9F9F9',
+      marginBottom: 15,
     },
     sectionTitle: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        color: '#444',
-        marginBottom: 15,
+      fontSize: 12,
+      fontWeight: 'bold',
+      marginBottom: 5,
+    },
+    summaryText: {
+      fontSize: 11,
+      fontWeight: 'bold',
+      color: '#333',
+      textAlign: 'right',
     },
     tableContainer: {
-        marginTop: 10,
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
+      borderWidth: 1,
+      borderColor: '#E5E7EB',
     },
     tableRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        borderBottomWidth: 1,
-        borderBottomColor: '#E5E7EB',
-        paddingVertical: 8,
-        paddingHorizontal: 5,
+      flexDirection: 'row',
+      paddingVertical: 6,
+      paddingHorizontal: 5,
+      borderBottomWidth: 1,
+      borderBottomColor: '#E5E7EB',
     },
     tableHeader: {
         backgroundColor: '#F5F5F5',
         fontWeight: 'bold',
     },
     tableCell: {
-        flex: 1,
-        textAlign: 'center',
-        fontSize: 10,
+      flex: 1,
+      textAlign: 'center',
+      fontSize: 10,
     },
     headerCell: {
-        fontWeight: 'bold',
+      fontWeight: 'bold',
     },
-    summaryContainer: {
-        marginTop: 15,
-        marginBottom: 10,
-        padding: 10,
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
-        backgroundColor: '#F9F9F9', // Light background for summary
+    altRow: {
+      backgroundColor: '#f7f7f7',
     },
-    summaryText: {
-        fontSize: 11,
-        fontWeight: 'bold',
-        color: '#333',
-        textAlign: 'right', // Right align for a neat summary look
+    noData: {
+      textAlign: 'center',
+      fontSize: 10,
+      fontWeight: 'bold',
+      padding: 10,
     },
-});
-
+    rightAlign: {
+      textAlign: 'right',
+    },
+    partialPaymentContainer: {
+      padding: 10,
+      borderWidth: 1,
+      borderColor: '#E5E7EB',
+      backgroundColor: '#F9F9F9',
+    },
+    partialTitle: {
+      fontWeight: 'bold',
+      marginBottom: 5,
+    },
+    partialRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    partialCell: {
+      fontSize: 10,
+      color: '#444',
+    },
+  });
+  
   
 
   if (loading) return <RecentrecieptSkeleton />;
@@ -308,7 +363,7 @@ const TutionPage = () => {
       <div className="max-w-6xl m-auto my-3">
         <div>
           <h2 className="text-2xl font-semibold mb-4">
-           Tution fee From {formatDate(fromDate).dayMonthYear || 'Invalid date'} - To{' '}
+            Tution fee From {formatDate(fromDate).dayMonthYear || 'Invalid date'} - To{' '}
             {formatDate(toDate).dayMonthYear || 'Invalid date'}
           </h2>
         </div>
@@ -324,15 +379,16 @@ const TutionPage = () => {
           <div className="md:col-span-2">
             <p className="text-sm font-medium">Filter by Status</p>
             <select
-    value={statusFilter}
-    onChange={(e) => setStatusFilter(e.target.value)}
-    className='p-2 border border-gray-300 bg-white rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-  >
-    <option value=''>All</option>
-    <option value='Paid'>Paid</option>
-    <option value='Unpaid'>Unpaid</option>
-    <option value='Rejected'>Rejected</option>
-  </select>
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className='p-2 border border-gray-300 bg-white rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+            >
+              <option value=''>All</option>
+              <option value='Paid'>Paid</option>
+              <option value='Partial'>Partial</option>
+              <option value='Unpaid'>Unpaid</option>
+              <option value='Rejected'>Rejected</option>
+            </select>
           </div>
           <div className="md:pt-4">
             <Button size="sm" onClick={fetchCollections} disabled={loading} className="w-full md:w-auto">
@@ -346,39 +402,71 @@ const TutionPage = () => {
           </div>
         </div>
         <div className="rounded-t-md bg-gray-100 p-1">
-          <Table className="bg-white">
-            <TableHeader className="bg-gray-100">
-              <TableRow>
-              <TableHead className="font-medium">Serial No.</TableHead>
-                <TableHead className="font-medium">Date</TableHead>
-                <TableHead className="font-medium">Receipt No.</TableHead>
-                <TableHead className="font-medium">House</TableHead>
-                <TableHead className="font-medium">Amount</TableHead>
-                <TableHead className="font-medium">Family Head</TableHead>
-                <TableHead className="font-medium">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredCollections?.map((collection: any, index: number) => (
-                <TableRow key={collection?._id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}</TableCell>
-                  <TableCell>{collection?.receiptNumber}</TableCell>
-                  <TableCell>{collection?.houseId?.number}</TableCell>
-                  <TableCell>{formatCurrency(collection?.amount)}</TableCell>
-                  <TableCell>{collection?.memberId?.name}</TableCell>
-                  <TableCell>{collection?.status}</TableCell>
-                </TableRow>
-              ))}
-              {filteredCollections?.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center">
-                    No collections found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+        <Table className="bg-white">
+  <TableHeader className="bg-gray-100">
+    <TableRow>
+      <TableHead className="font-medium">Serial No.</TableHead>
+      <TableHead className="font-medium">Date</TableHead>
+      <TableHead className="font-medium">Receipt No.</TableHead>
+      <TableHead className="font-medium">House</TableHead>
+      <TableHead className="font-medium">Collection Amount</TableHead>
+      <TableHead className="font-medium">Amount Paid</TableHead>
+      <TableHead className="font-medium">Family Head</TableHead>
+      <TableHead className="font-medium">Status</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    {filteredCollections?.map((collection: any, index: number) => (
+      <React.Fragment key={collection?._id}>
+        {/* Main Row */}
+        <TableRow>
+          <TableCell>{index + 1}</TableCell>
+          <TableCell>{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}</TableCell>
+          <TableCell>{collection?.receiptNumber}</TableCell>
+          <TableCell>{collection?.houseId?.number}</TableCell>
+          <TableCell>{formatCurrency(collection?.amount)}</TableCell>
+          <TableCell>{collection?.paymentType === 'monthly' && collection?.status === 'Paid' ? formatCurrency(collection?.amount||0) : formatCurrency(collection?.paidAmount||0)}</TableCell>
+          <TableCell>{collection?.memberId?.name}</TableCell>
+          <TableCell>{collection?.status}</TableCell>
+        </TableRow>
+
+        {/* Partial Payments Row (for yearly payments) */}
+        {collection?.paymentType === 'yearly' && collection.partialPayments?.length > 0 && (
+          <TableRow>
+            <TableCell colSpan={7} className="py-3">
+              <div className="pl-6 space-y-2">
+                {collection.partialPayments.map((payment: any, index: number) => (
+                  <div key={index} className="flex justify-between text-sm text-gray-600">
+                    <div>
+                      <span className="font-medium">Paid: {formatCurrency(payment.amount)}</span>
+                      <span className="mx-2">•</span>
+                      <span className="text-xs font-bold">
+                        {format(new Date(payment?.PaymentDate ? payment?.PaymentDate : new Date()), 'MMM dd, yyyy')}
+                      </span>
+                    </div>
+                    <div>
+                      {payment?.description && <span className="text-xs">{payment.description}</span>}
+                      {payment?.receiptNumber && (
+                        <span className="ml-2 text-gray-500 text-xs font-bold">Receipt: {payment.receiptNumber}</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </TableCell>
+          </TableRow>
+        )}
+      </React.Fragment>
+    ))}
+    {filteredCollections?.length === 0 && (
+      <TableRow>
+        <TableCell colSpan={7} className="text-center">
+          No collections found.
+        </TableCell>
+      </TableRow>
+    )}
+  </TableBody>
+</Table>
         </div>
       </div>
     </div>

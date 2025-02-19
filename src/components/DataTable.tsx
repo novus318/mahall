@@ -99,110 +99,93 @@ const DataTable = () => {
     setLoadingStates((prev) => ({ ...prev, [houseId]: true }));
 
     try {
-     if(house?.paymentType === 'yearly'){
-      const response = await axios.post(
-        WHATSAPP_API_URL,
-        {
-          messaging_product: 'whatsapp',
-          to: `${house.memberId.whatsappNumber}`,
-          type: 'template',
-          template: {
-            name: 'yearly_collection_reminder',
-            language: {
-              code: 'ml'
-            },
-            components: [
-              {
-                type: 'body',
-                parameters: [
-                  { type: 'text', text: `${house.memberId.name}` },
-                  { type: 'text', text: `${house?.paidYear}` },
-                  { type: 'text', text: `${house?.houseId?.number}` },
-                  { type: 'text', text: `${house?.totalAmount}` },
-                  { type: 'text', text: `${house?.totalAmount - house?.paidAmount}` },
-                ]
-              },
-              {
-                type: 'button',
-                sub_type: 'url',
-                index: '0',
-                parameters: [
-                  { type: 'text', text: `${house.memberId._id}` }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${ACCESS_TOKEN}`,
-            'Content-Type': 'application/json'
-          }
+        const whatsappNumber = house.memberId.whatsappNumber;
+        const mobileNumber = house.memberId.mobile;
+
+        // Check if the last 8 digits of both numbers match
+        const last8DigitsWhatsapp = whatsappNumber.slice(-8);
+        const last8DigitsMobile = mobileNumber.slice(-8);
+
+        const shouldSendToBoth = last8DigitsWhatsapp !== last8DigitsMobile;
+
+        const sendReminder = async (to: string) => {
+            const templateName = house?.paymentType === 'yearly' ? 'yearly_collection_reminder' : 'collection_reminder';
+            const templateParameters = house?.paymentType === 'yearly' ?
+                [
+                    { type: 'text', text: `${house.memberId.name}` },
+                    { type: 'text', text: `${house?.paidYear}` },
+                    { type: 'text', text: `${house?.houseId?.number}` },
+                    { type: 'text', text: `${house?.totalAmount}` },
+                    { type: 'text', text: `${house?.totalAmount - house?.paidAmount}` },
+                ] :
+                [
+                    { type: 'text', text: `${house.memberId.name}` },
+                    { type: 'text', text: `${house.collectionMonth}` },
+                    { type: 'text', text: `${house?.houseId?.number}` },
+                    { type: 'text', text: `${house.amount}` },
+                ];
+
+            const response = await axios.post(
+                WHATSAPP_API_URL,
+                {
+                    messaging_product: 'whatsapp',
+                    to: to,
+                    type: 'template',
+                    template: {
+                        name: templateName,
+                        language: {
+                            code: 'ml'
+                        },
+                        components: [
+                            {
+                                type: 'body',
+                                parameters: templateParameters
+                            },
+                            {
+                                type: 'button',
+                                sub_type: 'url',
+                                index: '0',
+                                parameters: [
+                                    { type: 'text', text: `${house.memberId._id}` }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            if (response.data.success) {
+                toast({
+                    title: 'Reminder sent successfully',
+                    variant: 'default',
+                });
+            }
+        };
+
+        // Send to WhatsApp number
+        await sendReminder(whatsappNumber);
+
+        // Send to mobile number if the last 8 digits don't match
+        if (shouldSendToBoth) {
+            await sendReminder(mobileNumber);
         }
-      );
-      if (response.data.success) {
-        toast({
-          title: 'Reminder sent successfully',
-          variant: 'default',
-        });
-      }
-     }else{
-      const response = await axios.post(
-        WHATSAPP_API_URL,
-        {
-          messaging_product: 'whatsapp',
-          to: `${house.memberId.whatsappNumber}`,
-          type: 'template',
-          template: {
-            name: 'collection_reminder',
-            language: {
-              code: 'ml'
-            },
-            components: [
-              {
-                type: 'body',
-                parameters: [
-                  { type: 'text', text: `${house.memberId.name}` },
-                  { type: 'text', text: `${house.collectionMonth}` },
-                  { type: 'text', text: `${house?.houseId?.number}` },
-                  { type: 'text', text: `${house.amount}` },
-                ]
-              },
-              {
-                type: 'button',
-                sub_type: 'url',
-                index: '0',
-                parameters: [
-                  { type: 'text', text: `${house.memberId._id}` }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${ACCESS_TOKEN}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      if (response.data.success) {
-        toast({
-          title: 'Reminder sent successfully',
-          variant: 'default',
-        });
-      }
-     }
+
     } catch (error: any) {
-      toast({
-        title: 'Failed to send reminder',
-        description: error.response?.data?.message || error.message || 'Something went wrong',
-        variant: 'destructive',
-      });
+        toast({
+            title: 'Failed to send reminder',
+            description: error.response?.data?.message || error.message || 'Something went wrong',
+            variant: 'destructive',
+        });
     } finally {
-      setLoadingStates((prev) => ({ ...prev, [houseId]: false }));
+        setLoadingStates((prev) => ({ ...prev, [houseId]: false }));
     }
-  };
+};
 
   const filteredHouses = houses.filter((house) => {
     const matchesSearchQuery =

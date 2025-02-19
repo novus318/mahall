@@ -136,6 +136,20 @@ const PageComponent = ({ params }: PageProps) => {
                                         {rent.status === 'Paid' && (
                                             <DownloadrentReciept collection={rent} contractDetails={contractDetails} room={room} />
                                         )}
+                                          {rent.status === 'Pending'  && (
+                                            <Button
+                                                onClick={() => handlePayNowClick(rent, contractDetails)}
+                                                >
+                                                    Pay Now
+                                                </Button>
+                                        )}
+                                        {rent.status === 'Partial'  && (
+                                            <Button
+                                                onClick={() => handlePayNowClick(rent, contractDetails)}
+                                                >
+                                                    Pay Now
+                                                </Button>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                                 {rent.partialPayments?.length > 0 && (

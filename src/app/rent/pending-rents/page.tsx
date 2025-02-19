@@ -75,11 +75,11 @@ const Page = () => {
         }
     };
 
-    const handleSendReminder = async (collection: RentCollection, index: number) => {
+    const handleSendReminder = async (collection:any, index: number) => {
         const rent = collection.amount.toFixed(2)
         setSendingLoading(prev => {
             const newLoadingState = [...prev];
-            newLoadingState[index] = true; // Set loading for this index
+            newLoadingState[index] = true;
             return newLoadingState;
         });
         try {
@@ -101,7 +101,9 @@ const Page = () => {
                                     { type: 'text', text: collection.tenantName },
                                     { type: 'text', text: collection.period },
                                     { type: 'text', text: collection.roomNumber },
-                                    { type: 'text', text: rent.toString() }
+                                    { type: 'text', text: collection.period },
+                                    { type: 'text', text: rent.toString() },
+                                    { type: 'text', text: `${(collection?.PaymentAmount || collection?.amount) - collection?.paidAmount}`}
                                 ]
                             },
                             {

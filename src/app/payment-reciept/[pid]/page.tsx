@@ -122,7 +122,7 @@ const PageComponent = ({ params }: PageProps) => {
             {collection.partialPayments.map((payment: any, index: number) => (
               <View key={index} style={styles.partialPaymentRow}>
                 <Text style={styles.partialPaymentText}>
-                  Paid: ₹{payment.amount.toFixed(2)} on {format(new Date(payment?.PaymentDate ? payment?.PaymentDate : new Date), 'dd MMM yyyy')}
+                  Paid: ₹{payment.amount.toFixed(2)} on {format(new Date(payment?.paymentDate ? payment?.paymentDate : new Date), 'dd MMM yyyy')}
                 </Text>
                 {payment?.receiptNumber && (
                   <Text style={styles.partialPaymentReceipt}>Receipt No: {payment.receiptNumber}</Text>
@@ -400,7 +400,7 @@ const PageComponent = ({ params }: PageProps) => {
                               <p className="font-medium">₹{payment.amount.toFixed(2)}</p>
                               {/* <p className="mx-2">•</p> */}
                               <p className="text-xs">
-                                {format(new Date(payment?.PaymentDate ? payment?.PaymentDate : new Date()), 'MMM dd, yyyy')}
+                                {format(new Date(payment?.paymentDate ? payment?.paymentDate : new Date()), 'MMM dd, yyyy')}
                               </p>
                             </div>
                             <div>

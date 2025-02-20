@@ -105,7 +105,7 @@ const PendingTransactions = ({ id, totalCollections }: any) => {
             {collection.partialPayments.map((payment: any, index: number) => (
               <View key={index} style={styles.partialPaymentRow}>
                 <Text style={styles.partialPaymentText}>
-                  Paid: ₹{payment.amount.toFixed(2)} on {format(new Date(payment?.PaymentDate ? payment?.PaymentDate : new Date), 'dd MMM yyyy')}
+                  Paid: ₹{payment.amount.toFixed(2)} on {format(new Date(payment?.paymentDate ? payment?.paymentDate : new Date), 'dd MMM yyyy')}
                 </Text>
                 {payment?.receiptNumber && (
                   <Text style={styles.partialPaymentReceipt}>Receipt No: {payment.receiptNumber}</Text>
@@ -369,7 +369,7 @@ const PendingTransactions = ({ id, totalCollections }: any) => {
                                 <span className="font-medium">Paid: ₹{payment.amount.toFixed(2)}</span>
                                 <span className="mx-2">•</span>
                                 <span className="text-xs font-bold">
-                                  {format(new Date(payment?.PaymentDate ? payment?.PaymentDate : new Date()), 'MMM dd, yyyy')}
+                                  {format(new Date(payment?.paymentDate ? payment?.paymentDate : new Date()), 'MMM dd, yyyy')}
                                 </span>
                               </div>
                               <div>

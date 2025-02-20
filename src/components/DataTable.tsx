@@ -363,7 +363,7 @@ const DataTable = () => {
                                       <span className="font-medium">Paid: ₹{payment.amount.toFixed(2)}</span>
                                       <span className="mx-2">•</span>
                                       <span className="text-xs font-bold">
-                                        {format(new Date(payment?.PaymentDate ? payment?.PaymentDate : new Date()), 'MMM dd, yyyy')}
+                                        {format(new Date(payment?.paymentDate ? payment?.paymentDate : new Date()), 'MMM dd, yyyy')}
                                       </span>
                                     </div>
                                     <div>

@@ -218,7 +218,7 @@ const TutionPage = () => {
                       {collection.partialPayments.map((payment:any, idx:any) => (
                         <View key={idx} style={styles.partialRow}>
                           <Text style={styles.partialCell}>
-                            {formatCurrency(payment.amount)} - {format(new Date(payment?.PaymentDate || new Date()), 'MMM dd, yyyy')}
+                            {formatCurrency(payment.amount)} - {format(new Date(payment?.paymentDate || new Date()), 'MMM dd, yyyy')}
                             {payment?.description && ` (${payment.description})`}
                             {payment?.receiptNumber && ` - Receipt: ${payment.receiptNumber}`}
                           </Text>
@@ -441,7 +441,7 @@ const TutionPage = () => {
                       <span className="font-medium">Paid: {formatCurrency(payment.amount)}</span>
                       <span className="mx-2">•</span>
                       <span className="text-xs font-bold">
-                        {format(new Date(payment?.PaymentDate ? payment?.PaymentDate : new Date()), 'MMM dd, yyyy')}
+                        {format(new Date(payment?.paymentDate ? payment?.paymentDate : new Date()), 'MMM dd, yyyy')}
                       </span>
                     </div>
                     <div>

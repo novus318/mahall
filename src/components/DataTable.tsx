@@ -103,8 +103,8 @@ const DataTable = () => {
         const mobileNumber = house.memberId.mobile;
 
         // Check if the last 8 digits of both numbers match
-        const last8DigitsWhatsapp = whatsappNumber.slice(-8);
-        const last8DigitsMobile = mobileNumber.slice(-8);
+        const last8DigitsWhatsapp = whatsappNumber ? whatsappNumber.slice(-8) : "";
+        const last8DigitsMobile = mobileNumber ? mobileNumber.slice(-8) : "";        
 
         const shouldSendToBoth = last8DigitsWhatsapp !== last8DigitsMobile;
 

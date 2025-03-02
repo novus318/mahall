@@ -53,6 +53,7 @@ const DataTable = () => {
   const [loadingStates, setLoadingStates] = useState<{ [key: string]: boolean }>({});
   const [bank, setBank] = useState<BankAccount[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [monthYearFilter, setMonthYearFilter] = useState<string>('all');
 
   useEffect(() => {
     fetchHouses();
@@ -199,8 +200,25 @@ const DataTable = () => {
       (filter === 'monthly' && house.paymentType === 'monthly') ||
       (filter === 'yearly' && house.paymentType === 'yearly');
 
-    return matchesSearchQuery && matchesFilter;
+    const matchesMonthYearFilter =
+      monthYearFilter === 'all' ||
+      (house.paymentType === 'monthly' && house.collectionMonth === monthYearFilter) ||
+      (house.paymentType === 'yearly' && house.paidYear === monthYearFilter);
+
+    return matchesSearchQuery && matchesFilter && matchesMonthYearFilter;
   });
+
+  const getUniqueMonthsAndYears = () => {
+    const monthsAndYears = new Set<string>();
+    houses.forEach((house) => {
+      if (house.paymentType === 'monthly') {
+        monthsAndYears.add(house.collectionMonth);
+      } else if (house.paymentType === 'yearly') {
+        monthsAndYears.add(house.paidYear);
+      }
+    });
+    return Array.from(monthsAndYears).sort();
+  };
 
   return (
     <div className="bg-gray-50/50 font-sans">
@@ -235,6 +253,22 @@ const DataTable = () => {
                 <DropdownMenuItem onClick={() => setFilter('yearly')}>Yearly</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2 rounded-full">
+                  {monthYearFilter === 'all' ? 'All Months/Years' : monthYearFilter}
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => setMonthYearFilter('all')}>All Months/Years</DropdownMenuItem>
+                {getUniqueMonthsAndYears().map((monthYear) => (
+                  <DropdownMenuItem key={monthYear} onClick={() => setMonthYearFilter(monthYear)}>
+                    {monthYear}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <Button
             className="rounded-full"
@@ -257,6 +291,7 @@ const DataTable = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>SI No.</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>House</TableHead>
                   <TableHead>Collection Amount</TableHead>
@@ -286,6 +321,7 @@ const DataTable = () => {
                       <React.Fragment key={index}>
                         {/* Main Row */}
                         <TableRow className="group">
+                        <TableCell>{index + 1}</TableCell>
                           <TableCell>{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}</TableCell>
                           <TableCell className="font-medium">
                           <Link className="text-blue-600 hover:underline" href={`/house/house-details/${collection.houseId?._id}`}>

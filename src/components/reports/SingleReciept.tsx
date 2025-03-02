@@ -22,7 +22,7 @@ const SingleReciept = ({reciept}:any) => {
           <Document>
           <Page size="A5" style={styles.page}>
             <View style={styles.header}>
-              <Text style={styles.organization}>Vellap Mahal</Text>
+              <Text style={styles.organization}>Vellap Khadimul Islam Jamaath</Text>
               <Text style={styles.contact}>Juma masjid, vellap, thrikkaripur</Text>
               <Text style={styles.contact}>Phone: +91 9876543210</Text>
             </View>

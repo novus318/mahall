@@ -5,9 +5,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { format } from 'date-fns';
-import { ArrowLeft, Download, Receipt, Search } from 'lucide-react';
+import { ArrowLeft, Download, Receipt, Search, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 // Skeleton Loading Component
 const CollectionsSkeleton: React.FC = () => {
@@ -90,6 +96,7 @@ const CollectionsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [monthYearFilter, setMonthYearFilter] = useState<string>('all');
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -106,14 +113,31 @@ const CollectionsPage: React.FC = () => {
     fetchCollections();
   }, [apiUrl]);
 
-
   const filteredCollections = collections.filter((collection) => {
-    return (
+    const matchesSearchQuery =
       collection.memberId.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       collection.houseId.number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      collection.memberId.whatsappNumber.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+      collection.memberId.whatsappNumber.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesMonthYearFilter =
+      monthYearFilter === 'all' ||
+      (collection.paymentType === 'monthly' && collection.collectionMonth === monthYearFilter) ||
+      (collection.paymentType === 'yearly' && collection.paidYear === monthYearFilter);
+
+    return matchesSearchQuery && matchesMonthYearFilter;
   });
+
+  const getUniqueMonthsAndYears = () => {
+    const monthsAndYears = new Set<string>();
+    collections.forEach((collection) => {
+      if (collection.paymentType === 'monthly') {
+        monthsAndYears.add(collection.collectionMonth);
+      } else if (collection.paymentType === 'yearly') {
+        monthsAndYears.add(collection.paidYear);
+      }
+    });
+    return Array.from(monthsAndYears).sort();
+  };
 
   if (loading) return <CollectionsSkeleton />;
   if (error) return <p className="text-center text-red-500">{error}</p>;
@@ -149,6 +173,22 @@ const CollectionsPage: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2 rounded-full">
+                {monthYearFilter === 'all' ? 'All Months/Years' : monthYearFilter}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setMonthYearFilter('all')}>All Months/Years</DropdownMenuItem>
+              {getUniqueMonthsAndYears().map((monthYear) => (
+                <DropdownMenuItem key={monthYear} onClick={() => setMonthYearFilter(monthYear)}>
+                  {monthYear}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <Card>
@@ -156,6 +196,7 @@ const CollectionsPage: React.FC = () => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>SI No.</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>House</TableHead>
                   <TableHead>Amount</TableHead>
@@ -167,11 +208,14 @@ const CollectionsPage: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCollections.map((collection) => {
+                {filteredCollections.map((collection,index) => {
                   return (
                     <React.Fragment key={collection._id}>
                       {/* Main Row */}
                       <TableRow>
+                      <TableCell>
+                        {index + 1}
+                        </TableCell>
                         <TableCell>
                           <div className="text-sm">{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}</div>
                         </TableCell>
@@ -189,7 +233,7 @@ const CollectionsPage: React.FC = () => {
                           </span>
                         </TableCell>
                         <TableCell>
-                          {collection?.PaymentDate ? format(new Date(collection.PaymentDate), 'MMM dd, yyyy'): 'NIL'}
+                          {collection?.PaymentDate ? format(new Date(collection.PaymentDate), 'MMM dd, yyyy') : 'NIL'}
                         </TableCell>
                         <TableCell className="text-right">
                           <Link

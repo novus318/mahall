@@ -2,7 +2,7 @@
 import DatePicker from '@/components/DatePicker';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2 } from 'lucide-react';
+import { ChevronDown, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -12,6 +12,12 @@ import { withAuth } from '@/components/withAuth';
 import { format, startOfMonth } from 'date-fns';
 import axios from 'axios';
 import { toast } from '@/components/ui/use-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 Font.register({
   family: 'AnekMalayalam',
@@ -43,6 +49,7 @@ const TutionPage = () => {
   const [collections, setCollections] = useState<any[]>([]);
   const [filteredCollections, setFilteredCollections] = useState<any[]>([]); // Filtered collections state
   const [statusFilter, setStatusFilter] = useState<string>(''); // Status filter
+  const [monthYearFilter, setMonthYearFilter] = useState<string>('all');
 
   const fetchInitialcollection = async () => {
     const now = new Date();
@@ -127,7 +134,6 @@ const TutionPage = () => {
     fetchInitialcollection();
   }, []);
 
-
   useEffect(() => {
     const applyFilters = () => {
       let data: any = collections;
@@ -135,11 +141,23 @@ const TutionPage = () => {
       if (statusFilter) {
         data = data.filter((collection: any) => collection.status === statusFilter);
       }
+
+      if (monthYearFilter !== 'all') {
+        data = data.filter((collection: any) => {
+          if (collection.paymentType === 'monthly') {
+            return collection.collectionMonth === monthYearFilter;
+          } else if (collection.paymentType === 'yearly') {
+            return collection.paidYear === monthYearFilter;
+          }
+          return false;
+        });
+      }
+
       setFilteredCollections(data);
     };
 
     applyFilters();
-  }, [collections, statusFilter]);
+  }, [collections, statusFilter, monthYearFilter]);
 
 
 
@@ -168,7 +186,6 @@ const TutionPage = () => {
           {/* Header */}
           <View style={styles.header}>
             <Image src="/vkgclean.png" style={styles.logo} />
-            <Text style={styles.headerTitle}>VKG CLEAN FOUNDATION</Text>
             <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. | P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
             <Text style={styles.headerText}>Phone: +91 9876543210</Text>
             <View style={styles.separator} />
@@ -187,7 +204,7 @@ const TutionPage = () => {
           <View style={styles.tableContainer}>
             {/* Table Header */}
             <View style={[styles.tableRow, styles.tableHeader]}>
-              {['#', 'Date', 'Receipt No.', 'House', 'Amount', 'Paid Amount', 'Family Head', 'Status'].map((header, index) => (
+              {['#', 'Date', 'Receipt No.', 'House', 'Amount', 'Paid Amount', 'Family Head','Payment Date', 'Status'].map((header, index) => (
                 <Text key={index} style={[styles.tableCell, styles.headerCell]}>{header}</Text>
               ))}
             </View>
@@ -208,6 +225,7 @@ const TutionPage = () => {
                         : formatCurrency(collection?.paidAmount || 0)}
                     </Text>
                     <Text style={styles.tableCell}>{collection?.memberId?.name}</Text>
+                    <Text style={styles.tableCell}>{collection?.PaymentDate ? format(new Date(collection.PaymentDate), 'MMM dd, yyyy') : 'NIL'}</Text>
                     <Text style={styles.tableCell}>{collection?.status}</Text>
                   </View>
   
@@ -352,6 +370,17 @@ const TutionPage = () => {
   });
   
   
+  const getUniqueMonthsAndYears = () => {
+    const monthsAndYears = new Set<string>();
+    collections.forEach((collection) => {
+      if (collection.paymentType === 'monthly') {
+        monthsAndYears.add(collection.collectionMonth);
+      } else if (collection.paymentType === 'yearly') {
+        monthsAndYears.add(collection.paidYear);
+      }
+    });
+    return Array.from(monthsAndYears).sort();
+  };
 
   if (loading) return <RecentrecieptSkeleton />;
 
@@ -367,7 +396,7 @@ const TutionPage = () => {
             {formatDate(toDate).dayMonthYear || 'Invalid date'}
           </h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-8 gap-3 md:gap-5 mb-2 items-center">
+        <div className="grid grid-cols-2 md:grid-cols-9 gap-3 md:gap-5 mb-2 items-center">
           <div className="md:col-span-2">
             <p className="text-sm font-medium">From Date</p>
             <DatePicker date={fromDate} setDate={setFromDate} />
@@ -376,12 +405,12 @@ const TutionPage = () => {
             <p className="text-sm font-medium">To Date</p>
             <DatePicker date={toDate} setDate={setToDate} />
           </div>
-          <div className="md:col-span-2">
+          <div className="md:col-span-1 w-full">
             <p className="text-sm font-medium">Filter by Status</p>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className='p-2 border border-gray-300 bg-white rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className='w-full p-2 border border-gray-300 bg-white rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
             >
               <option value=''>All</option>
               <option value='Paid'>Paid</option>
@@ -390,6 +419,25 @@ const TutionPage = () => {
               <option value='Rejected'>Rejected</option>
             </select>
           </div>
+          <div className="md:col-span-2">
+          <p className="text-sm font-medium">Filter by Date</p>
+     <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2 rounded-lg w-full">
+                {monthYearFilter === 'all' ? 'All Months/Years' : monthYearFilter}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setMonthYearFilter('all')}>All Months/Years</DropdownMenuItem>
+              {getUniqueMonthsAndYears().map((monthYear) => (
+                <DropdownMenuItem key={monthYear} onClick={() => setMonthYearFilter(monthYear)}>
+                  {monthYear}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+     </div>
           <div className="md:pt-4">
             <Button size="sm" onClick={fetchCollections} disabled={loading} className="w-full md:w-auto">
               {btloading ? <Loader2 className="animate-spin h-5" /> : 'Get collections'}
@@ -412,6 +460,7 @@ const TutionPage = () => {
       <TableHead className="font-medium">Collection Amount</TableHead>
       <TableHead className="font-medium">Amount Paid</TableHead>
       <TableHead className="font-medium">Family Head</TableHead>
+      <TableHead>Payment Date</TableHead>
       <TableHead className="font-medium">Status</TableHead>
     </TableRow>
   </TableHeader>
@@ -427,6 +476,9 @@ const TutionPage = () => {
           <TableCell>{formatCurrency(collection?.amount)}</TableCell>
           <TableCell>{collection?.paymentType === 'monthly' && collection?.status === 'Paid' ? formatCurrency(collection?.amount||0) : formatCurrency(collection?.paidAmount||0)}</TableCell>
           <TableCell>{collection?.memberId?.name}</TableCell>
+            <TableCell>
+                                    {collection?.PaymentDate ? format(new Date(collection.PaymentDate), 'MMM dd, yyyy') : 'NIL'}
+                                  </TableCell>
           <TableCell>{collection?.status}</TableCell>
         </TableRow>
 

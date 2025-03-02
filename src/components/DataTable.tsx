@@ -116,6 +116,7 @@ const DataTable = () => {
                     { type: 'text', text: `${house.memberId.name}` },
                     { type: 'text', text: `${house?.paidYear}` },
                     { type: 'text', text: `${house?.houseId?.number}` },
+                    { type: 'text', text: `${house?.paidYear}` },
                     { type: 'text', text: `${house?.totalAmount}` },
                     { type: 'text', text: `${house?.totalAmount - house?.paidAmount}` },
                 ] :
@@ -123,6 +124,7 @@ const DataTable = () => {
                     { type: 'text', text: `${house.memberId.name}` },
                     { type: 'text', text: `${house.collectionMonth}` },
                     { type: 'text', text: `${house?.houseId?.number}` },
+                    { type: 'text', text: `${house.collectionMonth}` },
                     { type: 'text', text: `${house.amount}` },
                 ];
 

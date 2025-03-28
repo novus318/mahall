@@ -225,8 +225,7 @@ const Page = () => {
             to: member.senderNumber,
             type: 'audio',
             audio: {
-              id: mediaId,
-              caption: newMessage || '',
+              id: mediaId
             },
           };
         } else if (selectedFile.type.startsWith('image')) {

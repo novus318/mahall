@@ -230,8 +230,8 @@ const DataTable = () => {
           <p className="text-gray-500">Here&apos;s a list of your Unpaid Collections!</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 items-center">
-          <div className="flex items-center gap-4 flex-1">
+        <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] md:grid-cols-4 gap-4 items-center">
+          <div className="flex items-center gap-4 flex-1 col-span-2">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
               <input
@@ -242,7 +242,9 @@ const DataTable = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <DropdownMenu>
+          </div>
+          <div className='grid grid-cols-2 gap-2 col-span-2 md:col-span-1'>
+          <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="flex items-center gap-2 rounded-full">
                   {filter === 'all' ? 'All Types' : filter === 'monthly' ? 'Monthly' : 'Yearly'}

@@ -118,7 +118,7 @@ const Page = () => {
             </CardContent>
             <CardFooter>
               <div className={`text-xs ${incomePercentage > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {incomePercentage > 0 ? '+' : ''}{incomePercentage?.toFixed(2)}% from last month
+                {incomePercentage > 0 ? '+' : ''}{incomePercentage}% from last month
               </div>
             </CardFooter>
           </Card>

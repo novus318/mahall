@@ -115,19 +115,7 @@ const Sidebar: React.FC = () => {
         }`}
       >
         <BookOpen className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
-        <span className="text-sm sm:text-lg">Tution Fees</span>
-      </div>
-    </Link>
-  </li>
-  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
-    <Link href="/staff">
-      <div
-        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
-          CurrentPage('/staff') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
-        }`}
-      >
-        <User2Icon className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
-        <span className="text-sm sm:text-lg">Staff</span>
+        <span className="text-sm sm:text-lg">Tuition Fees</span>
       </div>
     </Link>
   </li>
@@ -164,6 +152,18 @@ const Sidebar: React.FC = () => {
       >
         <ReceiptIndianRupeeIcon className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
         <span className="text-sm sm:text-lg">Reciept</span>
+      </div>
+    </Link>
+  </li>
+  <li className="mb-4 transition duration-300 ease-in-out transform hover:scale-105 sm:hover:scale-100">
+    <Link href="/staff">
+      <div
+        className={`flex items-center py-1 px-2 rounded-md hover:bg-white hover:text-gray-950 ${
+          CurrentPage('/staff') ? 'bg-gray-900 text-gray-50' : 'bg-gray-950 text-gray-400'
+        }`}
+      >
+        <User2Icon className="mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+        <span className="text-sm sm:text-lg">Staff</span>
       </div>
     </Link>
   </li>

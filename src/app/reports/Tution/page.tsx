@@ -182,7 +182,7 @@ const TutionPage = () => {
   
     const doc = (
       <Document>
-        <Page size="A4" style={styles.page}>
+        <Page size="A4" orientation="landscape" style={styles.page}>
           {/* Header */}
           <View style={styles.header}>
             <Image src="/vkgclean.png" style={styles.logo} />
@@ -204,7 +204,7 @@ const TutionPage = () => {
           <View style={styles.tableContainer}>
             {/* Table Header */}
             <View style={[styles.tableRow, styles.tableHeader]}>
-              {['#', 'Date', 'Receipt No.', 'House', 'Amount', 'Paid Amount', 'Family Head','Payment Date', 'Status'].map((header, index) => (
+              {['#', 'Date', 'Receipt No.', 'House', 'Amount', 'Paid Amount', 'Family Head', 'Payment Date', 'Account', 'Status'].map((header, index) => (
                 <Text key={index} style={[styles.tableCell, styles.headerCell]}>{header}</Text>
               ))}
             </View>
@@ -218,14 +218,19 @@ const TutionPage = () => {
                     <Text style={styles.tableCell}>{collection?.paymentType === 'monthly' ? collection?.collectionMonth : collection?.paidYear}</Text>
                     <Text style={styles.tableCell}>{collection?.receiptNumber}</Text>
                     <Text style={styles.tableCell}>{collection?.houseId?.number}</Text>
-                    <Text style={[styles.tableCell, styles.rightAlign]}>{formatCurrency(collection?.amount)}</Text>
-                    <Text style={[styles.tableCell, styles.rightAlign]}>
+                    <Text style={styles.tableCell}>{formatCurrency(collection?.amount)}</Text>
+                    <Text style={styles.tableCell}>
                       {collection?.paymentType === 'monthly' && collection?.status === 'Paid'
                         ? formatCurrency(collection?.amount || 0)
                         : formatCurrency(collection?.paidAmount || 0)}
                     </Text>
                     <Text style={styles.tableCell}>{collection?.memberId?.name}</Text>
                     <Text style={styles.tableCell}>{collection?.PaymentDate ? format(new Date(collection.PaymentDate), 'MMM dd, yyyy') : 'NIL'}</Text>
+                    <Text style={styles.tableCell}>
+                      {collection?.accountId ? 
+                        `${collection.accountId.name}\n${collection.accountId.holderName}` 
+                        : 'NIL'}
+                    </Text>
                     <Text style={styles.tableCell}>{collection?.status}</Text>
                   </View>
   
@@ -266,50 +271,50 @@ const TutionPage = () => {
   // Styles
   const styles = StyleSheet.create({
     page: {
-      padding: 30,
+      padding: 20,
       fontFamily: 'AnekMalayalam',
-      fontSize: 11,
+      fontSize: 10,
       color: '#333',
-      lineHeight: 1.5,
+      lineHeight: 1.4,
     },
     header: {
       textAlign: 'center',
-        marginBottom: 15,
+      marginBottom: 10,
     },
     headerTitle: {
-        fontSize: 14,
+      fontSize: 14,
       fontWeight: 'bold',
       marginBottom: 5,
     },
     headerText: {
-      fontSize: 10,
-      marginBottom: 4,
+      fontSize: 9,
+      marginBottom: 3,
     },
     logo: {
-        width: 80,
-        height: 80,
-      marginBottom: 10,
+      width: 60,
+      height: 60,
+      marginBottom: 8,
       alignSelf: 'center',
     },
     separator: {
       borderBottomWidth: 2,
       borderBottomColor: '#E5E7EB',
-      marginVertical: 15,
+      marginVertical: 10,
     },
     summaryContainer: {
-      padding: 10,
+      padding: 8,
       borderWidth: 1,
       borderColor: '#E5E7EB',
       backgroundColor: '#F9F9F9',
-      marginBottom: 15,
+      marginBottom: 10,
     },
     sectionTitle: {
-      fontSize: 12,
+      fontSize: 11,
       fontWeight: 'bold',
-      marginBottom: 5,
+      marginBottom: 4,
     },
     summaryText: {
-      fontSize: 11,
+      fontSize: 10,
       fontWeight: 'bold',
       color: '#333',
       textAlign: 'right',
@@ -320,19 +325,19 @@ const TutionPage = () => {
     },
     tableRow: {
       flexDirection: 'row',
-      paddingVertical: 6,
-      paddingHorizontal: 5,
+      paddingVertical: 4,
+      paddingHorizontal: 4,
       borderBottomWidth: 1,
       borderBottomColor: '#E5E7EB',
     },
     tableHeader: {
-        backgroundColor: '#F5F5F5',
-        fontWeight: 'bold',
+      backgroundColor: '#F5F5F5',
+      fontWeight: 'bold',
     },
     tableCell: {
       flex: 1,
       textAlign: 'center',
-      fontSize: 10,
+      fontSize: 9,
     },
     headerCell: {
       fontWeight: 'bold',
@@ -342,29 +347,29 @@ const TutionPage = () => {
     },
     noData: {
       textAlign: 'center',
-      fontSize: 10,
+      fontSize: 9,
       fontWeight: 'bold',
-      padding: 10,
+      padding: 8,
     },
     rightAlign: {
       textAlign: 'right',
     },
     partialPaymentContainer: {
-      padding: 10,
+      padding: 8,
       borderWidth: 1,
       borderColor: '#E5E7EB',
       backgroundColor: '#F9F9F9',
     },
     partialTitle: {
       fontWeight: 'bold',
-      marginBottom: 5,
+      marginBottom: 4,
     },
     partialRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
     },
     partialCell: {
-      fontSize: 10,
+      fontSize: 9,
       color: '#444',
     },
   });
@@ -449,8 +454,8 @@ const TutionPage = () => {
             </Button>
           </div>
         </div>
-        <div className="rounded-t-md bg-gray-100 p-1">
-        <Table className="bg-white">
+        <div className="rounded-t-md bg-gray-100 p-1 overflow-x-auto">
+        <Table className="bg-white min-w-[1200px]">
   <TableHeader className="bg-gray-100">
     <TableRow>
       <TableHead className="font-medium">Serial No.</TableHead>
@@ -460,7 +465,8 @@ const TutionPage = () => {
       <TableHead className="font-medium">Collection Amount</TableHead>
       <TableHead className="font-medium">Amount Paid</TableHead>
       <TableHead className="font-medium">Family Head</TableHead>
-      <TableHead>Payment Date</TableHead>
+      <TableHead className="font-medium">Payment Date</TableHead>
+      <TableHead className="font-medium">Account</TableHead>
       <TableHead className="font-medium">Status</TableHead>
     </TableRow>
   </TableHeader>
@@ -476,9 +482,17 @@ const TutionPage = () => {
           <TableCell>{formatCurrency(collection?.amount)}</TableCell>
           <TableCell>{collection?.paymentType === 'monthly' && collection?.status === 'Paid' ? formatCurrency(collection?.amount||0) : formatCurrency(collection?.paidAmount||0)}</TableCell>
           <TableCell>{collection?.memberId?.name}</TableCell>
-            <TableCell>
-                                    {collection?.PaymentDate ? format(new Date(collection.PaymentDate), 'MMM dd, yyyy') : 'NIL'}
-                                  </TableCell>
+          <TableCell>
+            {collection?.PaymentDate ? format(new Date(collection.PaymentDate), 'MMM dd, yyyy') : 'NIL'}
+          </TableCell>
+          <TableCell>
+            {collection?.accountId ? (
+              <div className="text-sm">
+                <div className="font-medium">{collection.accountId.name}</div>
+                <div className="text-gray-600">{collection.accountId.holderName}</div>
+              </div>
+            ) : 'NIL'}
+          </TableCell>
           <TableCell>{collection?.status}</TableCell>
         </TableRow>
 

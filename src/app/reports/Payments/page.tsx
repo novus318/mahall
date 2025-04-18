@@ -158,28 +158,31 @@ const fetchInitialPayments = async () => {
     const totalPayments = data.length;
     const doc = (
       <Document>
-        <Page size="A4" style={styles.page}>
+        <Page size="A4" orientation="landscape" style={styles.page}>
           {/* Header Section */}
           <View style={styles.header}>
             <Image src="/vkgclean.png" style={styles.logo} />
             <Text style={styles.headerText}>Reg. No: 1/88 K.W.B. Reg.No.A2/135/RA</Text>
             <Text style={styles.headerText}>VELLAP, P.O. TRIKARIPUR-671310, KASARGOD DIST</Text>
             <Text style={styles.headerText}>Phone: +91 9876543210</Text>
-            <View style={styles.separator} />
           </View>
-          <Text style={styles.sectionTitle}>From-To : {formatDate(fromDate).dayMonthYear} - {formatDate(toDate).dayMonthYear}</Text>
+          <Text style={styles.sectionTitle}>Payment Report</Text>
+          <Text style={[styles.sectionTitle, { fontSize: 10, marginBottom: 12 }]}>
+            From: {formatDate(fromDate).dayMonthYear} - To: {formatDate(toDate).dayMonthYear}
+          </Text>
           <View style={styles.summaryContainer}>
-                    <Text style={styles.summaryText}>Total Amount: {formatCurrency(totalAmount)}</Text>
-                    <Text style={styles.summaryText}>Total Payments: {totalPayments}</Text>
-                </View>
+            <Text style={styles.summaryText}>Total Amount: {formatCurrency(totalAmount)}</Text>
+            <Text style={styles.summaryText}>Total Payments: {totalPayments}</Text>
+          </View>
           {/* Table Header */}
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderItem, styles.dateColumn]}>Date</Text>
             <Text style={[styles.tableHeaderItem, styles.receiptColumn]}>Receipt No.</Text>
             <Text style={[styles.tableHeaderItem, styles.categoryColumn]}>Category</Text>
-            <Text style={[styles.tableHeaderItem, styles.categoryColumn]}>Status</Text>
+            <Text style={[styles.tableHeaderItem, styles.statusColumn]}>Status</Text>
             <Text style={[styles.tableHeaderItem, styles.fromColumn]}>To</Text>
             <Text style={[styles.tableHeaderItem, styles.amountColumn]}>Amount</Text>
+            <Text style={[styles.tableHeaderItem, styles.accountDetailsColumn]}>Account</Text>
           </View>
   
           {/* Table Body */}
@@ -190,12 +193,15 @@ const fetchInitialPayments = async () => {
                 <Text style={[styles.tableItem, styles.dateColumn]}>{dayMonthYear}</Text>
                 <Text style={[styles.tableItem, styles.receiptColumn]}>{receipt?.receiptNumber}</Text>
                 <Text style={[styles.tableItem, styles.categoryColumn]}>{receipt?.categoryId?.name}</Text>
-                <Text style={[styles.tableItem, styles.categoryColumn]}>{receipt?.status}</Text>
+                <Text style={[styles.tableItem, styles.statusColumn]}>{receipt?.status}</Text>
                 <Text style={[styles.tableItem, styles.fromColumn]}>
                   {receipt?.paymentTo}
                 </Text>
                 <Text style={[styles.tableItem, styles.amountColumn]}>
                   {formatCurrency(receipt?.total)}
+                </Text>
+                <Text style={[styles.tableItem, styles.accountDetailsColumn]}>
+                  {receipt?.accountId?.name} ({receipt?.accountId?.holderName})
                 </Text>
               </View>
             );
@@ -210,86 +216,113 @@ const fetchInitialPayments = async () => {
   
   const styles = StyleSheet.create({
     page: {
-      padding: 20, // Extra padding for A4 size
+      padding: 30,
       fontFamily: "AnekMalayalam",
-      fontSize: 11,
+      fontSize: 10,
       color: "#333",
-      lineHeight: 1.5,
+      lineHeight: 1.4,
     },
     header: {
       textAlign: "center",
-      marginBottom: 10,
+      marginBottom: 15,
+      borderBottom: '1px solid #E5E7EB',
+      paddingBottom: 10,
     },
     headerText: {
-      fontSize: 10,
-      marginBottom: 4,
+      fontSize: 9,
+      marginBottom: 3,
+      color: '#666',
     },
     summaryContainer: {
-      marginBottom: 10,
-      padding: 10,
+      marginBottom: 15,
+      padding: 8,
       borderWidth: 1,
       borderColor: '#E5E7EB',
-      backgroundColor: '#F9F9F9', // Light background for summary
-  },
-  summaryText: {
-      fontSize: 11,
+      backgroundColor: '#F9F9F9',
+      borderRadius: 4,
+    },
+    summaryText: {
+      fontSize: 10,
       fontWeight: 'bold',
       color: '#333',
-      textAlign: 'right', // Right align for better readability
-  },
+      textAlign: 'right',
+      marginBottom: 3,
+    },
     logo: {
-      width: 100,
-      height: 100,
-      marginBottom: 10,
+      width: 80,
+      height: 80,
+      marginBottom: 8,
       alignSelf: "center",
     },
     separator: {
-      borderBottomWidth: 2,
+      borderBottomWidth: 1,
       borderBottomColor: "#E5E7EB",
-      marginVertical: 15,
+      marginVertical: 12,
     },
     sectionTitle: {
-      fontSize: 12,
+      fontSize: 11,
       fontWeight: 'bold',
       color: '#444',
-      marginBottom: 5,
+      marginBottom: 8,
+      textAlign: 'center',
     },
     tableHeader: {
       flexDirection: "row",
       borderBottomWidth: 1,
       borderBottomColor: "#000",
-      paddingBottom: 8,
-      marginBottom: 5,
+      paddingBottom: 6,
+      marginBottom: 8,
+      backgroundColor: '#F3F4F6',
     },
     tableHeaderItem: {
       fontWeight: "bold",
-      fontSize: 11,
+      fontSize: 9,
+      color: '#374151',
     },
     tableRow: {
       flexDirection: "row",
-      marginBottom: 5,
-      paddingBottom: 8,
+      marginBottom: 4,
+      paddingBottom: 6,
+      borderBottomWidth: 0.5,
+      borderBottomColor: '#E5E7EB',
     },
     tableItem: {
-      fontSize: 11,
+      fontSize: 9,
+      color: '#4B5563',
     },
     dateColumn: {
-      width: "15%",
+      width: "10%",
+      paddingRight: 4,
     },
     receiptColumn: {
-      width: "20%",
+      width: "8%",
+      paddingRight: 4,
     },
     categoryColumn: {
+      width: "12%",
+      paddingRight: 4,
+    },
+    statusColumn: {
+      width: "8%",
+      paddingRight: 4,
+    },
+    accountColumn: {
       width: "15%",
+      paddingRight: 4,
     },
     fromColumn: {
-      width: "25%",
-      textAlign: "left", // Right align for better readability
-      paddingRight: 10, // Give space for "From" column
+      width: "10%",
+      paddingRight: 4,
     },
     amountColumn: {
-      width: "20%",
-      textAlign: "right", // Right align for currency
+      width: "15%",
+      textAlign: "right",
+      paddingRight: 4,
+    },
+    accountDetailsColumn: {
+      textAlign: 'center',
+      width: "22%",
+      paddingRight: 4,
     },
   });
   
@@ -362,6 +395,7 @@ const fetchInitialPayments = async () => {
                 <TableHead className="font-medium">Status</TableHead>
                 <TableHead className="font-medium">To</TableHead>
                 <TableHead className="font-medium">Amount</TableHead>
+                <TableHead className="font-medium">Account</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -387,6 +421,9 @@ const fetchInitialPayments = async () => {
                     </TableCell>
                     <TableCell>
                       <div className='text-sm'>{formatCurrency(payment?.total)}</div>
+                    </TableCell>
+                    <TableCell>
+                      <div className='text-sm'>{payment?.accountId?.name} ({payment?.accountId?.holderName})</div>
                     </TableCell>
                   </TableRow>
                 );

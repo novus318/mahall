@@ -152,9 +152,6 @@ const RentPage = () => {
     applyFilters();
   }, [collections, statusFilter, buildingFilter, roomFilter]);
 
-
-
-
   const formatDate = (dateString: any) => {
     const date = new Date(dateString || new Date());
     return {
@@ -173,7 +170,7 @@ const RentPage = () => {
     const totalCollections = data.length;
     const doc = (
       <Document>
-        <Page size="A4" style={styles.page}>
+        <Page size="A4" orientation="landscape" style={styles.page}>
           {/* Header Section */}
           <View style={styles.header}>
             <Image src="/vkgclean.png" style={styles.logo} />
@@ -188,7 +185,7 @@ const RentPage = () => {
             Collections From: {formatDate(fromDate).dayMonthYear} - To: {formatDate(toDate).dayMonthYear}
           </Text>
           <View style={styles.summaryContainer}>
-            <Text style={styles.summaryText}>Total Amount: ₹{formatCurrency(totalAmount)}</Text>
+            <Text style={styles.summaryText}>Total Amount: {formatCurrency(totalAmount)}</Text>
             <Text style={styles.summaryText}>Total Collections: {totalCollections}</Text>
           </View>
           {/* Table Section */}
@@ -205,30 +202,53 @@ const RentPage = () => {
               <Text style={[styles.tableCell, styles.headerCell]}>Due Amount</Text>
               <Text style={[styles.tableCell, styles.headerCell]}>Paid Amount</Text>
               <Text style={[styles.tableCell, styles.headerCell]}>Pay Date</Text>
+              <Text style={[styles.tableCell, styles.headerCell]}>Account</Text>
               <Text style={[styles.tableCell, styles.headerCell]}>Status</Text>
             </View>
 
             {/* Table Data */}
             {data.map((collection: any, index: number) => (
-              <View key={index} style={styles.tableRow}>
-                <Text style={styles.tableCell}>{collection.buildingName}</Text>
-                <Text style={styles.tableCell}>{collection.roomNumber}</Text>
-                <Text style={styles.tableCell}>{collection.tenantName}</Text>
-                <Text style={styles.tableCell}>{collection.period}</Text>
-                <Text style={styles.tableCell}>{formatCurrency(collection.amount)}</Text>
-                <Text style={styles.tableCell}>{collection?.onleave?.deductAmount || 0}</Text>
-                <Text style={styles.tableCell}>{formatCurrency(collection.PaymentAmount && collection.PaymentAmount > 0
-                      ? collection.PaymentAmount
-                      : collection?.amount)}</Text>
-                <Text style={styles.tableCell}>{formatCurrency((collection?.PaymentAmount || collection?.amount) - collection?.paidAmount)}</Text>
-                <Text style={styles.tableCell}>{
-                  collection?.status === 'Partial' ?
-                  `Paid: ₹${collection?.paidAmount?.toFixed(2)}`
-                  :
-                  `${collection?.paidAmount}`
-                  }</Text>
-                <Text style={styles.tableCell}>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString() : 'Pending'}</Text>
-                <Text style={styles.tableCell}>{collection?.status}</Text>
+              <View key={index}>
+                <View style={styles.tableRow}>
+                  <Text style={styles.tableCell}>{collection.buildingName}</Text>
+                  <Text style={styles.tableCell}>{collection.roomNumber}</Text>
+                  <Text style={styles.tableCell}>{collection.tenantName}</Text>
+                  <Text style={styles.tableCell}>{collection.period}</Text>
+                  <Text style={styles.tableCell}>{formatCurrency(collection.amount)}</Text>
+                  <Text style={styles.tableCell}>{collection?.onleave?.deductAmount || 0}</Text>
+                  <Text style={styles.tableCell}>{formatCurrency(collection.PaymentAmount && collection.PaymentAmount > 0
+                    ? collection.PaymentAmount
+                    : collection?.amount)}</Text>
+                  <Text style={styles.tableCell}>{formatCurrency((collection?.PaymentAmount || collection?.amount) - collection?.paidAmount)}</Text>
+                  <Text style={styles.tableCell}>{
+                    collection?.status === 'Partial' ?
+                    `Paid: ₹${collection?.paidAmount?.toFixed(2)}`
+                    :
+                    `${collection?.paidAmount}`
+                    }</Text>
+                  <Text style={styles.tableCell}>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString() : 'Pending'}</Text>
+                  <Text style={styles.tableCell}>
+                    {collection?.accountDetails ? 
+                      `${collection.accountDetails.name}${collection.accountDetails.holderName ? `\n${collection.accountDetails.holderName}` : ''}`
+                      : '-'
+                    }
+                  </Text>
+                  <Text style={styles.tableCell}>{collection?.status}</Text>
+                </View>
+                {collection?.partialPayments?.length > 0 && (
+                  <View style={[styles.tableRow, styles.partialPaymentsRow]}>
+                    <Text style={[styles.tableCell, styles.partialPaymentsCell]}>
+                      {collection.partialPayments.map((payment: any, pIndex: number) => (
+                        <Text key={pIndex} style={styles.partialPaymentText}>
+                          {`Paid: ₹${payment.amount.toFixed(2)} • ${format(new Date(payment?.paymentDate ? payment?.paymentDate : new Date()), 'MMM dd, yyyy')}`}
+                          {payment?.description ? ` • ${payment.description}` : ''}
+                          {payment?.receiptNumber ? ` • Receipt: ${payment.receiptNumber}` : ''}
+                          {'\n'}
+                        </Text>
+                      ))}
+                    </Text>
+                  </View>
+                )}
               </View>
             ))}
             {data?.length === 0 && (
@@ -247,11 +267,12 @@ const RentPage = () => {
 
   const styles = StyleSheet.create({
     page: {
-      padding: 10, // Padding for A4 layout
+      padding: 10,
       fontFamily: 'AnekMalayalam',
       fontSize: 11,
       color: '#333',
       lineHeight: 1.5,
+      orientation: 'landscape',
     },
     summaryContainer: {
       marginTop: 15,
@@ -322,9 +343,22 @@ const RentPage = () => {
     headerCell: {
       fontWeight: 'bold',
     },
+    partialPaymentsRow: {
+      backgroundColor: '#F9FAFB',
+      borderBottomWidth: 1,
+      borderBottomColor: '#E5E7EB',
+    },
+    partialPaymentsCell: {
+      flex: 12,
+      textAlign: 'left',
+      paddingLeft: 20,
+      fontSize: 9,
+      color: '#6B7280',
+    },
+    partialPaymentText: {
+      marginBottom: 2,
+    },
   });
-
-
 
   if (loading) return <RecentrecieptSkeleton />;
 
@@ -423,6 +457,7 @@ const RentPage = () => {
                 <TableHead className="font-semibold">Due Amount</TableHead>
                 <TableHead className="font-semibold">Paid Amount</TableHead>
                 <TableHead className="font-medium">Pay Date</TableHead>
+                <TableHead className="font-medium">Account</TableHead>
                 <TableHead className="font-medium">Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -456,6 +491,16 @@ const RentPage = () => {
                         collection?.paidAmount}
                     </TableCell>
                     <TableCell>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString() : 'Pending'}</TableCell>
+                    <TableCell>
+                      {collection?.accountDetails ? (
+                        <div className="text-xs">
+                          <div>{collection.accountDetails.name}</div>
+                          {collection.accountDetails.holderName && (
+                            <div className="text-gray-500">{collection.accountDetails.holderName}</div>
+                          )}
+                        </div>
+                      ) : '-'}
+                    </TableCell>
                     <TableCell>{collection?.status}</TableCell>
                   </TableRow>
                   {collection?.partialPayments?.length > 0 && (

@@ -157,7 +157,7 @@ const fetchInitialReciepts = async () => {
     const totalPayments = data.length;
     const doc = (
       <Document>
-        <Page size="A4" style={styles.page}>
+        <Page size="A4" orientation="landscape" style={styles.page}>
           {/* Header Section */}
           <View style={styles.header}>
             <Image src="/vkgclean.png" style={styles.logo} />
@@ -169,15 +169,16 @@ const fetchInitialReciepts = async () => {
           <Text style={styles.sectionTitle}>From-To : {formatDate(fromDate).dayMonthYear} - {formatDate(toDate).dayMonthYear}</Text>
           {/* Table Header */}
           <View style={styles.summaryContainer}>
-                    <Text style={styles.summaryText}>Total Amount: {formatCurrency(totalAmount)}</Text>
-                    <Text style={styles.summaryText}>Total Payments: {totalPayments}</Text>
-                </View>
+            <Text style={styles.summaryText}>Total Amount: {formatCurrency(totalAmount)}</Text>
+            <Text style={styles.summaryText}>Total Payments: {totalPayments}</Text>
+          </View>
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderItem, styles.dateColumn]}>Date</Text>
             <Text style={[styles.tableHeaderItem, styles.receiptColumn]}>Receipt No.</Text>
             <Text style={[styles.tableHeaderItem, styles.categoryColumn]}>Category</Text>
             <Text style={[styles.tableHeaderItem, styles.categoryColumn]}>Status</Text>
             <Text style={[styles.tableHeaderItem, styles.fromColumn]}>From</Text>
+            <Text style={[styles.tableHeaderItem, styles.accountColumn]}>Account</Text>
             <Text style={[styles.tableHeaderItem, styles.amountColumn]}>Amount</Text>
           </View>
   
@@ -192,6 +193,9 @@ const fetchInitialReciepts = async () => {
                 <Text style={[styles.tableItem, styles.categoryColumn]}>{receipt?.status}</Text>
                 <Text style={[styles.tableItem, styles.fromColumn]}>
                   {receipt?.memberId ? receipt?.memberId?.name : receipt?.otherRecipient?.name}
+                </Text>
+                <Text style={[styles.tableItem, styles.accountColumn]}>
+                  {receipt?.accountId?.name}
                 </Text>
                 <Text style={[styles.tableItem, styles.amountColumn]}>
                   {formatCurrency(receipt?.amount)}
@@ -209,7 +213,7 @@ const fetchInitialReciepts = async () => {
   
   const styles = StyleSheet.create({
     page: {
-      padding: 20, // Extra padding for A4 size
+      padding: 20,
       fontFamily: "AnekMalayalam",
       fontSize: 11,
       color: "#333",
@@ -224,14 +228,14 @@ const fetchInitialReciepts = async () => {
       padding: 10,
       borderWidth: 1,
       borderColor: '#E5E7EB',
-      backgroundColor: '#F9F9F9', // Light background for summary
-  },
-  summaryText: {
+      backgroundColor: '#F9F9F9',
+    },
+    summaryText: {
       fontSize: 11,
       fontWeight: 'bold',
       color: '#333',
-      textAlign: 'right', // Right align for better readability
-  },
+      textAlign: 'right',
+    },
     headerText: {
       fontSize: 10,
       marginBottom: 4,
@@ -273,22 +277,27 @@ const fetchInitialReciepts = async () => {
       fontSize: 11,
     },
     dateColumn: {
-      width: "15%",
+      width: "12%",
     },
     receiptColumn: {
-      width: "20%",
-    },
-    categoryColumn: {
       width: "15%",
     },
+    categoryColumn: {
+      width: "12%",
+    },
     fromColumn: {
-      width: "25%",
-      textAlign: "left", // Right align for better readability
-      paddingRight: 10, // Give space for "From" column
+      width: "20%",
+      textAlign: "left",
+      paddingRight: 10,
+    },
+    accountColumn: {
+      width: "20%",
+      textAlign: "left",
+      paddingRight: 10,
     },
     amountColumn: {
-      width: "20%",
-      textAlign: "right", // Right align for currency
+      width: "15%",
+      textAlign: "right",
     },
   });
   
@@ -359,6 +368,7 @@ const fetchInitialReciepts = async () => {
     <TableHead className="font-medium">Reciept No.</TableHead>
     <TableHead className="font-medium">Category</TableHead>
     <TableHead className="font-medium">From</TableHead>
+    <TableHead className="font-medium">Account</TableHead>
     <TableHead className="font-medium">Amount</TableHead>
     <TableHead className="font-medium">Reciept</TableHead>
   </TableRow>
@@ -369,8 +379,8 @@ const fetchInitialReciepts = async () => {
     return(
       <TableRow key={reciept?._id}>
         <TableCell>
-        <div className='text-sm'>{dayMonthYear}</div>
-        <div className="text-xs text-gray-500">{time}</div>
+          <div className='text-sm'>{dayMonthYear}</div>
+          <div className="text-xs text-gray-500">{time}</div>
         </TableCell>
         <TableCell>
           <div className='text-sm'>{reciept?.receiptNumber}</div>
@@ -382,19 +392,22 @@ const fetchInitialReciepts = async () => {
           <div className='text-sm'>{reciept?.memberId ? reciept?.memberId?.name : reciept?.otherRecipient?.name}</div>
         </TableCell>
         <TableCell>
+          <div className='text-sm'>{reciept?.accountId?.name}</div>
+        </TableCell>
+        <TableCell>
           <div className='text-sm'>{formatCurrency(reciept?.amount)}</div>
         </TableCell>
         <TableCell>
-       {reciept?.status === 'Completed' ? (
-        <SingleReciept reciept={reciept}/>
-       ):(
-        <div>
-          {reciept?.status}
-        </div>
-       )}
+          {reciept?.status === 'Completed' ? (
+            <SingleReciept reciept={reciept}/>
+          ):(
+            <div>
+              {reciept?.status}
+            </div>
+          )}
         </TableCell>
       </TableRow>
-      )
+    )
   })}
   {reciepts.length === 0 && (
       <TableCell colSpan={3} className="text-center text-gray-600 text-sm">

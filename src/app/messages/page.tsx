@@ -7,7 +7,7 @@ import axios from 'axios'
 import { format } from 'date-fns'
 import { Dialog, DialogContent, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { FileText, ImageDown, Loader2, Music, Paperclip, Trash, Trash2 } from 'lucide-react'
+import { Download, FileText, ImageDown, Loader2, Music, Paperclip, Trash, Trash2 } from 'lucide-react'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/components/ui/use-toast'
 import Link from 'next/link'
@@ -384,14 +384,28 @@ const Page = () => {
                                 alt="Sticker"
                               />
                             )}
-                            {msg.messageType === 'audio' && (
-                              <div className="flex flex-col items-start space-y-2 w-full">
-                                <audio controls className="w-full rounded-xl bg-gray-200">
-                                  <source src={`${apiUrl}/api/message/media/${msg._id}`} type={msg.mediaType} />
-                                  Your browser does not support the audio element.
-                                </audio>
-                              </div>
-                            )}
+                           {msg.messageType === 'audio' && (
+  <div className="flex flex-col items-start space-y-2 w-full">
+    {/* Audio player (may not work in Safari) */}
+    <audio controls className="w-full rounded-xl bg-gray-200" preload="none">
+      <source src={`${apiUrl}/api/message/audio/${msg._id}`} type={msg.mediaType || 'audio/mpeg'} />
+      Your browser does not support the audio element.
+    </audio>
+    
+    {/* Download option for Safari */}
+    <div className="flex items-center gap-2 mt-2">
+      <span className="text-sm text-gray-500">Having trouble playing? </span>
+      <a
+        href={`${apiUrl}/api/message/audio/${msg._id}`}
+        download={`audio_message_${msg._id}.${msg.mediaType?.split('/')[1] || 'mp3'}`}
+        className="text-blue-500 hover:underline text-sm flex items-center gap-1"
+      >
+        <Download className='h-4 w-4' />
+        Download
+      </a>
+    </div>
+  </div>
+)}
                             {msg.messageType === 'video' && (
                               <div className="flex flex-col items-start space-y-2">
                                 <video

@@ -226,7 +226,7 @@ const RentPage = () => {
                     :
                     `${collection?.paidAmount}`
                     }</Text>
-                  <Text style={styles.tableCell}>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString() : 'Pending'}</Text>
+                  <Text style={styles.tableCell}>{collection.paymentDate ? format(new Date(collection.paymentDate), 'dd MMM yyyy') : 'Pending'}</Text>
                   <Text style={styles.tableCell}>
                     {collection?.accountDetails ? 
                       `${collection.accountDetails.name}${collection.accountDetails.holderName ? `\n${collection.accountDetails.holderName}` : ''}`
@@ -490,7 +490,7 @@ const RentPage = () => {
                         ) :
                         collection?.paidAmount}
                     </TableCell>
-                    <TableCell>{collection.paymentDate ? new Date(collection.paymentDate).toLocaleDateString() : 'Pending'}</TableCell>
+                    <TableCell>{collection.paymentDate ? format(new Date(collection.paymentDate), 'dd MMM yyyy') : 'Pending'}</TableCell>
                     <TableCell>
                       {collection?.accountDetails ? (
                         <div className="text-xs">

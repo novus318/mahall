@@ -228,7 +228,7 @@ const TutionPage = () => {
                     <Text style={styles.tableCell}>{collection?.PaymentDate ? format(new Date(collection.PaymentDate), 'MMM dd, yyyy') : 'NIL'}</Text>
                     <Text style={styles.tableCell}>
                       {collection?.accountId ? 
-                        `${collection.accountId.name}\n${collection.accountId.holderName}` 
+                        `${collection.accountId.name}` 
                         : 'NIL'}
                     </Text>
                     <Text style={styles.tableCell}>{collection?.status}</Text>
@@ -489,7 +489,6 @@ const TutionPage = () => {
             {collection?.accountId ? (
               <div className="text-sm">
                 <div className="font-medium">{collection.accountId.name}</div>
-                <div className="text-gray-600">{collection.accountId.holderName}</div>
               </div>
             ) : 'NIL'}
           </TableCell>

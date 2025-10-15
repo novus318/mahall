@@ -265,7 +265,7 @@ const handleReceiptClick = async (collection: any) => {
             <TableBody>
               {reciepts.map((reciept) => {
                 const { dayMonthYear, time } = formatDate(reciept?.date);
-                const isCurrent = isCurrentMonth(reciept?.date); // Check if receipt date is in the current month
+                const isCurrent = true; //isCurrentMonth(reciept?.date); // Check if receipt date is in the current month
                 return (
                   <TableRow
                     key={reciept?._id}

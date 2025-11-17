@@ -57,6 +57,8 @@ const PageComponent = ({ params }: PageProps) => {
   const { pid } = params;
   const [house, setHouse] = useState<any>(null);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const WHATSAPP_API_URL = process.env.NEXT_PUBLIC_WHATSAPP_API_URL;
+  const ACCESS_TOKEN = process.env.NEXT_PUBLIC_WHATSAPP_TOKEN;
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -69,6 +71,7 @@ const PageComponent = ({ params }: PageProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLocked, setIsLocked] = useState(true);
   const [password, setPassword] = useState('');
+  const [isRemindingAll, setIsRemindingAll] = useState(false);
 
   const handleCollectionTypeChange = async (newType:any) => {
     setIsLoading(true);
@@ -215,6 +218,178 @@ const fetchLockSetting = async () => {
     }
   }
 
+  const handleRemindAllDues = async () => {
+    setIsRemindingAll(true);
+    try {
+      const response = await axios.get(`${apiUrl}/api/house/kudi-collections/${house?.familyHead?._id}`);
+      if (response.data.success) {
+        const unpaidCollections = response.data.collections.filter((collection: any) => 
+          collection.status === 'Unpaid' || collection.status === 'Partial'
+        );
+
+        if (unpaidCollections.length === 0) {
+          toast({
+            title: 'No unpaid dues found',
+            description: 'All collections for this house are paid.',
+            variant: 'default',
+          });
+          setIsRemindingAll(false);
+          return;
+        }
+
+        // Group collections by payment type
+        const monthlyCollections = unpaidCollections.filter((c: any) => c.paymentType === 'monthly');
+        const yearlyCollections = unpaidCollections.filter((c: any) => c.paymentType === 'yearly');
+
+        // Get member details from first collection
+        const memberDetails = unpaidCollections[0].memberId;
+        const houseNumber = unpaidCollections[0].houseId?.number;
+
+        const whatsappNumber = memberDetails?.whatsappNumber;
+        const mobileNumber = memberDetails?.mobile;
+
+        if (!whatsappNumber && !mobileNumber) {
+          toast({
+            title: 'No contact number found',
+            description: 'Unable to send reminder - no WhatsApp or mobile number available.',
+            variant: 'destructive',
+          });
+          setIsRemindingAll(false);
+          return;
+        }
+
+        const last8DigitsWhatsapp = whatsappNumber ? whatsappNumber.slice(-8) : "";
+        const last8DigitsMobile = mobileNumber ? mobileNumber.slice(-8) : "";        
+        const shouldSendToBoth = last8DigitsWhatsapp !== last8DigitsMobile;
+
+        // Process monthly collections
+        if (monthlyCollections.length > 0) {
+          const monthsList = monthlyCollections.map((c: any) => c.collectionMonth).join(', ');
+          const totalMonthlyAmount = monthlyCollections.reduce((sum: number, c: any) => sum + c.amount, 0);
+
+          const sendMonthlyReminder = async (to: string) => {
+            await axios.post(
+              WHATSAPP_API_URL!,
+              {
+                messaging_product: 'whatsapp',
+                to: to,
+                type: 'template',
+                template: {
+                  name: 'collection_reminder',
+                  language: {
+                    code: 'ml'
+                  },
+                  components: [
+                    {
+                      type: 'body',
+                      parameters: [
+                        { type: 'text', text: `${memberDetails.name}` },
+                        { type: 'text', text: `${monthsList}` },
+                        { type: 'text', text: `${houseNumber}` },
+                        { type: 'text', text: `${monthsList}` },
+                        { type: 'text', text: `${totalMonthlyAmount}` },
+                      ]
+                    },
+                    {
+                      type: 'button',
+                      sub_type: 'url',
+                      index: '0',
+                      parameters: [
+                        { type: 'text', text: `${memberDetails._id}` }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                headers: {
+                  'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                  'Content-Type': 'application/json'
+                }
+              }
+            );
+          };
+
+          await sendMonthlyReminder(whatsappNumber || mobileNumber);
+          if (shouldSendToBoth && mobileNumber) {
+            await sendMonthlyReminder(mobileNumber);
+          }
+        }
+
+        // Process yearly collections
+        if (yearlyCollections.length > 0) {
+          const yearsList = yearlyCollections.map((c: any) => c.paidYear).join(', ');
+          const totalYearlyAmount = yearlyCollections.reduce((sum: number, c: any) => 
+            sum + (c.totalAmount - (c.paidAmount || 0)), 0
+          );
+
+          const sendYearlyReminder = async (to: string) => {
+            await axios.post(
+              WHATSAPP_API_URL!,
+              {
+                messaging_product: 'whatsapp',
+                to: to,
+                type: 'template',
+                template: {
+                  name: 'yearly_collection_reminder',
+                  language: {
+                    code: 'ml'
+                  },
+                  components: [
+                    {
+                      type: 'body',
+                      parameters: [
+                        { type: 'text', text: `${memberDetails.name}` },
+                        { type: 'text', text: `${yearsList}` },
+                        { type: 'text', text: `${houseNumber}` },
+                        { type: 'text', text: `${yearsList}` },
+                        { type: 'text', text: `${yearlyCollections.reduce((sum: number, c: any) => sum + c.totalAmount, 0)}` },
+                        { type: 'text', text: `${totalYearlyAmount}` },
+                      ]
+                    },
+                    {
+                      type: 'button',
+                      sub_type: 'url',
+                      index: '0',
+                      parameters: [
+                        { type: 'text', text: `${memberDetails._id}` }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                headers: {
+                  'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                  'Content-Type': 'application/json'
+                }
+              }
+            );
+          };
+
+          await sendYearlyReminder(whatsappNumber || mobileNumber);
+          if (shouldSendToBoth && mobileNumber) {
+            await sendYearlyReminder(mobileNumber);
+          }
+        }
+
+        toast({
+          title: 'Reminder sent successfully',
+          description: `Reminder sent for ${unpaidCollections.length} unpaid collection(s).`,
+          variant: 'default',
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Failed to send reminder',
+        description: error.response?.data?.message || error.message || 'Something went wrong',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsRemindingAll(false);
+    }
+  };
+
   if (!house) {
     return <SkeletonLoader />;
   }
@@ -322,8 +497,23 @@ const fetchLockSetting = async () => {
       <div className="my-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-800">House Collections</h2>
-          {house?.paymentType == 'monthly' && 
-          <ManualCollections houseId={pid} collectionAmount={house?.collectionAmount} />}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRemindAllDues}
+              disabled={isRemindingAll}
+              className="flex items-center gap-2"
+            >
+              {isRemindingAll ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Remind Dues"
+              )}
+            </Button>
+            {house?.paymentType == 'monthly' && 
+            <ManualCollections houseId={pid} collectionAmount={house?.collectionAmount} />}
+          </div>
         </div>
         <PendingTransactions id={house?.familyHead?._id} totalCollections={setTotalHouseCollections} />
       </div>

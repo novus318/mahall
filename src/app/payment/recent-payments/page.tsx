@@ -9,6 +9,7 @@ import Link from 'next/link';
 import React, { useEffect,  useState } from 'react'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import RejectPayment from '@/components/RejectPayment';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 
 const RecentPaymentsSkeleton: React.FC = () => {
@@ -35,13 +36,21 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [limit] = useState(10);
 
 
-  const fetchPayments = async () => {
+  const fetchPayments = async (page: number = 1) => {
     try {
-      const response = await axios.get(`${apiUrl}/api/pay/get/payments`);
+      setLoading(true);
+      const response = await axios.get(`${apiUrl}/api/pay/recent-payments?page=${page}&limit=${limit}`);
       if (response.data.success) {
         setPayments(response.data.payments);
+        setCurrentPage(response.data.pagination.currentPage);
+        setTotalPages(response.data.pagination.totalPages);
+        setTotalCount(response.data.pagination.totalCount);
         setLoading(false);
       }
     } catch (err) {
@@ -50,8 +59,8 @@ const Page = () => {
   };
 
   useEffect(() => {
-    fetchPayments();
-  }, []);
+    fetchPayments(currentPage);
+  }, [currentPage]);
 
   const formatDate = (dateString: any) => {
     const date = new Date(dateString);
@@ -94,8 +103,9 @@ const Page = () => {
         Back
       </Link>
       <div className='max-w-6xl m-auto my-3'>
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Recent payments</h2>
+        <div className='flex justify-between items-center mb-4'>
+          <h2 className="text-2xl font-semibold">Recent payments</h2>
+          <p className='text-sm text-gray-600'>Total: {totalCount} payments</p>
         </div>
         <div className='rounded-t-md bg-gray-100 p-1'>
           <Table className="bg-white">
@@ -146,7 +156,6 @@ const Page = () => {
                     </TableCell>
                    ):(
                     <TableCell>
-                    {inCurrentMonth ?(
                       <div className="flex gap-2 items-center">
                         <Link href={`/payment/edit/${payment?._id}`} className='text-white bg-gray-950 py-2 px-3 rounded-md hover:underline'>
                           Edit
@@ -160,17 +169,6 @@ const Page = () => {
                          view
                        </div>
                       </div>
-                    ):(
-                      <TableCell>
-                      <div className='underline text-slate-600'
-                           onClick={()=>{
-                             setIsOpen(true)
-                             setSelectedPayment(payment)
-                           }}>
-                            view
-                          </div>
-                      </TableCell>
-                    )}
                   </TableCell>
                    )}
                   </TableRow>
@@ -183,6 +181,33 @@ const Page = () => {
               )}
             </TableBody>
           </Table>
+        </div>
+
+        {/* Pagination Controls */}
+        <div className='flex justify-between items-center mt-4 px-2'>
+          <div className='text-sm text-gray-600'>
+            Page {currentPage} of {totalPages}
+          </div>
+          <div className='flex gap-2'>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className='h-4 w-4' />
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+              <ChevronRight className='h-4 w-4' />
+            </Button>
+          </div>
         </div>
       </div>
       <Dialog

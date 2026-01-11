@@ -172,6 +172,7 @@ const PageComponent = ({ params }: PageProps) => {
                   {contractDetails?.status === 'active' &&
                     <div className='grid grid-cols-2 gap-2 md:grid-cols-4'>
                       <EditContract buildingID={pid} roomId={roomId} fetchRoomDetails={fetchRoomDetails} contractDetails={contractDetails} />
+                        <CancelContract contractDetails={contractDetails} roomId={roomId} buildingId={pid} fetchRoomDetails={fetchRoomDetails} />
                     </div>
                   }
                 </div>

@@ -11,6 +11,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import { toast } from '@/components/ui/use-toast';
 import RejectReceipt from '@/components/RejectReceipt';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 
 const RecentrecieptSkeleton: React.FC = () => {
@@ -41,22 +42,30 @@ const RecieptPage = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [reciepts, setreciepts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [limit] = useState(10);
 
-  const fetchReciepts = async () => {
+  const fetchReciepts = async (page: number = 1) => {
     try {
-      const response = await axios.get(`${apiUrl}/api/reciept/get-reciepts`);
+      setLoading(true);
+      const response = await axios.get(`${apiUrl}/api/reciept/recent-reciepts?page=${page}&limit=${limit}`);
      if(response.data.success){
       setreciepts(response.data.reciepts)
+      setCurrentPage(response.data.pagination.currentPage);
+      setTotalPages(response.data.pagination.totalPages);
+      setTotalCount(response.data.pagination.totalCount);
       setLoading(false);
      }
     } catch (err) {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
-    fetchReciepts();
-  }, []);
+    fetchReciepts(currentPage);
+  }, [currentPage]);
 
   const formatDate = (dateString:any) => {
     const date = new Date(dateString);
@@ -247,8 +256,9 @@ const handleReceiptClick = async (collection: any) => {
         Back
       </Link>
       <div className='max-w-6xl m-auto my-3'>
-        <div>
-          <h2 className="text-2xl font-semibold mb-4">Recent payments</h2>
+        <div className='flex justify-between items-center mb-4'>
+          <h2 className="text-2xl font-semibold">Recent receipts</h2>
+          <p className='text-sm text-gray-600'>Total: {totalCount} receipts</p>
         </div>
         <div className='rounded-t-md bg-gray-100 p-1'>
           <Table className="bg-white">
@@ -328,6 +338,33 @@ const handleReceiptClick = async (collection: any) => {
               )}
             </TableBody>
           </Table>
+        </div>
+
+        {/* Pagination Controls */}
+        <div className='flex justify-between items-center mt-4 px-2'>
+          <div className='text-sm text-gray-600'>
+            Page {currentPage} of {totalPages}
+          </div>
+          <div className='flex gap-2'>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className='h-4 w-4' />
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+              <ChevronRight className='h-4 w-4' />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

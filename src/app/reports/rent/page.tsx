@@ -2,7 +2,7 @@
 import DatePicker from '@/components/DatePicker';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2 } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -165,6 +165,53 @@ const RentPage = () => {
       maximumFractionDigits: 2,
     })}`;
   };
+
+  const handleExcelDownload = async () => {
+    if (!fromDate || !toDate) {
+      toast({
+        title: 'Please select a date range.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      const data: any = {
+        startDate: fromDate,
+        endDate: toDate,
+      };
+
+      const response = await axios.get(`${apiUrl}/api/reports/rent-collections/excel`, {
+        params: data,
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Rent-Collections-${formatDate(fromDate).dayMonthYear}-to-${formatDate(toDate).dayMonthYear}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: 'Excel file downloaded successfully.',
+        variant: 'default',
+      });
+    } catch (err: any) {
+      toast({
+        title: 'Failed to download Excel file.',
+        description: err.response?.data?.message || err.message || 'something went wrong',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const handleReceiptClick = async (data: any) => {
     const totalAmount = data.reduce((acc: number, collection: any) => acc + collection.amount, 0);
     const totalCollections = data.length;
@@ -439,6 +486,12 @@ const RentPage = () => {
           <div className="md:pt-4 col-span-2 md:col-span-1">
             <Button size="sm" onClick={() => handleReceiptClick(filteredCollections)} className="w-full md:w-auto">
               Print
+            </Button>
+          </div>
+          <div className="md:pt-4 col-span-2 md:col-span-1">
+            <Button size="sm" onClick={handleExcelDownload} variant="outline" className="w-full md:w-auto">
+              <Download className="h-4 w-4 mr-2" />
+              Excel
             </Button>
           </div>
         </div>

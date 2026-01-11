@@ -2,7 +2,7 @@
 import DatePicker from '@/components/DatePicker';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ChevronDown, Loader2 } from 'lucide-react';
+import { ChevronDown, Download, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -175,6 +175,53 @@ const TutionPage = () => {
     })}`;
   };
 
+  const handleExcelDownload = async () => {
+    if (!fromDate || !toDate) {
+      toast({
+        title: 'Please select a date range.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      const data: any = {
+        startDate: fromDate,
+        endDate: toDate,
+      };
+
+      const response = await axios.get(`${apiUrl}/api/reports/get/collections/excel`, {
+        params: data,
+        responseType: 'blob', // Important for file download
+      });
+
+      // Create a blob from the response
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      // Create download link and trigger download
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Tuition-Collections-${formatDate(fromDate).dayMonthYear}-to-${formatDate(toDate).dayMonthYear}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: 'Excel file downloaded successfully.',
+        variant: 'default',
+      });
+    } catch (err: any) {
+      toast({
+        title: 'Failed to download Excel file.',
+        description: err.response?.data?.message || err.message || 'something went wrong',
+        variant: 'destructive',
+      });
+    }
+  };
 
   const handleReceiptClick = async (data:any) => {
     const totalAmount = data.reduce((sum:any, collection:any) => sum + (collection?.amount || 0), 0);
@@ -451,6 +498,12 @@ const TutionPage = () => {
           <div className="md:pt-4">
             <Button size="sm" onClick={() => handleReceiptClick(filteredCollections)} className="w-full md:w-auto">
               Print
+            </Button>
+          </div>
+          <div className="md:pt-4">
+            <Button size="sm" onClick={handleExcelDownload} variant="outline" className="w-full md:w-auto">
+              <Download className="h-4 w-4 mr-2" />
+              Excel
             </Button>
           </div>
         </div>

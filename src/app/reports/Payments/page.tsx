@@ -10,7 +10,7 @@ import { format, startOfMonth } from 'date-fns';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import DatePicker from '@/components/DatePicker';
-import { Loader2 } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 Font.register({
@@ -133,7 +133,53 @@ const fetchInitialPayments = async () => {
       })
     }
   };
-  
+
+  const handleExcelDownload = async () => {
+    if (!fromDate || !toDate) {
+      toast({
+        title: 'Please select a date range.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      const data: any = {
+        startDate: fromDate,
+        endDate: toDate,
+      };
+
+      const response = await axios.get(`${apiUrl}/api/reports/get/payment/excel`, {
+        params: data,
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Payments-${formatDate(fromDate).dayMonthYear}-to-${formatDate(toDate).dayMonthYear}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: 'Excel file downloaded successfully.',
+        variant: 'default',
+      });
+    } catch (err: any) {
+      toast({
+        title: 'Failed to download Excel file.',
+        description: err.response?.data?.message || err.message || 'something went wrong',
+        variant: 'destructive',
+      });
+    }
+  };
+
   useEffect(() => {
     fetchInitialPayments();
     fetchPayCategories();
@@ -381,7 +427,18 @@ const fetchInitialPayments = async () => {
               onClick={() => handleReceiptClick(filteredPayments)}
               className="w-full md:w-auto"
             >
-              Print  
+              Print
+            </Button>
+          </div>
+          <div className='md:pt-4'>
+            <Button
+              size='sm'
+              onClick={handleExcelDownload}
+              variant="outline"
+              className="w-full md:w-auto"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Excel
             </Button>
           </div>
         </div>

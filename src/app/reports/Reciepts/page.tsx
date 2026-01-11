@@ -10,7 +10,7 @@ import { format, startOfMonth } from 'date-fns';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import DatePicker from '@/components/DatePicker';
-import { Loader2 } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import SingleReciept from '@/components/reports/SingleReciept';
 import { toast } from '@/components/ui/use-toast';
 
@@ -131,6 +131,52 @@ const fetchInitialReciepts = async () => {
         description: err.response?.data?.message || err.message || 'something went wrong',
         variant: "destructive",
       })
+    }
+  };
+
+  const handleExcelDownload = async () => {
+    if (!fromDate || !toDate) {
+      toast({
+        title: 'Please select a date range.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      const data: any = {
+        startDate: fromDate,
+        endDate: toDate,
+      };
+
+      const response = await axios.get(`${apiUrl}/api/reports/get/reciept/excel`, {
+        params: data,
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Reciepts-${formatDate(fromDate).dayMonthYear}-to-${formatDate(toDate).dayMonthYear}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: 'Excel file downloaded successfully.',
+        variant: 'default',
+      });
+    } catch (err: any) {
+      toast({
+        title: 'Failed to download Excel file.',
+        description: err.response?.data?.message || err.message || 'something went wrong',
+        variant: 'destructive',
+      });
     }
   };
   
@@ -359,6 +405,17 @@ const fetchInitialReciepts = async () => {
        Print  
        </Button>
       </div>
+       <div className='md:pt-4'>
+            <Button
+              size='sm'
+              onClick={handleExcelDownload}
+              variant="outline"
+              className="w-full md:w-auto"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Excel
+            </Button>
+          </div>
       </div>
       <div className='rounded-t-md bg-gray-100 p-1'>
  <Table className="bg-white">

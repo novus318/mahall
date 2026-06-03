@@ -7,7 +7,7 @@ import { toast } from '@/components/ui/use-toast';
 import { withAuth } from '@/components/withAuth'
 import axios from 'axios';
 import { format, isValid, startOfMonth } from 'date-fns';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Download } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { Document, Page, Text, View, StyleSheet, pdf, Font, Image } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
@@ -180,6 +180,54 @@ const TransactionPage = () => {
     return type === 'Credit' ? `+₹${formatted}` : `-₹${formatted}`;
   };
 
+
+  const handleExcelDownload = async () => {
+    if (!fromDate || !toDate) {
+      toast({
+        title: 'Please select a date range.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      const data: any = {
+        fromDate,
+        toDate,
+        accountName: selectedAccount,
+        category: selectedCategory
+      };
+
+      const response = await axios.get(`${apiUrl}/api/transactions/recent/transactions/excel`, {
+        params: data,
+        responseType: 'blob',
+      });
+
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Transactions-${formatDate(transactions?.from).dayMonthYear}-to-${formatDate(transactions?.to).dayMonthYear}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast({
+        title: 'Excel file downloaded successfully.',
+        variant: 'default',
+      });
+    } catch (err: any) {
+      toast({
+        title: 'Failed to download Excel file.',
+        description: err.response?.data?.message || err.message || 'something went wrong',
+        variant: 'destructive',
+      });
+    }
+  };
 
   const handleReceiptClick = async (data: any) => {
     const doc = (
@@ -483,6 +531,17 @@ const TransactionPage = () => {
               className="w-full md:w-auto"
             >
               Print
+            </Button>
+          </div>
+          <div className='md:pt-4'>
+            <Button
+              size='sm'
+              onClick={handleExcelDownload}
+              variant="outline"
+              className="w-full md:w-auto"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Excel
             </Button>
           </div>
         </div>
